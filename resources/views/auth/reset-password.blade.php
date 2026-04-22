@@ -143,7 +143,7 @@
 
     <!-- Footer Section -->
     <footer>
-        <p>© 2024 RM EXPRESS GLOB. All Rights Reserved.</p>
+        <p>© {{ date('Y') }} ML SOURCING. All Rights Reserved.</p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>

@@ -8,6 +8,7 @@ use App\Http\Controllers\AgentController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\FaqController;
+use App\Http\Controllers\FilterController;
 use App\Http\Controllers\UserNotificationController;
 
 
@@ -38,6 +39,11 @@ Route::get('/', function () {
     }
     
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware('auth')->group(function() {
+    Route::get('switch_language', [FilterController::class, 'switch_language'])->name('switch_language');
+    Route::get('switch_currency', [FilterController::class, 'switch_currency'])->name('switch_currency');
+});
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

@@ -1,5 +1,5 @@
 @extends('auth.theme.dashboard')
-
+@section('title') {{ __('add_request') }} @endsection
 @section('content')
 <div class="container-fluid py-4">
     <div class="row">
@@ -33,9 +33,9 @@
 
                     <form action="{{ route('seller.storeProductRequests') }}" method="POST">
                         @csrf
-                        <div class="d-md-flex align-items-center mb-4">
-                            <img src="https://cdn.codpartner.com/assets/img/pngs/sourcing.png" style="width: 450px; height: auto;">
-                            <div class="p-4">
+                        <div class="d-md-flex align-items-center mb-4 row">
+                        <div class="col-md-4 col-12"><img src="https://cdn.codpartner.com/assets/img/pngs/sourcing.png" style="width: 100%; height: auto;"></div>
+                            <div class="col-md-8 col-12">
                                 <h4 class="font-weight-bold mb-3">We Source For You</h4>
                                 <p class="mb-4">Let our professional sourcing team take care of all your sourcing needs.</p>
                                 
@@ -51,8 +51,17 @@
                                     </div>
                                     <div class="col-md-4">
                                         <div class="mb-3">
-                                            <label for="product_url" class="form-label">Product URL*</label>
+                                            <label for="product_url" class="form-label">Product URL</label>
                                             <input type="text" id="product_url" name="product_url" class="form-control" placeholder="Product URL" value="{{ old('product_url') }}" required>
+                                            @error('product_url')
+                                                <span class="text-danger">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label for="product_url" class="form-label">Product Image</label>
+                                            <input type="file" id="product_url" name="product_url" class="form-control" placeholder="Product URL" value="{{ old('product_url') }}" required>
                                             @error('product_url')
                                                 <span class="text-danger">{{ $message }}</span>
                                             @enderror

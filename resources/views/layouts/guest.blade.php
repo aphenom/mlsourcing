@@ -5,7 +5,30 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <!-- SEO PRINCIPAL -->
+        <title>ML SOURCING | Plateforme de sourcing & approvisionnement direct usine</title>
+
+        <meta name="description" content="ML SOURCING est une plateforme de sourcing B2B spécialisée dans l’approvisionnement direct usine. Nous connectons les entreprises aux fabricants pour garantir qualité et prix d’usine.">
+
+        <meta name="keywords" content="sourcing, plateforme de sourcing, approvisionnement industriel, sourcing B2B, prix usine, fournisseurs fabricants, sourcing international">
+
+        <meta name="robots" content="index, follow">
+        <meta name="author" content="ML SOURCING">
+
+        <!-- RESPONSIVE -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- OPEN GRAPH (réseaux sociaux) -->
+        <meta property="og:title" content="ML SOURCING | Sourcing direct usine au prix fabricant">
+        <meta property="og:description" content="Plateforme de sourcing reliant directement les entreprises aux usines pour des produits de haute qualité aux prix d’usine.">
+        <meta property="og:type" content="website">
+        <meta property="og:locale" content="fr_FR">
+
+        <!-- TWITTER CARD -->
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="ML SOURCING | Plateforme de sourcing B2B">
+        <meta name="twitter:description" content="Approvisionnement direct fabricant, sans intermédiaire, pour des produits qualitatifs aux prix d’usine.">
+
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">

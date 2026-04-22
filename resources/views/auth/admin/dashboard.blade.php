@@ -268,7 +268,7 @@
 
 
     <!-- Notifications Section -->
-    <div class="row mt-4">
+    <div class="row mt-4 d-none">
     <div class="col-12">
         <div class="card">
         <div class="card-header pb-3">

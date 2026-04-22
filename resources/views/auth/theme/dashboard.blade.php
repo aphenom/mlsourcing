@@ -5,7 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('adminTheme/assets/img/apple-icon.png') }}">
   <link rel="icon" type="image/png" href="{{ asset('adminTheme/assets/img/favicon.png') }}">
-  <title>RME EXPRESS GLOB</title>
+  <!-- SEO PRINCIPAL -->
+  <title>ML SOURCING | Plateforme de sourcing & approvisionnement direct usine</title>
+
+  <meta name="description" content="ML SOURCING est une plateforme de sourcing B2B spécialisée dans l’approvisionnement direct usine. Nous connectons les entreprises aux fabricants pour garantir qualité et prix d’usine.">
+
+  <meta name="keywords" content="sourcing, plateforme de sourcing, approvisionnement industriel, sourcing B2B, prix usine, fournisseurs fabricants, sourcing international">
+
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="ML SOURCING">
+
+  <!-- RESPONSIVE -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- OPEN GRAPH (réseaux sociaux) -->
+  <meta property="og:title" content="ML SOURCING | Sourcing direct usine au prix fabricant">
+  <meta property="og:description" content="Plateforme de sourcing reliant directement les entreprises aux usines pour des produits de haute qualité aux prix d’usine.">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="fr_FR">
+
+  <!-- TWITTER CARD -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="ML SOURCING | Plateforme de sourcing B2B">
+  <meta name="twitter:description" content="Approvisionnement direct fabricant, sans intermédiaire, pour des produits qualitatifs aux prix d’usine.">
+
 
   <!-- Fonts and icons -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
@@ -53,15 +76,146 @@
       <div class="container-fluid py-1 px-3">
         <nav aria-label="breadcrumb">
           
-          <h6 class="font-weight-bolder mb-0">Dashboard</h6>
+          <h6 class="font-weight-bolder mb-0">@yield('title', 'Dashboard')</h6>
         </nav>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
           <div class="ms-md-auto pe-md-3 d-flex align-items-center">
             
           </div>
           <ul class="navbar-nav  justify-content-end">
-           
-            
+   
+            <!-- Langue -->
+            <li class="nav-item dropdown pe-2">
+              <a href="#"
+                class="nav-link text-body p-0 position-relative"
+                id="dropdownMenuButtonLang"
+                data-bs-toggle="dropdown"
+                aria-expanded="false">
+                @if(Session::get('locale')=="en")
+                <img width="16" alt="Tinker Tailwind HTML Admin Template" src="https://flagcdn.com/w40/gb.png">
+                @else
+                <img width="16" alt="Tinker Tailwind HTML Admin Template" src="https://flagcdn.com/w40/fr.png">
+                @endif
+              </a>
+
+              <!-- MENU DEROULANT -->
+              <ul class="dropdown-menu dropdown-menu-end px-2 py-3"
+                  aria-labelledby="dropdownMenuButtonLang">
+                  <li class="p-2">
+                    <div class="font-medium">{{ __('global.choix_langue') }}</div>
+                    <div class="text-xs text-white/70 mt-0.5 dark:text-slate-500"></div>
+                </li>
+                <li>
+                    <hr class="dropdown-divider border-white/[0.08]">
+                </li>
+                <li>
+                    <a href="{{ route('switch_language') }}?locale=fr" class="dropdown-item hover:bg-white/5">
+                        <i data-feather="flag" class="w-4 h-4 mr-2"></i> Français
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route('switch_language') }}?locale=en" class="dropdown-item hover:bg-white/5">
+                        <i data-feather="flag" class="w-4 h-4 mr-2"></i> English
+                    </a>
+                </li>
+              </ul>
+            </li>
+
+            <!-- Devise -->
+            <li class="nav-item dropdown pe-2">
+              <a href="#"
+                class="nav-link text-body p-1 position-relative btn btn-info"
+                id="dropdownMenuButtonDev"
+                data-bs-toggle="dropdown"
+                aria-expanded="false" style="border-radius: 25px; padding: 15px 20px;">
+                <!--
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cash" viewBox="0 0 16 16">
+                  <path d="M8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/>
+                  <path d="M0 4a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V6a2 2 0 0 1-2-2z"/>
+                </svg> 
+                -->
+                @if(Session::get('currency')=="USD")
+                USD
+                @elseif(Session::get('locale')=="RMB")
+                RMB
+                @else
+                FCFA
+                @endif
+              </a>
+
+              <!-- MENU DEROULANT -->
+              <ul class="dropdown-menu dropdown-menu-end px-2 py-3"
+                  aria-labelledby="dropdownMenuButtonDev">
+                  <li class="p-2">
+                    <div class="font-medium">{{ __('global.choix_devise') }}</div>
+                    <div class="text-xs text-white/70 mt-0.5 dark:text-slate-500"></div>
+                </li>
+                <li>
+                    <hr class="dropdown-divider border-white/[0.08]">
+                </li>
+                <li>
+                    <a href="{{ route('switch_currency') }}?currency=XOF" class="dropdown-item hover:bg-white/5">
+                    XOF (FCFA)
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route('switch_currency') }}?currency=USD" class="dropdown-item hover:bg-white/5">
+                    USD ($)
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route('switch_currency') }}?currency=RMB" class="dropdown-item hover:bg-white/5">
+                       RMB (¥)       
+                    </a>
+                </li>
+              </ul>
+            </li>
+ 
+            <!-- CLOCHE NOTIFICATIONS -->
+            <li class="nav-item dropdown pe-2">
+              <a href="#"
+                class="nav-link text-body p-0 position-relative"
+                id="dropdownMenuButton"
+                data-bs-toggle="dropdown"
+                aria-expanded="false">
+
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16">
+                  <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/>
+                </svg>
+
+                <!-- Badge 
+                <span class="position-absolute top-0 start-100 translate-middle
+                            badge rounded-pill bg-danger">
+                  3
+                </span>-->
+              </a>
+
+              <!-- MENU DEROULANT -->
+              <ul class="dropdown-menu dropdown-menu-end px-2 py-3"
+                  aria-labelledby="dropdownMenuButton">
+
+                <li class="mb-2">
+                  <a class="dropdown-item border-radius-md" href="#">
+                    <div class="d-flex py-1">
+                      <!--<img src="assets/img/team-2.jpg"
+                          class="avatar avatar-sm me-3">
+                      <div>
+                        <h6 class="text-sm mb-0">
+                          <strong>Nouveau message</strong> de Laur
+                        </h6>
+                        <p class="text-xs text-secondary mb-0">
+                          <i class="fa fa-clock me-1"></i> 13 min
+                        </p>
+                      </div>-->
+                    </div>
+                  </a>
+                </li>
+              </ul>
+            </li>
+                   
             <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
               <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
                 <div class="sidenav-toggler-inner">

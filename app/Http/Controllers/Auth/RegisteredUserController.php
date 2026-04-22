@@ -13,14 +13,27 @@ use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 use Carbon\Carbon;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\App;
 
 class RegisteredUserController extends Controller
 {
     /**
      * Display the registration view.
      */
-    public function create(): View
+    public function create(Request $request): View
     {
+            // Récupérer la langue choisie par l'utilisateur
+            $locale = $request->input('locale', 'fr'); // 'fr' par défaut si non fourni
+
+            // Vérifier si la langue est valide
+            if (!in_array($locale, ['en', 'fr'])) {
+                throw new \Exception('Langue non supportée.');
+            }
+
+            // Définir la langue et la sauvegarder dans la session
+            App::setLocale($locale);
+            session(['locale' => $locale]);
+
         return view('auth.register');
     }
 
@@ -85,10 +98,23 @@ class RegisteredUserController extends Controller
             $user->save();  // Save the user instance to the database
 
             // Trigger email verification (optional)
-            event(new Registered($user));
+            // event(new Registered($user));
 
             // Log the user in after registration
             Auth::login($user);
+
+            // Récupérer la langue choisie par l'utilisateur
+            $locale = $request->input('locale', 'fr'); // 'fr' par défaut si non fourni
+
+            // Vérifier si la langue est valide
+            if (!in_array($locale, ['en', 'fr'])) {
+                throw new \Exception('Langue non supportée.');
+            }
+
+            // Définir la langue et la sauvegarder dans la session
+            App::setLocale($locale);
+            session(['locale' => $locale]);
+
 
             // Redirect to dashboard or other page
             return redirect(route('dashboard'));

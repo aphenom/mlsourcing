@@ -3,7 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RM EXPRESS GLOB Sign Up</title>
+    <!-- SEO PRINCIPAL -->
+    <title>Inscription - ML SOURCING | Plateforme de sourcing & approvisionnement direct usine</title>
+
+    <meta name="description" content="ML SOURCING est une plateforme de sourcing B2B spécialisée dans l’approvisionnement direct usine. Nous connectons les entreprises aux fabricants pour garantir qualité et prix d’usine.">
+
+    <meta name="keywords" content="sourcing, plateforme de sourcing, approvisionnement industriel, sourcing B2B, prix usine, fournisseurs fabricants, sourcing international">
+
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="ML SOURCING">
+
+    <!-- RESPONSIVE -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- OPEN GRAPH (réseaux sociaux) -->
+    <meta property="og:title" content="ML SOURCING | Sourcing direct usine au prix fabricant">
+    <meta property="og:description" content="Plateforme de sourcing reliant directement les entreprises aux usines pour des produits de haute qualité aux prix d’usine.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="fr_FR">
+
+    <!-- TWITTER CARD -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="ML SOURCING | Plateforme de sourcing B2B">
+    <meta name="twitter:description" content="Approvisionnement direct fabricant, sans intermédiaire, pour des produits qualitatifs aux prix d’usine.">
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -114,13 +137,13 @@
             <!-- Left Section (Sign-Up Form) -->
             <div class="col-md-6 p-0 d-flex justify-content-center align-items-center">
                 <div class="signup-form">
-                    <h2 class="text-center">Sign Up</h2>
+                    <h2 class="text-center">{{ __('global.sign_up_title') }}</h2>
                     <form action="{{ route('register') }}" method="POST" enctype="multipart/form-data">
                         @csrf
 
                         <!-- Name -->
                         <div class="form-group">
-                            <label for="name">Name</label>
+                            <label for="name">{{ __('global.nom') }}</label>
                             <input type="text" id="name" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" required>
                             @error('name')
                                 <small class="text-danger">{{ $message }}</small>
@@ -129,7 +152,7 @@
 
                         <!-- Phone Number -->
                         <div class="form-group">
-                            <label for="phone_number">Phone Number : (ex : +21260000000)</label>
+                            <label for="phone_number">{{ __('global.contact') }} : (ex : +21260000000)</label>
                             <input type="text" id="phone_number" name="phone_number" class="form-control @error('phone_number') is-invalid @enderror" value="{{ old('phone_number') }}" required>
                             @error('phone_number')
                                 <small class="text-danger">{{ $message }}</small>
@@ -147,7 +170,7 @@
 
                         <!-- Password -->
                         <div class="form-group">
-                            <label for="password">Password</label>
+                            <label for="password">{{ __('global.password') }}</label>
                             <input type="password" id="password" name="password" class="form-control @error('password') is-invalid @enderror" required>
                             @error('password')
                                 <small class="text-danger">{{ $message }}</small>
@@ -156,13 +179,13 @@
 
                         <!-- Confirm Password -->
                         <div class="form-group">
-                            <label for="password_confirmation">Confirm Password</label>
+                            <label for="password_confirmation">{{ __('global.confirm_password') }}</label>
                             <input type="password" id="password_confirmation" name="password_confirmation" class="form-control" required>
                         </div>
 
                         <!-- Address -->
                         <div class="form-group">
-                            <label for="address">Address</label>
+                            <label for="address">{{ __('global.address') }}</label>
                             <textarea id="address" name="address" class="form-control @error('address') is-invalid @enderror" rows="3" required>{{ old('address') }}</textarea>
                             @error('address')
                                 <small class="text-danger">{{ $message }}</small>
@@ -171,10 +194,10 @@
 
                         <!-- Account Type -->
                         <div class="form-group">
-                            <label for="user_type">Account Type</label>
+                            <label for="user_type">{{ __('global.type_compte') }}</label>
                             <select id="user_type" name="user_type" class="form-select @error('user_type') is-invalid @enderror" required>
-                                <option value="particular" {{ old('user_type') == 'particular' ? 'selected' : '' }}>Particular</option>
-                                <option value="company" {{ old('user_type') == 'company' ? 'selected' : '' }}>Company</option>
+                                <option value="particular" {{ old('user_type') == 'particular' ? 'selected' : '' }}>{{ __('global.particulier') }}</option>
+                                <option value="company" {{ old('user_type') == 'company' ? 'selected' : '' }}>{{ __('global.compagnie') }}</option>
                             </select>
                             @error('user_type')
                                 <small class="text-danger">{{ $message }}</small>
@@ -184,7 +207,7 @@
                         <!-- Particular Fields -->
                         <div id="particular-fields" class="conditional-fields" style="display: none;">
                             <div class="form-group">
-                                <label for="identity_perso">Personal Identity Image</label>
+                                <label for="identity_perso">{{ __('global.photo_identity') }}</label>
                                 <input type="file" id="identity_perso" name="identity_perso" class="form-control @error('identity_perso') is-invalid @enderror" accept=".jpg,.jpeg,.png,.pdf">
                                 @error('identity_perso')
                                     <small class="text-danger">{{ $message }}</small>
@@ -196,7 +219,7 @@
                         <div id="company-fields" class="conditional-fields" style="display: none;">
                             <!-- Company Name -->
                             <div class="form-group">
-                                <label for="company_name">Company Name</label>
+                                <label for="company_name">{{ __('global.company_name') }}</label>
                                 <input type="text" id="company_name" name="company_name" class="form-control @error('company_name') is-invalid @enderror">
                                 @error('company_name')
                                     <small class="text-danger">{{ $message }}</small>
@@ -205,7 +228,7 @@
 
                             <!-- Company Information -->
                             <div class="form-group">
-                                <label for="company_information">Company Information</label>
+                                <label for="company_information">{{ __('global.company_information') }}</label>
                                 <textarea id="company_information" name="company_information" class="form-control @error('company_information') is-invalid @enderror" rows="4"></textarea>
                                 @error('company_information')
                                     <small class="text-danger">{{ $message }}</small>
@@ -214,7 +237,7 @@
 
                             <!-- Company Document -->
                             <div class="form-group">
-                                <label for="company_document">Upload Company Document</label>
+                                <label for="company_document">{{ __('global.company_document') }}</label>
                                 <input type="file" id="company_document" name="company_document" class="form-control @error('company_document') is-invalid @enderror" accept=".jpg,.jpeg,.png,.pdf">
                                 @error('company_document')
                                     <small class="text-danger">{{ $message }}</small>
@@ -223,11 +246,11 @@
                         </div>
 
                         <!-- Submit Button -->
-                        <button type="submit" class="btn btn-signup">Sign Up</button>
+                        <button type="submit" class="btn btn-signup">{{ __('global.sign_up_btn') }}</button>
 
                         <!-- Links -->
                         <div class="links">
-                            <a href="{{ route('login') }}" class="create-account">Login</a>
+                            <a href="{{ route('login') }}" class="create-account">{{ __('global.login') }}</a>
                         </div>
                     </form>
 

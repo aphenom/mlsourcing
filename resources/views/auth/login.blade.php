@@ -3,7 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
+    <!-- SEO PRINCIPAL -->
+    <title>Connexion - ML SOURCING | Plateforme de sourcing & approvisionnement direct usine</title>
+
+    <meta name="description" content="ML SOURCING est une plateforme de sourcing B2B spécialisée dans l’approvisionnement direct usine. Nous connectons les entreprises aux fabricants pour garantir qualité et prix d’usine.">
+
+    <meta name="keywords" content="sourcing, plateforme de sourcing, approvisionnement industriel, sourcing B2B, prix usine, fournisseurs fabricants, sourcing international">
+
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="ML SOURCING">
+
+    <!-- RESPONSIVE -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- OPEN GRAPH (réseaux sociaux) -->
+    <meta property="og:title" content="ML SOURCING | Sourcing direct usine au prix fabricant">
+    <meta property="og:description" content="Plateforme de sourcing reliant directement les entreprises aux usines pour des produits de haute qualité aux prix d’usine.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="fr_FR">
+
+    <!-- TWITTER CARD -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="ML SOURCING | Plateforme de sourcing B2B">
+    <meta name="twitter:description" content="Approvisionnement direct fabricant, sans intermédiaire, pour des produits qualitatifs aux prix d’usine.">
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -124,7 +147,7 @@
             <!-- Left Section (Login Form) -->
             <div class="col-md-6 p-0 d-flex justify-content-center align-items-center"> <!-- Added flex utilities -->
                 <div class="login-form">
-                    <h2 class="text-center">Login</h2>
+                    <h2 class="text-center">{{ __('global.login_title') }}</h2>
                     <form action="{{ route('login') }}" method="POST">
                     @csrf
                     <!-- Email Field -->
@@ -144,7 +167,7 @@
                     
                     <!-- Password Field -->
                     <div class="form-group">
-                        <label for="password">Password</label>
+                        <label for="password">{{ __('global.password') }}</label>
                         <input 
                             type="password" 
                             id="password" 
@@ -159,17 +182,17 @@
                     <!-- Remember Me -->
                     <div class="form-group form-check">
                         <input type="checkbox" class="form-check-input" id="remember" name="remember" {{ old('remember') ? 'checked' : '' }}>
-                        <label class="form-check-label" for="remember">Remember Me</label>
+                        <label class="form-check-label" for="remember">{{ __('global.remember_me') }}</label>
                     </div>
                     
                     <!-- Submit Button -->
-                    <button type="submit" class="btn btn-login">Login</button>
+                    <button type="submit" class="btn btn-login">{{ __('global.login_btn') }}</button>
                     
                     <!-- Links -->
                     <div class="links">
-                        <a href="{{ route('password.request') }}" class="forgot-password">Forgot Password?</a>
-                        <br>or<br>
-                        <a href="{{ route('register') }}" class="create-account">Create Account</a>
+                        <a href="{{ route('password.request') }}" class="forgot-password">{{ __('global.forgot_password') }}?</a>
+                        <br>{{ __('global.or') }}<br>
+                        <a href="{{ route('register') }}" class="create-account">{{ __('global.create_account') }}</a>
                     </div>
                 </form>
 

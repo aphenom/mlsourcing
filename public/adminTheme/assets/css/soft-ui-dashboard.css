@@ -22356,7 +22356,7 @@ hr.horizontal.gray-light {
     animation-fill-mode: both;
     animation-duration: 1.5s;
     transform: scale(0.6);
-    background: #fff;
+    background: #00A752;
     left: 18% !important;
     position: absolute;
   }
