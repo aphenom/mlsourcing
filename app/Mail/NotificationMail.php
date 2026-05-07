@@ -3,37 +3,31 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
 class NotificationMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $subject;
-    public $message;
-    public $link;
+    public array $texts;
+    public string $link;
+
     /**
-     * Create a new message instance.
+     * @param array<string, array{subject: string, message: string, sms: string}> $texts
+     *        Keyed by locale, e.g. ['fr' => ['subject'=>..., 'message'=>..., 'sms'=>...], 'en' => [...]]
+     * @param string $link  Action URL for the CTA button
      */
-    public function __construct($subject,$message,$link)
+    public function __construct(array $texts, string $link)
     {
-        $this->subject = $subject;
-        $this->message = $message;
-        $this->link = $link;
+        $this->texts = $texts;
+        $this->link  = $link;
     }
 
-    public function build()
+    public function build(): self
     {
-        return $this->subject($this->subject)
-            ->view('emails.notification')
-            ->with([
-                'messageContent' => $this->message,
-                'link' => $this->link,
-            ]);
+        $firstLocale = array_key_first($this->texts);
+        return $this->subject($this->texts[$firstLocale]['subject'])
+                    ->view('emails.notification');
     }
-
 }

@@ -278,6 +278,71 @@
             </div>
          </div>
       </div>
+      <!-- Add Comptable Section -->
+      <div class="col-lg-6 col-md-12 mb-4">
+         <div class="card">
+            <div class="card-header bg-gradient-primary text-white text-center">{{ __('pages.add_comptable') }}</div>
+            <div class="card-body">
+               <form action="{{ route('admin.storeComptable') }}" method="POST">
+                  @csrf
+                  <div class="mb-3">
+                     <label for="comptable_name" class="form-label">{{ __('pages.comptable_name_label') }}</label>
+                     <input type="text" class="form-control" id="comptable_name" name="comptable_name" required>
+                  </div>
+                  <div class="mb-3">
+                     <label for="comptable_email" class="form-label">{{ __('pages.comptable_email_label') }}</label>
+                     <input type="email" class="form-control" id="comptable_email" name="comptable_email" required>
+                  </div>
+                  <div class="mb-3">
+                     <label for="comptable_phone" class="form-label">{{ __('pages.comptable_phone_label') }}</label>
+                     <input type="text" class="form-control" id="comptable_phone" name="comptable_phone" required>
+                  </div>
+                  <p class="text-sm text-muted">{{ __('pages.comptable_password_hint') }}</p>
+                  <button type="submit" class="btn btn-primary">{{ __('pages.add_comptable') }}</button>
+               </form>
+            </div>
+         </div>
+      </div>
+      <!-- Comptable Listing Section -->
+      <div class="col-lg-6 col-md-12 mb-4">
+         <div class="card">
+            <div class="card-header bg-gradient-primary text-white text-center">{{ __('pages.comptables') }}</div>
+            <div class="card-body">
+               <table class="table align-items-center mb-0">
+                  <thead class="text-center">
+                     <tr>
+                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">{{ __('pages.action_col') }}</th>
+                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">{{ __('pages.agent_name_col') }}</th>
+                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">{{ __('pages.agent_email_col') }}</th>
+                     </tr>
+                  </thead>
+                  <tbody class="text-center">
+                     @forelse($comptables as $comptable)
+                     <tr>
+                        <td>
+                           <form action="{{ route('admin.deleteComptable', $comptable->id) }}" method="POST" onsubmit="return confirm('{{ __('pages.confirm_delete_comptable') }}')">
+                              @csrf
+                              @method('DELETE')
+                              <button type="submit" class="btn btn-danger btn-sm">{{ __('pages.delete') }}</button>
+                           </form>
+                        </td>
+                        <td>
+                           <p class="text-xs font-weight-bold mb-0">{{ $comptable->name }}</p>
+                        </td>
+                        <td>
+                           <p class="text-xs font-weight-bold mb-0">{{ $comptable->email }}</p>
+                        </td>
+                     </tr>
+                     @empty
+                     <tr>
+                        <td colspan="3" class="text-center text-sm">{{ __('pages.no_comptables') }}</td>
+                     </tr>
+                     @endforelse
+                  </tbody>
+               </table>
+            </div>
+         </div>
+      </div>
       <!-- See Linking Agent Section -->
       <div class="col-lg-12 col-md-12 mb-4">
          <div class="card">

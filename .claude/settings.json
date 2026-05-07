@@ -5,7 +5,16 @@
       "Bash(php -r ' *)",
       "Bash(php -l app/Http/Controllers/AdminController.php)",
       "Bash(php -l app/Http/Controllers/AgentController.php)",
-      "Bash(php -l app/Models/ImportedProduct.php)"
+      "Bash(php -l app/Models/ImportedProduct.php)",
+      "Bash(Get-ChildItem -Path \"c:\\\\wamp64\\\\www\\\\mlsourcing\" -Directory)",
+      "Bash(Select-Object Name)",
+      "Bash(xargs cat)",
+      "Bash(php -l app/Http/Controllers/SellerController.php)",
+      "Bash(php -l app/Http/Controllers/ChatController.php)",
+      "Bash(php -l app/Http/Middleware/SetLocale.php)",
+      "Bash(findstr \"app.php\")",
+      "Bash(findstr \"Kernel.php\")",
+      "Bash(findstr -i kernel)"
     ]
   }
 }

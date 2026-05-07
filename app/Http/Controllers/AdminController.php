@@ -20,11 +20,7 @@ use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
-use App\Notifications\UserNotification;
-use App\Mail\NotificationMail;
-use Illuminate\Support\Facades\Mail;
-use App\Notifications\SmsNotification;
-use Illuminate\Support\Facades\Notification;
+use App\Services\NotificationService;
 use Illuminate\Support\Str;
 
 
@@ -82,11 +78,12 @@ class AdminController extends Controller
     public function configuration(){
 
         $agents = User::where('role', '2')->get();
+        $comptables = User::where('role', '4')->get();
         $sourcingCountries = SourcingCountry::all();
         $destinationCountries = DestinationCountry::all();
         $paymentOptions = PaymentOption::all();
 
-        return view('auth.admin.configuration', compact('agents', 'paymentOptions','sourcingCountries', 'destinationCountries'));
+        return view('auth.admin.configuration', compact('agents', 'comptables', 'paymentOptions','sourcingCountries', 'destinationCountries'));
 
     }
     // Delete Sourcing Country : 
@@ -291,6 +288,7 @@ class AdminController extends Controller
         $agent->company_information = $request->company_information;
         $agent->password = Hash::make('test');
         $agent->role = 2;
+        $agent->email_verified_at = now();
         $agent->save();
 
 
@@ -312,6 +310,40 @@ class AdminController extends Controller
         }
         $agent->delete();
         return redirect()->back()->with('success', 'Agent deleted successfully.');
+    }
+
+    public function storeComptable(Request $request)
+    {
+        $request->validate([
+            'comptable_name'  => 'required|string|max:255',
+            'comptable_email' => 'required|string|email|max:255|unique:users,email',
+            'comptable_phone' => 'required|string',
+        ]);
+
+        $plainPassword = Str::random(10);
+
+        $comptable = new User();
+        $comptable->name               = $request->comptable_name;
+        $comptable->email              = $request->comptable_email;
+        $comptable->phone_number       = $request->comptable_phone;
+        $comptable->address            = '';
+        $comptable->user_type          = 'particular';
+        $comptable->password           = Hash::make($plainPassword);
+        $comptable->role               = 4;
+        $comptable->status             = 'active';
+        $comptable->email_verified_at  = now();
+        $comptable->save();
+
+        NotificationService::sendWelcomeMail($comptable->email, $comptable->name, $comptable->email, $plainPassword);
+
+        return redirect()->route('admin.configuration')->with('success', __('pages.comptable_created'));
+    }
+
+    public function deleteComptable($id)
+    {
+        $comptable = User::where('id', $id)->where('role', 4)->firstOrFail();
+        $comptable->delete();
+        return redirect()->back()->with('success', __('pages.comptable_deleted'));
     }
 
     public function unlinkDestinationCountry($agentId, $destinationCountryId)
@@ -415,8 +447,8 @@ class AdminController extends Controller
                                     ->value('name');
     
                                 return [
-                                    'created_at' => $row->created_at->format('Y-m-d'),
-                                    'updated_at' => $row->updated_at->format('Y-m-d'),
+                                    'created_at' => $row->created_at->isoFormat('L'),
+                                    'updated_at' => $row->updated_at->isoFormat('L'),
                                     'seller' => $row->seller ? $row->seller->name . '<br><small class="text-muted">' . $row->seller->email . '</small>' : '-',
                                     'agent' => $agentName ?? '-',
                                     'product_name' => $row->importedproducts->pluck('productName')->implode(', '),
@@ -552,7 +584,7 @@ class AdminController extends Controller
                                             ->value('name');
 
                             return [
-                                'created_at'       => $row->created_at->format('Y-m-d'),
+                                'created_at'       => $row->created_at->isoFormat('L'),
                                 'agent'            => $agentName,
                                 'request_no'       => $row->requestNO,
                                 'product_name'     => $importedProduct->productName,
@@ -663,79 +695,28 @@ class AdminController extends Controller
     }
     
     
-    public function sendPaymentStatusNotificationToSeller($paymentId, $isApproved)
+    private function sendPaymentStatusNotificationToSeller(int $paymentId, int $isApproved): void
     {
-        // Retrieve the Payment instance
-        $m_payment = Payment::find($paymentId);
-        $m_requestID = $m_payment->requestID;
-        $m_sellerID = $m_payment->ordersrequests->sellerID;
-        $m_seller = User::find($m_sellerID);
-    
-        $m_subject = '';
-        $m_message = '';
-        
-        // Prepare subject and message based on approval status
-        if ($isApproved === 1) {
-            $m_subject = 'Payment Approved';
-            $m_message = 'Congratulations, your payment with ID: ' . $paymentId . ' has been approved.';
-        } else {
-            $m_subject = 'Payment Rejected';
-            $m_message = 'Your payment with ID: ' . $paymentId . ' has been rejected - See why.';
-        }
+        $payment = Payment::find($paymentId);
+        $seller  = User::find($payment->ordersrequests->sellerID);
+        if (!$seller) return;
 
-        $m_link = route('seller.followUpProductRequest', ['id' => $m_requestID]);
-        $sms = $m_subject.' : '.$m_message;
-        $this->sendNotification($m_seller,$sms);
-        $this->sendMailNotificationToSeller($m_seller,$m_subject,$m_message,$m_link);
-        // Send the notification to the seller
-        $m_seller->notify(new UserNotification(
-            $m_requestID,
-            $m_subject,
-            $m_message,
-            $m_link
-        ));
+        $key  = $isApproved === 1 ? 'payment_approved_seller' : 'payment_rejected_seller';
+        $link = route('seller.followUpProductRequest', ['id' => $payment->requestID]);
+
+        NotificationService::notify($seller, $payment->requestID, $key, ['payment_id' => $paymentId], $link);
     }
 
-    public function sendMailNotificationToSeller($seller,$subject,$message,$link){
-        $sellerMail = $seller->email;
-        Mail::to($sellerMail)->send(new NotificationMail(
-                    $subject,
-                    $message,
-                    $link
-            ));
-    }
-    public function sendNotification($seller,$message)
+    private function sendPaymentStatusNotificationToAgent(int $paymentId, int $isApproved): void
     {
-        $recipients = [$seller->phone_number];
-        Notification::route('sms', $recipients)->notify(new SmsNotification($recipients, $message));
-    }
-    public function sendPaymentStatusNotificationToAgent($paymentId, $isApproved)
-    {
-        // Retrieve the Payment instance
-        $m_payment = Payment::find($paymentId);
-        $m_requestID = $m_payment->requestID;
-        $m_agentID = $m_payment->ordersrequests->agentID;
-        $m_agent = User::find($m_agentID);
-    
-        $m_subject = '';
-        $m_message = '';
-        
-        // Prepare subject and message based on approval status
-        if ($isApproved === 1) {
-            $m_subject = 'Payment Approved';
-            $m_message = 'Payment with ID: ' . $paymentId . ' has been approved. Please ship the product';
-        } else {
-            $m_subject = 'Payment Rejected';
-            $m_message = 'Payment with ID: ' . $paymentId . ' has been rejected.';
-        }
-    
-        // Send the notification to the agent
-        $m_agent->notify(new UserNotification(
-            $m_requestID,
-            $m_subject,
-            $m_message,
-            route('agent.followUpProductRequest', ['id' => $m_requestID]),
-        ));
+        $payment = Payment::find($paymentId);
+        $agent   = User::find($payment->ordersrequests->agentID);
+        if (!$agent) return;
+
+        $key  = $isApproved === 1 ? 'payment_approved_agent' : 'payment_rejected_agent';
+        $link = route('agent.followUpProductRequest', ['id' => $payment->requestID]);
+
+        NotificationService::notify($agent, $payment->requestID, $key, ['payment_id' => $paymentId], $link, ['db', 'mail', 'sms']);
     }
 
     // Seller Management
@@ -770,11 +751,10 @@ class AdminController extends Controller
         $seller->password            = Hash::make($plainPassword);
         $seller->role                = 3;
         $seller->status              = 'active';
+        $seller->email_verified_at   = now();
         $seller->save();
 
-        $subject = 'Your MLSourcing Account is Ready';
-        $message = "Hello {$seller->name},\n\nYour account has been created.\nEmail: {$seller->email}\nPassword: {$plainPassword}\n\nPlease log in and change your password.";
-        Mail::to($seller->email)->send(new NotificationMail($subject, $message, route('login')));
+        NotificationService::sendWelcomeMail($seller->email, $seller->name, $seller->email, $plainPassword);
 
         return redirect()->back()->with('success', __('pages.seller_created'));
     }
@@ -785,9 +765,7 @@ class AdminController extends Controller
         $seller->status = 'active';
         $seller->save();
 
-        $subject = 'Your MLSourcing Account is Activated';
-        $message = "Hello {$seller->name},\n\nYour account has been activated. You can now log in and start using the platform.";
-        Mail::to($seller->email)->send(new NotificationMail($subject, $message, route('login')));
+        NotificationService::notify($seller, null, 'account_activated', ['name' => $seller->name], route('login'), ['mail', 'sms']);
 
         return redirect()->back()->with('success', __('pages.seller_activated'));
     }
@@ -806,9 +784,7 @@ class AdminController extends Controller
         $seller->status = 'active';
         $seller->save();
 
-        $subject = 'Your MLSourcing Account has been Unblocked';
-        $message = "Hello {$seller->name},\n\nYour account has been unblocked. You can now access the platform again.";
-        Mail::to($seller->email)->send(new NotificationMail($subject, $message, route('login')));
+        NotificationService::notify($seller, null, 'account_unblocked', ['name' => $seller->name], route('login'), ['mail', 'sms']);
 
         return redirect()->back()->with('success', __('pages.seller_unblocked'));
     }
@@ -908,12 +884,13 @@ class AdminController extends Controller
                 if ($agentId) {
                     $agent = User::find($agentId);
                     if ($agent) {
-                        $agent->notify(new \App\Notifications\UserNotification(
+                        NotificationService::notify(
+                            $agent,
                             $orderRequest->id,
-                            'New Request',
-                            'You have a new request assigned to you',
-                            route('agent.followUpProductRequest', ['id' => $orderRequest->id]),
-                        ));
+                            'new_request_agent',
+                            [],
+                            route('agent.followUpProductRequest', ['id' => $orderRequest->id])
+                        );
                     }
                 }
             });

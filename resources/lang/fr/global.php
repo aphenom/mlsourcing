@@ -52,4 +52,18 @@ return [
     'faqs' => 'FAQs',
     'configuration' => 'Configuration',
 
+    // --- Forgot / Reset password ---
+    'forgot_password_title'   => 'Mot de passe oublié',
+    'forgot_password_desc'    => 'Saisissez votre adresse email et nous vous enverrons un lien de réinitialisation.',
+    'enter_email'             => 'Votre adresse email',
+    'send_reset_link'         => 'Envoyer le lien',
+    'back_to_login'           => 'Retour à la connexion',
+    'reset_password_title'    => 'Réinitialiser le mot de passe',
+    'reset_password_desc'     => 'Saisissez votre nouveau mot de passe ci-dessous.',
+    'email_address'           => 'Adresse email',
+    'new_password_label'      => 'Nouveau mot de passe',
+    'confirm_password_label'  => 'Confirmer le mot de passe',
+    'reset_password_btn'      => 'Réinitialiser',
+    'password_reset_success'  => 'Votre mot de passe a été réinitialisé. Vous pouvez maintenant vous connecter.',
+
 ];

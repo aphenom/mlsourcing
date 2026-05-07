@@ -15,12 +15,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Log;
-use App\Notifications\UserNotification;
 use App\Models\ChatThread;
-use App\Mail\NotificationMail;
-use Illuminate\Support\Facades\Mail;
-use App\Notifications\SmsNotification;
-use Illuminate\Support\Facades\Notification;
+use App\Services\NotificationService;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 
@@ -142,8 +138,8 @@ class AgentController extends Controller
                         ->map(function ($row) {
                             return [
                                 'request_id' => $row->id,
-                                'created_at' => $row->created_at->format('Y-m-d'),
-                                'updated_at' => $row->updated_at->format('Y-m-d'),
+                                'created_at' => $row->created_at->isoFormat('L'),
+                                'updated_at' => $row->updated_at->isoFormat('L'),
                                 'seller' => $row->seller ? $row->seller->name . '<br><small class="text-muted">' . $row->seller->email . '</small>' : '-',
                                 'product_name' => $row->importedproducts->pluck('productName')->implode(', '),
                                 'quantity' => $row->importedproducts->sum('qte'),
@@ -326,7 +322,7 @@ class AgentController extends Controller
                             $importedProduct = $row->importedproducts->first();
 
                             return [
-                                'created_at'    => $row->created_at->format('Y-m-d'),
+                                'created_at'    => $row->created_at->isoFormat('L'),
                                 'request_no'    => $row->requestNO,
                                 'product_name'  => $importedProduct->productName,
                                 'product_url'   => $importedProduct->productURL,
@@ -361,64 +357,35 @@ class AgentController extends Controller
     }
 
     // Send Notification To Seller
-    public function sendNotificationToSeller($seller,$requestID,$requestNO,$sbjct){
-        
-        $subject='';
-        $message='';
-        $link='';
+    public function sendNotificationToSeller($seller, $requestID, $requestNO, $sbjct): void
+    {
+        $link = route('seller.followUpProductRequest', ['id' => $requestID]);
 
-        if($sbjct === 'request_quoted'){
-            $subject = 'Request Quoted';
-            $message='Your request NO : '.$requestNO.' was quoted. Please make the payment.';
-            $link = route('seller.followUpProductRequest', ['id' => $requestID]);
-        }
+        $key = match ($sbjct) {
+            'request_quoted'         => 'request_quoted_seller',
+            'product_status_updated' => 'product_updated_seller',
+            default                  => null,
+        };
 
-        if($sbjct === 'product_status_updated'){
-            $subject = 'Product Status Updated';
-            $message='Status of product in request NO : '.$requestNO.' has been updated. see more details.';
-            $link = route('seller.followUpProductRequest', ['id' => $requestID]);
-        }
-        $sms = $subject.' : '.$message;
-        $this->sendMailNotificationToSeller($seller,$subject,$message,$link);
-        $this->sendNotification($seller,$sms);
-        $seller->notify(new UserNotification(
-            $requestID,
-            $subject,
-            $message,
-            $link,
-        ));
-    }
+        if ($key === null) return;
 
-    public function sendMailNotificationToSeller($seller,$subject,$message,$link){
-        $sellerMail = $seller->email;
-        Mail::to($sellerMail)->send(new NotificationMail(
-                    $subject,
-                    $message,
-                    $link
-            ));
+        NotificationService::notify($seller, $requestID, $key, ['request_no' => $requestNO], $link);
     }
 
     // Send Notification To Admin
-    public function sendNotificationToAdmin($requestID,$requestNO){
-        
-        $subject = 'Product Status Updated';
-        $message='Status of product in request NO : '.$requestNO.' has been updated. see more details.';
-        $link = route('admin.followUpProductRequest', ['id' => $requestID]);
-        
-        $admin = User::where('role', '1')->first();
-
-        $admin->notify(new UserNotification(
-            $requestID,
-            $subject,
-            $message,
-            $link,
-        ));
-    }
-
-    public function sendNotification($seller,$message)
+    public function sendNotificationToAdmin($requestID, $requestNO): void
     {
-        $recipients = [$seller->phone_number];
-        Notification::route('sms', $recipients)->notify(new SmsNotification($recipients, $message));
+        $admin = User::where('role', '1')->first();
+        if (!$admin) return;
+
+        NotificationService::notify(
+            $admin,
+            $requestID,
+            'product_updated_admin',
+            ['request_no' => $requestNO],
+            route('admin.followUpProductRequest', ['id' => $requestID]),
+            ['db']
+        );
     }
 
     // Seller Management
@@ -453,11 +420,10 @@ class AgentController extends Controller
         $seller->password            = Hash::make($plainPassword);
         $seller->role                = 3;
         $seller->status              = 'active';
+        $seller->email_verified_at   = now();
         $seller->save();
 
-        $subject = 'Your MLSourcing Account is Ready';
-        $message = "Hello {$seller->name},\n\nYour account has been created.\nEmail: {$seller->email}\nPassword: {$plainPassword}\n\nPlease log in and change your password.";
-        Mail::to($seller->email)->send(new NotificationMail($subject, $message, route('login')));
+        NotificationService::sendWelcomeMail($seller->email, $seller->name, $seller->email, $plainPassword);
 
         return redirect()->back()->with('success', __('pages.seller_created'));
     }
@@ -468,9 +434,7 @@ class AgentController extends Controller
         $seller->status = 'active';
         $seller->save();
 
-        $subject = 'Your MLSourcing Account is Activated';
-        $message = "Hello {$seller->name},\n\nYour account has been activated. You can now log in and start using the platform.";
-        Mail::to($seller->email)->send(new NotificationMail($subject, $message, route('login')));
+        NotificationService::notify($seller, null, 'account_activated', ['name' => $seller->name], route('login'), ['mail', 'sms']);
 
         return redirect()->back()->with('success', __('pages.seller_activated'));
     }

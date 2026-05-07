@@ -31,6 +31,10 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->role === 3;
     }
 
+    public function isComptable(){
+        return $this->role === 4;
+    }
+
     public function isPending(){
         return $this->status === 'pending';
     }

@@ -52,4 +52,18 @@ return [
     'faqs' => 'FAQs',
     'configuration' => 'Configuration',
 
+    // --- Forgot / Reset password ---
+    'forgot_password_title'   => 'Forgot Password',
+    'forgot_password_desc'    => 'Enter your email address and we will send you a password reset link.',
+    'enter_email'             => 'Your email address',
+    'send_reset_link'         => 'Send Reset Link',
+    'back_to_login'           => 'Back to login',
+    'reset_password_title'    => 'Reset Password',
+    'reset_password_desc'     => 'Enter your new password below.',
+    'email_address'           => 'Email Address',
+    'new_password_label'      => 'New Password',
+    'confirm_password_label'  => 'Confirm Password',
+    'reset_password_btn'      => 'Reset Password',
+    'password_reset_success'  => 'Your password has been reset. You can now log in.',
+
 ];

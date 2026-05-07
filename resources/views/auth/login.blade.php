@@ -148,6 +148,13 @@
             <div class="col-md-6 p-0 d-flex justify-content-center align-items-center"> <!-- Added flex utilities -->
                 <div class="login-form">
                     <h2 class="text-center">{{ __('global.login_title') }}</h2>
+
+                    @if (session('status'))
+                        <div class="alert alert-success mb-3" role="alert">
+                            {{ session('status') }}
+                        </div>
+                    @endif
+
                     <form action="{{ route('login') }}" method="POST">
                     @csrf
                     <!-- Email Field -->

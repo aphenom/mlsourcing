@@ -57,7 +57,7 @@ class ChatController extends Controller
                 'recipient_id' => $message->recipient_id,
                 'message' => $message->message_content,
                 'file_path' => $filePath ? asset('storage/' . $filePath) : null,
-                'created_at' => $message->created_at->format('F j, Y h:i A'), // Now `created_at` will be available because we saved the message
+                'created_at' => $message->created_at->isoFormat('LLL'), // Now `created_at` will be available because we saved the message
             ],
         ]);
     }    

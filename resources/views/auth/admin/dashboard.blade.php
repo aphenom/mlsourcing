@@ -277,7 +277,7 @@
                 @forelse ($notifications as $notification)
                     <tr>
                     <td class="text-center" style="border: 1px solid #d3d3d3">
-                        <p class="text-sm font-weight-bold mb-0">{{ $notification->created_at->format('Y-m-d') }}</p>
+                        <p class="text-sm font-weight-bold mb-0">{{ $notification->created_at->isoFormat('L') }}</p>
                     </td>
                     <td class="text-center" style="border: 1px solid #d3d3d3">
                         <p class="text-sm font-weight-bold mb-0">{{ $notification->data['subject'] }}</p>

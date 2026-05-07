@@ -55,7 +55,7 @@
                                             <span class="badge bg-gradient-danger">{{ __('pages.blocked') }}</span>
                                         @endif
                                     </td>
-                                    <td>{{ $seller->created_at->format('d/m/Y') }}</td>
+                                    <td>{{ $seller->created_at->isoFormat('L') }}</td>
                                     <td class="d-flex gap-1 flex-wrap">
                                         <button class="btn btn-sm bg-gradient-info text-white"
                                                 data-bs-toggle="modal"

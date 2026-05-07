@@ -381,4 +381,19 @@ return [
     'notification'              => 'Notification',
     'confirm_delete_notif'      => 'Supprimer cette notification ?',
 
+    'payments_pending_review'   => 'Paiements en attente de validation',
+
+    // --- Comptable ---
+    'comptable'                 => 'Comptable',
+    'comptables'                => 'Comptables',
+    'add_comptable'             => 'Ajouter un comptable',
+    'comptable_name_label'      => 'Nom*',
+    'comptable_email_label'     => 'Email*',
+    'comptable_phone_label'     => 'Téléphone*',
+    'comptable_password_hint'   => 'Un mot de passe aléatoire sera généré et envoyé par email.',
+    'comptable_created'         => 'Comptable créé et identifiants envoyés par email.',
+    'comptable_deleted'         => 'Comptable supprimé avec succès.',
+    'no_comptables'             => 'Aucun comptable trouvé.',
+    'confirm_delete_comptable'  => 'Êtes-vous sûr de vouloir supprimer ce comptable ?',
+
 ];

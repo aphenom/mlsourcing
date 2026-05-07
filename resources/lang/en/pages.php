@@ -379,4 +379,19 @@ return [
     'notification'              => 'Notification',
     'confirm_delete_notif'      => 'Delete this notification?',
 
+    'payments_pending_review'   => 'Payments Pending Review',
+
+    // --- Comptable ---
+    'comptable'                 => 'Accountant',
+    'comptables'                => 'Accountants',
+    'add_comptable'             => 'Add Accountant',
+    'comptable_name_label'      => 'Name*',
+    'comptable_email_label'     => 'Email*',
+    'comptable_phone_label'     => 'Phone*',
+    'comptable_password_hint'   => 'A random password will be generated and sent by email.',
+    'comptable_created'         => 'Accountant created and credentials sent by email.',
+    'comptable_deleted'         => 'Accountant deleted successfully.',
+    'no_comptables'             => 'No accountants found.',
+    'confirm_delete_comptable'  => 'Are you sure you want to delete this accountant?',
+
 ];

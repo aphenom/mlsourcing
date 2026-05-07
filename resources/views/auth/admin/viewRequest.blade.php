@@ -33,7 +33,7 @@
                 <div class="card-body d-flex justify-content-between align-items-center">
                     <div>
                         <h4 class="mb-1">Quotation #{{ $orderRequest->requestNO }}</h4>
-                        <p class="mb-0 text-sm">{{ $orderRequest->created_at->format('F j, Y h:i A') }}</p>
+                        <p class="mb-0 text-sm">{{ $orderRequest->created_at->isoFormat('LLL') }}</p>
                     </div>
                     <div>
                         @if(strtolower($orderRequest->statusRequest)==='quoting')
@@ -113,14 +113,14 @@
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <strong>{{ __('pages.requested_at_label') }}</strong>
-                            <p class="mb-0">{{ $orderRequest->created_at->format('F j, Y h:i A') }}</p>
+                            <p class="mb-0">{{ $orderRequest->created_at->isoFormat('LLL') }}</p>
                         </div>
                         <div class="col-md-4">
                             <strong>{{ __('pages.paid_at') }}</strong>
                             <p class="mb-0">
                                 @if ($payment && ($payment->status === 'approved'))
                                 )
-                                    {{ $payment->created_at->format('F j, Y h:i A') }}
+                                    {{ $payment->created_at->isoFormat('LLL') }}
                                 @else
                                     -
                                 @endif
@@ -365,7 +365,7 @@
                                     @endif
                                     <p class="mb-0">{{ $message->message_content }}</p>
                                 </div>
-                                <small class="d-block text-muted">{{ $message->created_at->format('F j, Y h:i A') }}</small>
+                                <small class="d-block text-muted">{{ $message->created_at->isoFormat('LLL') }}</small>
                             </div>
                         @empty
                             <p class="text-center text-muted">{{ __('pages.no_messages') }}</p>

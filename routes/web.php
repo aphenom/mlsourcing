@@ -11,6 +11,7 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\FilterController;
 use App\Http\Controllers\UserNotificationController;
+use App\Http\Controllers\ComptableController;
 
 
 Route::get('/symlink', function(){
@@ -39,6 +40,8 @@ Route::get('/', function () {
                 return redirect()->route('login')->withErrors(['email' => __('pages.account_blocked')]);
             }
             return redirect()->route('seller.dashboard');
+        case 4: // Comptable
+            return redirect()->route('comptable.dashboard');
         default:
             // Default action if role is undefined or invalid
             abort(403, 'Unauthorized action.');
@@ -157,6 +160,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/admin/add-agent', [AdminController::class, 'storeAgent'])->name('admin.storeAgent');
         // Delete
         Route::delete('/admin/agents/delete/{id}', [AdminController::class, 'deleteAgent'])->name('admin.deleteAgent');
+
+        // Comptable - Controller
+        Route::post('/admin/add-comptable', [AdminController::class, 'storeComptable'])->name('admin.storeComptable');
+        Route::delete('/admin/comptables/delete/{id}', [AdminController::class, 'deleteComptable'])->name('admin.deleteComptable');
         // Unlink a destination country
         Route::delete('/admin/agents/{agentId}/unlink-destination-countries/{destinationCountryId}', [AdminController::class, 'unlinkDestinationCountry'])->name('admin.unlinkDestinationCountry');
         // Link new destination countries
@@ -201,6 +208,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('admin/sellers/{id}/block', [AdminController::class, 'blockSeller'])->name('admin.blockSeller');
         Route::post('admin/sellers/{id}/unblock', [AdminController::class, 'unblockSeller'])->name('admin.unblockSeller');
         Route::post('admin/sellers/{id}/update', [AdminController::class, 'updateSeller'])->name('admin.updateSeller');
+    });
+    // Comptable
+    Route::middleware(CheckRole::class . ':4')->group(function () {
+        Route::get('comptable/dashboard', [ComptableController::class, 'dashboard'])->name('comptable.dashboard');
+        Route::get('comptable/payments', [ComptableController::class, 'payments'])->name('comptable.payments');
+        Route::get('comptable/payments-data', [ComptableController::class, 'paymentsData'])->name('comptable.paymentsData');
+        Route::get('comptable/payments/approve/{paymentID}', [ComptableController::class, 'approvePayment'])->name('comptable.approvePayment');
+        Route::get('comptable/payments/disapprove/{paymentID}', [ComptableController::class, 'disapprovePayment'])->name('comptable.disapprovePayment');
+        Route::get('comptable/profile', [ComptableController::class, 'profile'])->name('comptable.profile');
+        Route::post('comptable/profile', [ComptableController::class, 'updateProfile'])->name('comptable.updateProfile');
+        Route::post('comptable/profile/password', [ComptableController::class, 'updatePassword'])->name('comptable.updatePassword');
     });
 });
 

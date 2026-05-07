@@ -57,7 +57,7 @@
                                             </p>
                                             <span class="text-xs text-muted">
                                                 <i class="fa fa-clock me-1"></i>
-                                                {{ $notif->created_at->format('d/m/Y H:i') }}
+                                                {{ $notif->created_at->isoFormat('LLL') }}
                                                 &mdash; {{ $notif->created_at->diffForHumans() }}
                                             </span>
                                         </div>

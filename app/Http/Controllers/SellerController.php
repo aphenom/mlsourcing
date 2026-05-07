@@ -15,10 +15,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Log;
-use App\Notifications\UserNotification;
 use App\Models\ChatThread;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ReclamationMail;
+use App\Services\NotificationService;
 
 
 class SellerController extends Controller
@@ -135,8 +135,8 @@ class SellerController extends Controller
                             // Ensure we are only using the OrdersRequest fields, and not those from related models
                             return [
                                 'request_id' => $row->id, // Add requestID
-                                'created_at' => $row->created_at->format('Y-m-d'), // Created date from OrdersRequest
-                                'updated_at' => $row->updated_at->format('Y-m-d'), // Updated date from OrdersRequest
+                                'created_at' => $row->created_at->isoFormat('L'), // Created date from OrdersRequest
+                                'updated_at' => $row->updated_at->isoFormat('L'), // Updated date from OrdersRequest
                                 'product_name' => $row->importedproducts->pluck('productName')->implode(', '),
                                 'quantity' => $row->importedproducts->sum('qte'),
                                 'country_from' => $row->countryFrom,
@@ -359,7 +359,7 @@ class SellerController extends Controller
                 ->get()
                 ->map(function ($row) {
                     return [
-                        'requested_at'    => $row->created_at->format('Y-m-d'),
+                        'requested_at'    => $row->created_at->isoFormat('L'),
                         'request_no'      => $row->requestNO,
                         'product_name'    => $row->importedproducts->pluck('productName')->implode(', '),
                         'quantity'        => $row->importedproducts->sum('qte'),
@@ -559,7 +559,7 @@ class SellerController extends Controller
     
                     return [
                         'payment_id' => $payment->id,
-                        'created_at' => $payment->created_at->format('Y-m-d'), // Payment creation date
+                        'created_at' => $payment->created_at->isoFormat('L'), // Payment creation date
                         'request_no' => $orderRequest->requestNO,
                         'product_name' => $product->productName,
                         'amount' => $payment->amount,
@@ -580,24 +580,33 @@ class SellerController extends Controller
         }
     }
     // Send Notification To Agent
-    public function sendNotificationToAgent($agent,$requestID){
-        $agent->notify(new UserNotification(
+    public function sendNotificationToAgent($agent, $requestID): void
+    {
+        NotificationService::notify(
+            $agent,
             $requestID,
-            'New Request',
-            'You have a new request for you',
-            route('agent.followUpProductRequest', ['id' => $requestID]),
-        ));
+            'new_request_agent',
+            [],
+            route('agent.followUpProductRequest', ['id' => $requestID])
+        );
     }
 
     // Send Notification To Admin
-    public function sendNotificationToAdmin($requestID){
+    public function sendNotificationToAdmin($requestID): void
+    {
         $admin = User::where('role', '1')->first();
-        $admin->notify(new UserNotification(
+        if (!$admin) return;
+
+        $requestNO = OrdersRequest::find($requestID)?->requestNO ?? $requestID;
+
+        NotificationService::notify(
+            $admin,
             $requestID,
-            'New Payment',
-            'You have new payment to check',
+            'payment_submitted_admin',
+            ['request_no' => $requestNO],
             route('admin.followUpProductRequest', ['id' => $requestID]),
-        ));
+            ['db']
+        );
     }
 
     public function pending()
