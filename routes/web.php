@@ -99,6 +99,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // FAQs
         Route::get('/faq', [FaqController::class, 'index'])->name('faqs');
 
+        // Seller Profile
+        Route::get('/seller/profile', [SellerController::class, 'profile'])->name('seller.profile');
+        Route::post('/seller/profile', [SellerController::class, 'updateProfile'])->name('seller.updateProfile');
+        Route::post('/seller/profile/password', [SellerController::class, 'updatePassword'])->name('seller.updatePassword');
+
     });
 
     // Agent Routing
@@ -110,7 +115,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Agent Requests
         Route::get('agent/requests', [AgentController::class, 'productRequests'])->name('agent.productRequests');
         Route::get('agent/requests-data', [AgentController::class, 'filteredProductRequests'])->name('agent.requestsData');
+        Route::get('agent/requests/add-for-seller', [AgentController::class, 'addRequestForSeller'])->name('agent.addRequestForSeller');
+        Route::post('agent/requests/add-for-seller', [AgentController::class, 'storeRequestForSeller'])->name('agent.storeRequestForSeller');
         Route::get('/agent/requests/{id}', [AgentController::class, 'followUpProductRequest'])->name('agent.followUpProductRequest');
+        Route::post('/agent/requests/{id}/update-quantity', [AgentController::class, 'updateQuantity'])->name('agent.updateQuantity');
 
         Route::post('/agent/requests/quote/{id}', [AgentController::class, 'quote'])->name('agent.quote');
         
@@ -124,6 +132,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('agent/sellers', [AgentController::class, 'sellers'])->name('agent.sellers');
         Route::post('agent/sellers/create', [AgentController::class, 'storeSeller'])->name('agent.storeSeller');
         Route::post('agent/sellers/{id}/activate', [AgentController::class, 'activateSeller'])->name('agent.activateSeller');
+        Route::post('agent/sellers/{id}/update', [AgentController::class, 'updateSeller'])->name('agent.updateSeller');
     });
 
     // Admin
@@ -174,8 +183,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('admin/requests', [AdminController::class, 'productRequests'])->name('admin.productRequests');
         // See Filtered Requests
         Route::get('admin/requests-data', [AdminController::class, 'filteredProductRequests'])->name('admin.requestsData');
+        // Add request on behalf of a seller
+        Route::get('admin/requests/add-for-seller', [AdminController::class, 'addRequestForSeller'])->name('admin.addRequestForSeller');
+        Route::post('admin/requests/add-for-seller', [AdminController::class, 'storeRequestForSeller'])->name('admin.storeRequestForSeller');
         // See Details of specific request
         Route::get('admin/requests/{id}', [AdminController::class, 'followUpProductRequest'])->name('admin.followUpProductRequest');
+        Route::post('admin/requests/{id}/update-quantity', [AdminController::class, 'updateQuantity'])->name('admin.updateQuantity');
         
         // See and filter orders
         Route::get('admin/orders', [AdminController::class, 'orders'])->name('admin.orders');
@@ -187,6 +200,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('admin/sellers/{id}/activate', [AdminController::class, 'activateSeller'])->name('admin.activateSeller');
         Route::post('admin/sellers/{id}/block', [AdminController::class, 'blockSeller'])->name('admin.blockSeller');
         Route::post('admin/sellers/{id}/unblock', [AdminController::class, 'unblockSeller'])->name('admin.unblockSeller');
+        Route::post('admin/sellers/{id}/update', [AdminController::class, 'updateSeller'])->name('admin.updateSeller');
     });
 });
 

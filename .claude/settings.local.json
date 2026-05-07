@@ -9,7 +9,9 @@
       "Bash(findstr -i \"seller\")",
       "Bash(php artisan *)",
       "Bash(Get-Content \"c:\\\\wamp64\\\\www\\\\mlsourcing\\\\app\\\\Http\\\\Controllers\\\\AdminController.php\")",
-      "Bash(Measure-Object -Line)"
+      "Bash(Measure-Object -Line)",
+      "PowerShell(cmd /c dir c:\\\\wamp64\\\\www\\\\mlsourcing\\\\public\\\\ /AL)",
+      "PowerShell(cmd /c dir c:\\\\wamp64\\\\www\\\\mlsourcing\\\\public\\\\ /AL /S 2>&1)"
     ]
   }
 }

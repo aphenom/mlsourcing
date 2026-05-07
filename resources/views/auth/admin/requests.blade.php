@@ -73,6 +73,7 @@
                                     <tr>
                                         <th>{{ __('pages.requested_at') }}</th>
                                         <th>{{ __('pages.updated_at') }}</th>
+                                        <th>{{ __('pages.seller_col') }}</th>
                                         <th>{{ __('pages.agent_col') }}</th>
                                         <th>{{ __('pages.product_name_col') }}</th>
                                         <th>{{ __('pages.quantity_col') }}</th>
@@ -88,6 +89,7 @@
                                     <tr>
                                         <th>{{ __('pages.requested_at') }}</th>
                                         <th>{{ __('pages.updated_at') }}</th>
+                                        <th>{{ __('pages.seller_col') }}</th>
                                         <th>{{ __('pages.agent_col') }}</th>
                                         <th>{{ __('pages.product_name_col') }}</th>
                                         <th>{{ __('pages.quantity_col') }}</th>
@@ -132,13 +134,14 @@
                         }
                     },
                     columns: [
-                        {data: 'created_at',name: 'created_at'},
-                        {data: 'updated_at',name: 'updated_at'},
-                        {data: 'agent',name: 'agent'},
-                        {data: 'product_name',name: 'product_name'},
-                        {data: 'quantity',name: 'quantity'},
-                        {data: 'country_from',name: 'country_from'},
-                        {data: 'country_to',name: 'country_to'},
+                        {data: 'created_at', name: 'created_at'},
+                        {data: 'updated_at', name: 'updated_at'},
+                        {data: 'seller', name: 'seller', render: function(data) { return data; }},
+                        {data: 'agent', name: 'agent'},
+                        {data: 'product_name', name: 'product_name'},
+                        {data: 'quantity', name: 'quantity'},
+                        {data: 'country_from', name: 'country_from'},
+                        {data: 'country_to', name: 'country_to'},
                         {
                             data: 'request_status',
                             name: 'request_status',
@@ -224,23 +227,23 @@
                     },
                     series: [{
                             name: 'Request Status',
-                            data: chartData(table, 7), // Column index for request status
-                            center: ['25%', '50%'], // Center for the first pie
-                            size: '100%' // Size for the first pie
+                            data: chartData(table, 8),
+                            center: ['25%', '50%'],
+                            size: '100%'
                         },
                         {
                             name: 'Payment Status',
-                            data: chartData(table, 8), // Column index for payment status
-                            center: ['75%', '50%'], // Center for the second pie
-                            size: '100%' // Size for the second pie
+                            data: chartData(table, 9),
+                            center: ['75%', '50%'],
+                            size: '100%'
                         }
                     ]
                 });
 
                 // Update chart on DataTable draw event
                 table.on('draw', function() {
-                    chart.series[0].setData(chartData(table, 7)); // Update request status data
-                    chart.series[1].setData(chartData(table, 8)); // Update payment status data
+                    chart.series[0].setData(chartData(table, 8));
+                    chart.series[1].setData(chartData(table, 9));
                 });
 
                 // Handle form submission

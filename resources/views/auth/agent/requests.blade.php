@@ -47,6 +47,7 @@
                                     <th>{{ __('pages.request_id') }}</th>
                                     <th>{{ __('pages.requested_at') }}</th>
                                     <th>{{ __('pages.updated_at') }}</th>
+                                    <th>{{ __('pages.seller_col') }}</th>
                                     <th>{{ __('pages.product_name_col') }}</th>
                                     <th>{{ __('pages.quantity_col') }}</th>
                                     <th>{{ __('pages.country_from') }}</th>
@@ -62,6 +63,7 @@
                                     <th>{{ __('pages.request_id') }}</th>
                                     <th>{{ __('pages.requested_at') }}</th>
                                     <th>{{ __('pages.updated_at') }}</th>
+                                    <th>{{ __('pages.seller_col') }}</th>
                                     <th>{{ __('pages.product_name_col') }}</th>
                                     <th>{{ __('pages.quantity_col') }}</th>
                                     <th>{{ __('pages.country_from') }}</th>
@@ -106,6 +108,7 @@
                 { data: 'request_id', name: 'request_id' },
                 { data: 'created_at', name: 'created_at' },
                 { data: 'updated_at', name: 'updated_at' },
+                { data: 'seller', name: 'seller', render: function(data) { return data; } },
                 { data: 'product_name', name: 'product_name' },
                 { data: 'quantity', name: 'quantity' },
                 { data: 'country_from', name: 'country_from' },
@@ -180,13 +183,13 @@
             series: [
                 {
                     name: 'Request Status',
-                    data: chartData(table, 7),
+                    data: chartData(table, 8),
                     center: ['25%', '50%'],
                     size: '100%'
                 },
                 {
                     name: 'Payment Status',
-                    data: chartData(table, 8),
+                    data: chartData(table, 9),
                     center: ['75%', '50%'],
                     size: '100%'
                 }
@@ -194,8 +197,8 @@
         });
 
         table.on('draw', function() {
-            chart.series[0].setData(chartData(table, 7));
-            chart.series[1].setData(chartData(table, 8));
+            chart.series[0].setData(chartData(table, 8));
+            chart.series[1].setData(chartData(table, 9));
         });
 
         $('#filter-form').on('submit', function(e) {

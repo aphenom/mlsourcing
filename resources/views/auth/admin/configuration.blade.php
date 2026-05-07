@@ -226,7 +226,7 @@
                         </td>
                         <td>
                            @foreach(json_decode($option->details, true) as $key => $value)
-                           <strong class="text-sm mb-0">{{ $key }}:</strong> <span class="text-sm mb-0">{{ $value }}</span><br>
+                           <strong class="text-sm mb-0">{{ $key }}:</strong> <span class="text-sm mb-0">{{ is_array($value) ? json_encode($value) : $value }}</span><br>
                            @endforeach
                         </td>
                         <td>

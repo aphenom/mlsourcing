@@ -225,9 +225,9 @@
                       <span class="mt-1 flex-shrink-0"
                             style="width:8px;height:8px;border-radius:50%;background:#00A752;display:inline-block;"></span>
                       <div>
-                        <div class="text-sm font-weight-bold mb-0">{{ $notif->data['subject'] ?? '' }}</div>
+                        <div class="text-sm font-weight-bold mb-0">{{ is_array($notif->data['subject'] ?? '') ? '' : ($notif->data['subject'] ?? '') }}</div>
                         <div class="text-xs text-secondary mb-1" style="line-height:1.3;">
-                          {{ \Illuminate\Support\Str::limit($notif->data['message'] ?? '', 70) }}
+                          {{ \Illuminate\Support\Str::limit(is_array($notif->data['message'] ?? '') ? '' : ($notif->data['message'] ?? ''), 70) }}
                         </div>
                         <div class="text-xs text-muted">
                           <i class="fa fa-clock me-1"></i>{{ $notif->created_at->diffForHumans() }}

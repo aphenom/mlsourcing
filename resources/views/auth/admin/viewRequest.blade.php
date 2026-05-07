@@ -86,6 +86,22 @@
             <!-- End Page Header -->
         </div>
     </div>
+    <!-- Seller Info -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body py-2 px-3 d-flex align-items-center gap-4 flex-wrap">
+                    <span class="text-xs text-uppercase font-weight-bold text-muted">{{ __('pages.seller_info') }}</span>
+                    <span class="text-sm"><i class="fa fa-user me-1"></i>{{ $orderRequest->seller->name ?? '-' }}</span>
+                    <span class="text-sm"><i class="fa fa-envelope me-1"></i>{{ $orderRequest->seller->email ?? '-' }}</span>
+                    @if($orderRequest->seller?->phone)
+                    <span class="text-sm"><i class="fa fa-phone me-1"></i>{{ $orderRequest->seller->phone }}</span>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Request Details -->
     <div class="row">
         <div class="col-lg-8">
@@ -230,13 +246,37 @@
                                 {{ $orderRequest->ShippingMethod }}
                             </div>
                         </li>
+                        @if($product->measurement_type === 'cbm' && $product->cbm)
                         <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
                             <div class="d-flex flex-column">
-                                <h6 class="text-dark mb-1 font-weight-bold text-sm">{{ __('pages.quantity_label') }}</h6>
+                                <h6 class="text-dark mb-1 font-weight-bold text-sm">{{ __('pages.cbm_value') }}</h6>
                             </div>
-                            <div class="d-flex align-items-center text-sm">
-                                {{ $product->qte }}
+                            <div class="d-flex align-items-center text-sm">{{ $product->cbm }} m³</div>
+                        </li>
+                        @elseif($product->weight)
+                        <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                            <div class="d-flex flex-column">
+                                <h6 class="text-dark mb-1 font-weight-bold text-sm">{{ __('pages.weight_value') }}</h6>
                             </div>
+                            <div class="d-flex align-items-center text-sm">{{ $product->weight }} kg</div>
+                        </li>
+                        @endif
+                        @if($product->productSpecification)
+                        <li class="list-group-item border-0 ps-0 mb-2 border-radius-lg">
+                            <h6 class="text-dark mb-1 font-weight-bold text-sm">{{ __('pages.request_note') }}</h6>
+                            <p class="mb-0 text-sm">{{ $product->productSpecification }}</p>
+                        </li>
+                        @endif
+                        <li class="list-group-item border-0 ps-0 mb-2 border-radius-lg">
+                            <h6 class="text-dark mb-2 font-weight-bold text-sm">{{ __('pages.quantity_label') }}</h6>
+                            <form method="POST" action="{{ route('admin.updateQuantity', $orderRequest->id) }}" class="d-flex align-items-center gap-2">
+                                @csrf
+                                <input type="number" name="qte" value="{{ $product->qte }}" min="1"
+                                       class="form-control form-control-sm" style="width:90px;">
+                                <button type="submit" class="btn btn-sm bg-gradient-success text-white mb-0">
+                                    {{ __('pages.save') }}
+                                </button>
+                            </form>
                         </li>
                         <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
                             <div class="d-flex flex-column">

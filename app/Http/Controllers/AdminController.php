@@ -375,7 +375,7 @@ class AdminController extends Controller
     public function filteredProductRequests(Request $request)
     {
         try {
-            $query = OrdersRequest::with(['importedproducts', 'payments'])
+            $query = OrdersRequest::with(['importedproducts', 'payments', 'seller'])
                 ->when($request->input('date_from') && $request->input('date_to'), function ($query) use ($request) {
                     $query->whereBetween('created_at', [$request->input('date_from'), $request->input('date_to')]);
                 })
@@ -417,6 +417,7 @@ class AdminController extends Controller
                                 return [
                                     'created_at' => $row->created_at->format('Y-m-d'),
                                     'updated_at' => $row->updated_at->format('Y-m-d'),
+                                    'seller' => $row->seller ? $row->seller->name . '<br><small class="text-muted">' . $row->seller->email . '</small>' : '-',
                                     'agent' => $agentName ?? '-',
                                     'product_name' => $row->importedproducts->pluck('productName')->implode(', '),
                                     'quantity' => $row->importedproducts->sum('qte'),
@@ -444,12 +445,11 @@ class AdminController extends Controller
     public function followUpProductRequest($id)
     {
         // Fetch the order request with its associated imported products and payments
-        $orderRequest = OrdersRequest::with(['importedproducts', 'payments'])
-            ->findOrFail($id); // Fetch the request or fail if not found
+        $orderRequest = OrdersRequest::with(['importedproducts', 'payments', 'seller'])
+            ->findOrFail($id);
 
-        // Fetch the first (and only) payment
         $payment = $orderRequest->payments->first();
-        
+
         // Pass Chating Sys
         $chatThread = ChatThread::with('messages')
             ->where('order_request_id', $id)
@@ -464,6 +464,22 @@ class AdminController extends Controller
 
     }
     
+    public function updateQuantity(Request $request, $id)
+    {
+        $request->validate(['qte' => 'required|integer|min:1']);
+
+        $orderRequest = OrdersRequest::findOrFail($id);
+        $product = $orderRequest->importedproducts()->first();
+
+        $product->qte = $request->qte;
+        if ($product->unitPrice) {
+            $product->totalPrice = $product->unitPrice * $request->qte;
+        }
+        $product->save();
+
+        return back()->with('success', __('pages.quantity_updated'));
+    }
+
     public function approvePayment($paymentID)
     {
         // Find the request and payment
@@ -549,7 +565,9 @@ class AdminController extends Controller
                                 'qte' => $importedProduct->qte,
                                 'unitPrice' => $importedProduct->unitPrice,
                                 'totalPrice' => $importedProduct->totalPrice,
-                                'weight' => $importedProduct->weight,
+                                'weight' => $importedProduct->measurement_type === 'cbm' && $importedProduct->cbm
+                                    ? $importedProduct->cbm . ' m³'
+                                    : ($importedProduct->weight ? $importedProduct->weight . ' kg' : '-'),
                                 'trackingNumber' => $importedProduct->trackingNumber ?? '-',
                                 'carrier' => $importedProduct->carrier ?? '-',
                                 'statusProduct' => $importedProduct->statusProduct
@@ -730,24 +748,28 @@ class AdminController extends Controller
     public function storeSeller(Request $request)
     {
         $request->validate([
-            'name'         => 'required|string|max:255',
-            'email'        => 'required|email|unique:users,email',
-            'phone_number' => 'required|string|max:20',
-            'address'      => 'required|string',
-            'user_type'    => 'required|in:particular,company',
+            'name'                => 'required|string|max:255',
+            'email'               => 'required|email|unique:users,email',
+            'phone_number'        => 'required|string|max:20',
+            'address'             => 'required|string',
+            'user_type'           => 'required|in:particular,company',
+            'company_name'        => 'required_if:user_type,company|nullable|string|max:255',
+            'company_information' => 'nullable|string|max:1000',
         ]);
 
         $plainPassword = Str::random(12);
 
         $seller = new User();
-        $seller->name         = $request->name;
-        $seller->email        = $request->email;
-        $seller->phone_number = $request->phone_number;
-        $seller->address      = $request->address;
-        $seller->user_type    = $request->user_type;
-        $seller->password     = Hash::make($plainPassword);
-        $seller->role         = 3;
-        $seller->status       = 'active';
+        $seller->name                = $request->name;
+        $seller->email               = $request->email;
+        $seller->phone_number        = $request->phone_number;
+        $seller->address             = $request->address;
+        $seller->user_type           = $request->user_type;
+        $seller->company_name        = $request->user_type === 'company' ? $request->company_name : null;
+        $seller->company_information = $request->user_type === 'company' ? $request->company_information : null;
+        $seller->password            = Hash::make($plainPassword);
+        $seller->role                = 3;
+        $seller->status              = 'active';
         $seller->save();
 
         $subject = 'Your MLSourcing Account is Ready';
@@ -789,5 +811,148 @@ class AdminController extends Controller
         Mail::to($seller->email)->send(new NotificationMail($subject, $message, route('login')));
 
         return redirect()->back()->with('success', __('pages.seller_unblocked'));
+    }
+
+    public function updateSeller(Request $request, $id)
+    {
+        $seller = User::where('id', $id)->where('role', 3)->firstOrFail();
+
+        $request->validate([
+            'name'                => 'required|string|max:255',
+            'email'               => 'required|email|unique:users,email,' . $seller->id,
+            'phone_number'        => 'nullable|string|max:30',
+            'address'             => 'nullable|string|max:500',
+            'user_type'           => 'required|in:particular,company',
+            'company_name'        => 'nullable|string|max:255',
+            'company_information' => 'nullable|string|max:1000',
+            'new_password'        => 'nullable|min:8|confirmed',
+        ]);
+
+        $seller->fill($request->only([
+            'name', 'email', 'phone_number', 'address',
+            'user_type', 'company_name', 'company_information',
+        ]));
+
+        if ($request->filled('new_password')) {
+            $seller->password = \Illuminate\Support\Facades\Hash::make($request->new_password);
+        }
+
+        $seller->save();
+
+        return redirect()->back()->with('success', __('pages.seller_updated'));
+    }
+
+    public function addRequestForSeller()
+    {
+        $sellers             = User::where('role', 3)->where('status', 'active')->orderBy('name')->get();
+        $sourcingCountries   = SourcingCountry::all();
+        $destinationCountries = DestinationCountry::all();
+        return view('auth.admin.addRequestForSeller', compact('sellers', 'sourcingCountries', 'destinationCountries'));
+    }
+
+    public function storeRequestForSeller(Request $request)
+    {
+        $request->validate([
+            'seller_id'      => 'required|exists:users,id',
+            'product_name'   => 'required|string|max:255',
+            'product_url'    => 'nullable|url',
+            'product_image'  => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'category'       => 'nullable|string',
+            'quantity'       => 'required|integer|min:1',
+            'countryTo'      => 'required|exists:destination_countries,id',
+            'countryFrom'    => 'required|exists:sourcing_countries,id',
+            'note'           => 'nullable|string|max:2000',
+            'shipping_method'=> 'required|in:Air freight,Ocean freight',
+        ]);
+
+        if (!$request->filled('product_url') && !$request->hasFile('product_image')) {
+            return redirect()->back()->withErrors(['product_url' => __('pages.url_or_image_required')])->withInput();
+        }
+
+        try {
+            DB::transaction(function () use ($request) {
+                $countryToName   = DestinationCountry::findOrFail($request->countryTo)->country_name;
+                $countryFromName = SourcingCountry::findOrFail($request->countryFrom)->country_name;
+                $agentId         = $this->assignAgent($request->countryFrom, $request->countryTo);
+
+                $orderRequest                = new OrdersRequest();
+                $orderRequest->sellerID      = $request->seller_id;
+                $orderRequest->agentID       = $agentId;
+                $orderRequest->requestNO     = uniqid();
+                $orderRequest->statusRequest = 'quoting';
+                $orderRequest->countryFrom   = $countryFromName;
+                $orderRequest->countryTo     = $countryToName;
+                $orderRequest->ShippingMethod = $request->shipping_method;
+                $orderRequest->save();
+
+                $productImage = null;
+                if ($request->hasFile('product_image')) {
+                    $file         = $request->file('product_image');
+                    $filename     = 'product_' . $orderRequest->id . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                    $productImage = $file->storeAs('product_images', $filename, 'public');
+                }
+
+                $importedProduct                       = new ImportedProduct();
+                $importedProduct->requestID            = $orderRequest->id;
+                $importedProduct->productName          = $request->product_name;
+                $importedProduct->productURL           = $request->filled('product_url') ? $request->product_url : null;
+                $importedProduct->productImage         = $productImage;
+                $importedProduct->productCategory      = $request->category;
+                $importedProduct->qte                  = $request->quantity;
+                $importedProduct->unitPrice            = 0;
+                $importedProduct->totalPrice           = 0;
+                $importedProduct->productSpecification = $request->note;
+                $importedProduct->statusProduct        = '-';
+                $importedProduct->save();
+
+                if ($agentId) {
+                    $agent = User::find($agentId);
+                    if ($agent) {
+                        $agent->notify(new \App\Notifications\UserNotification(
+                            $orderRequest->id,
+                            'New Request',
+                            'You have a new request assigned to you',
+                            route('agent.followUpProductRequest', ['id' => $orderRequest->id]),
+                        ));
+                    }
+                }
+            });
+
+            return redirect()->route('admin.productRequests')->with('success', __('pages.request_submitted_for_seller'));
+        } catch (\Exception $e) {
+            Log::error('Error in storeRequestForSeller (admin): ' . $e->getMessage());
+            return redirect()->back()->with('error', $e->getMessage())->withInput();
+        }
+    }
+
+    private function assignAgent($countryFrom, $countryTo)
+    {
+        $agents = User::where('role', 2)
+            ->with(['sourcingCountries', 'destinationCountries'])
+            ->get();
+
+        $availableAgents = $agents->filter(function ($agent) use ($countryFrom, $countryTo) {
+            return $agent->sourcingCountries->pluck('id')->contains($countryFrom) &&
+                   $agent->destinationCountries->pluck('id')->contains($countryTo);
+        });
+
+        if ($availableAgents->count() === 1) {
+            return $availableAgents->first()->id;
+        } elseif ($availableAgents->count() > 1) {
+            return $this->dispatchAgent($availableAgents);
+        }
+        return null;
+    }
+
+    private function dispatchAgent($agents)
+    {
+        return DB::transaction(function () use ($agents) {
+            $workloads = $agents->mapWithKeys(function ($agent) {
+                return [$agent->id => OrdersRequest::where('agentID', $agent->id)->count()];
+            });
+            $minWorkload      = $workloads->min();
+            $leastBusyAgents  = $workloads->filter(fn($w) => $w === $minWorkload);
+            return $leastBusyAgents->keys()->first();
+        });
     }
 }

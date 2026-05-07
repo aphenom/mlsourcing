@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\ImportedProduct;
 use App\Models\Payment;
+use App\Models\User;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 
@@ -18,6 +19,11 @@ class OrdersRequest extends Model
     protected $fillable = [
         'sellerID', 'agentID', 'requestNO', 'statusRequest', 'countryFrom', 'countryTo', 'ShippingMethod'
     ];
+
+    public function seller()
+    {
+        return $this->belongsTo(User::class, 'sellerID');
+    }
 
     public function importedproducts()
     {

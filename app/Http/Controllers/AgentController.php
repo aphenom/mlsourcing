@@ -112,7 +112,7 @@ class AgentController extends Controller
         try {
             $agentId = auth()->id();
 
-            $query = OrdersRequest::with(['importedproducts', 'payments'])
+            $query = OrdersRequest::with(['importedproducts', 'payments', 'seller'])
                 ->where('agentID', $agentId)
                 ->when($request->input('date'), function ($query, $date) {
                     $query->whereDate('created_at', $date);
@@ -141,15 +141,16 @@ class AgentController extends Controller
                         ->get()
                         ->map(function ($row) {
                             return [
-                                'request_id' => $row->id, // Add requestID
+                                'request_id' => $row->id,
                                 'created_at' => $row->created_at->format('Y-m-d'),
                                 'updated_at' => $row->updated_at->format('Y-m-d'),
+                                'seller' => $row->seller ? $row->seller->name . '<br><small class="text-muted">' . $row->seller->email . '</small>' : '-',
                                 'product_name' => $row->importedproducts->pluck('productName')->implode(', '),
                                 'quantity' => $row->importedproducts->sum('qte'),
                                 'country_from' => $row->countryFrom,
                                 'country_to' => $row->countryTo,
                                 'request_status' => $row->statusRequest,
-                                'payment_status' => $row->payments->isNotEmpty() ? $row->payments->first()->status : '-', // Check if payments exist before accessing
+                                'payment_status' => $row->payments->isNotEmpty() ? $row->payments->first()->status : '-',
                                 'view_url' => url('/agent/requests/' . $row->id)
                             ];
                         })->toArray();
@@ -171,10 +172,9 @@ class AgentController extends Controller
     public function followUpProductRequest($id)
     {
         // Fetch the order request with its associated imported products and payments
-        $orderRequest = OrdersRequest::with(['importedproducts', 'payments'])
-            ->findOrFail($id); // Fetch the request or fail if not found
+        $orderRequest = OrdersRequest::with(['importedproducts', 'payments', 'seller'])
+            ->findOrFail($id);
 
-        // Fetch the first (and only) payment
         $payment = $orderRequest->payments->first();
 
         // Check if the payment is 'confirmed'
@@ -231,32 +231,52 @@ class AgentController extends Controller
             return redirect()->back()->with('error', 'An error occurred while dispatching the order.');
         }
     }
+    public function updateQuantity(Request $request, $id)
+    {
+        $request->validate(['qte' => 'required|integer|min:1']);
+
+        $orderRequest = OrdersRequest::findOrFail($id);
+        $product = $orderRequest->importedproducts()->first();
+
+        $product->qte = $request->qte;
+        if ($product->unitPrice) {
+            $product->totalPrice = $product->unitPrice * $request->qte;
+        }
+        $product->save();
+
+        return back()->with('success', __('pages.quantity_updated'));
+    }
+
     public function quote(Request $request, $id)
     {
-        // Validate the incoming request
         $validated = $request->validate([
-            'unit_price' => 'required|numeric|min:0.01',
-            'weight' => 'required|string', // Allow null or numeric values
-            'note' => 'nullable|string', // Allow null or string values
+            'unit_price'       => 'required|numeric|min:0.01',
+            'measurement_type' => 'required|in:weight,cbm',
+            'weight'           => 'nullable|numeric|min:0',
+            'cbm'              => 'nullable|numeric|min:0',
+            'note'             => 'nullable|string',
         ]);
 
-        // Find the order request
-        $orderRequest = OrdersRequest::findOrFail($id);
+        if ($validated['measurement_type'] === 'weight' && empty($validated['weight'])) {
+            return back()->withErrors(['weight' => __('pages.weight_required')])->withInput();
+        }
+        if ($validated['measurement_type'] === 'cbm' && empty($validated['cbm'])) {
+            return back()->withErrors(['cbm' => __('pages.cbm_required')])->withInput();
+        }
 
-        // Retrieve the first associated imported product
+        $orderRequest    = OrdersRequest::findOrFail($id);
         $importedProduct = $orderRequest->importedproducts->first();
 
         if ($importedProduct) {
-            // Calculate total price
-            $unitPrice = $validated['unit_price'];
-            $quantity = $importedProduct->qte; // Assuming qte is stored in the imported product
-            $totalPrice = $unitPrice * $quantity;
+            $unitPrice  = $validated['unit_price'];
+            $totalPrice = $unitPrice * $importedProduct->qte;
 
-            // Update the imported product
-            $importedProduct->unitPrice = $unitPrice;
-            $importedProduct->totalPrice = $totalPrice;
-            $importedProduct->agentNote = $validated['note'] ?? '-';
-            $importedProduct->weight = $validated['weight'] ?? '-';
+            $importedProduct->unitPrice        = $unitPrice;
+            $importedProduct->totalPrice       = $totalPrice;
+            $importedProduct->agentNote        = $validated['note'] ?? null;
+            $importedProduct->measurement_type = $validated['measurement_type'];
+            $importedProduct->weight           = $validated['measurement_type'] === 'weight' ? $validated['weight'] : null;
+            $importedProduct->cbm              = $validated['measurement_type'] === 'cbm'    ? $validated['cbm']    : null;
             $importedProduct->save();
         }
 
@@ -316,7 +336,9 @@ class AgentController extends Controller
                                 'qte' => $importedProduct->qte,
                                 'unitPrice' => $importedProduct->unitPrice,
                                 'totalPrice' => $importedProduct->totalPrice,
-                                'weight' => $importedProduct->weight,
+                                'weight' => $importedProduct->measurement_type === 'cbm' && $importedProduct->cbm
+                                    ? $importedProduct->cbm . ' m³'
+                                    : ($importedProduct->weight ? $importedProduct->weight . ' kg' : '-'),
                                 'trackingNumber' => $importedProduct->trackingNumber ?? '-',
                                 'carrier' => $importedProduct->carrier ?? '-',
                                 'statusProduct' => $importedProduct->statusProduct,
@@ -409,24 +431,28 @@ class AgentController extends Controller
     public function storeSeller(Request $request)
     {
         $request->validate([
-            'name'         => 'required|string|max:255',
-            'email'        => 'required|email|unique:users,email',
-            'phone_number' => 'required|string|max:20',
-            'address'      => 'required|string',
-            'user_type'    => 'required|in:particular,company',
+            'name'                => 'required|string|max:255',
+            'email'               => 'required|email|unique:users,email',
+            'phone_number'        => 'required|string|max:20',
+            'address'             => 'required|string',
+            'user_type'           => 'required|in:particular,company',
+            'company_name'        => 'required_if:user_type,company|nullable|string|max:255',
+            'company_information' => 'nullable|string|max:1000',
         ]);
 
         $plainPassword = Str::random(12);
 
         $seller = new User();
-        $seller->name         = $request->name;
-        $seller->email        = $request->email;
-        $seller->phone_number = $request->phone_number;
-        $seller->address      = $request->address;
-        $seller->user_type    = $request->user_type;
-        $seller->password     = Hash::make($plainPassword);
-        $seller->role         = 3;
-        $seller->status       = 'active';
+        $seller->name                = $request->name;
+        $seller->email               = $request->email;
+        $seller->phone_number        = $request->phone_number;
+        $seller->address             = $request->address;
+        $seller->user_type           = $request->user_type;
+        $seller->company_name        = $request->user_type === 'company' ? $request->company_name : null;
+        $seller->company_information = $request->user_type === 'company' ? $request->company_information : null;
+        $seller->password            = Hash::make($plainPassword);
+        $seller->role                = 3;
+        $seller->status              = 'active';
         $seller->save();
 
         $subject = 'Your MLSourcing Account is Ready';
@@ -447,5 +473,104 @@ class AgentController extends Controller
         Mail::to($seller->email)->send(new NotificationMail($subject, $message, route('login')));
 
         return redirect()->back()->with('success', __('pages.seller_activated'));
+    }
+
+    public function updateSeller(Request $request, $id)
+    {
+        $seller = User::where('id', $id)->where('role', 3)->firstOrFail();
+
+        $request->validate([
+            'name'                => 'required|string|max:255',
+            'email'               => 'required|email|unique:users,email,' . $seller->id,
+            'phone_number'        => 'nullable|string|max:30',
+            'address'             => 'nullable|string|max:500',
+            'user_type'           => 'required|in:particular,company',
+            'company_name'        => 'nullable|string|max:255',
+            'company_information' => 'nullable|string|max:1000',
+            'new_password'        => 'nullable|min:8|confirmed',
+        ]);
+
+        $seller->fill($request->only([
+            'name', 'email', 'phone_number', 'address',
+            'user_type', 'company_name', 'company_information',
+        ]));
+
+        if ($request->filled('new_password')) {
+            $seller->password = Hash::make($request->new_password);
+        }
+
+        $seller->save();
+
+        return redirect()->back()->with('success', __('pages.seller_updated'));
+    }
+
+    public function addRequestForSeller()
+    {
+        $sellers              = User::where('role', 3)->where('status', 'active')->orderBy('name')->get();
+        $sourcingCountries    = SourcingCountry::all();
+        $destinationCountries = DestinationCountry::all();
+        return view('auth.agent.addRequestForSeller', compact('sellers', 'sourcingCountries', 'destinationCountries'));
+    }
+
+    public function storeRequestForSeller(Request $request)
+    {
+        $request->validate([
+            'seller_id'       => 'required|exists:users,id',
+            'product_name'    => 'required|string|max:255',
+            'product_url'     => 'nullable|url',
+            'product_image'   => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'category'        => 'nullable|string',
+            'quantity'        => 'required|integer|min:1',
+            'countryTo'       => 'required|exists:destination_countries,id',
+            'countryFrom'     => 'required|exists:sourcing_countries,id',
+            'note'            => 'nullable|string|max:2000',
+            'shipping_method' => 'required|in:Air freight,Ocean freight',
+        ]);
+
+        if (!$request->filled('product_url') && !$request->hasFile('product_image')) {
+            return redirect()->back()->withErrors(['product_url' => __('pages.url_or_image_required')])->withInput();
+        }
+
+        try {
+            DB::transaction(function () use ($request) {
+                $countryToName   = DestinationCountry::findOrFail($request->countryTo)->country_name;
+                $countryFromName = SourcingCountry::findOrFail($request->countryFrom)->country_name;
+
+                $orderRequest                 = new OrdersRequest();
+                $orderRequest->sellerID       = $request->seller_id;
+                $orderRequest->agentID        = Auth::id();
+                $orderRequest->requestNO      = uniqid();
+                $orderRequest->statusRequest  = 'quoting';
+                $orderRequest->countryFrom    = $countryFromName;
+                $orderRequest->countryTo      = $countryToName;
+                $orderRequest->ShippingMethod = $request->shipping_method;
+                $orderRequest->save();
+
+                $productImage = null;
+                if ($request->hasFile('product_image')) {
+                    $file         = $request->file('product_image');
+                    $filename     = 'product_' . $orderRequest->id . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                    $productImage = $file->storeAs('product_images', $filename, 'public');
+                }
+
+                $importedProduct                       = new ImportedProduct();
+                $importedProduct->requestID            = $orderRequest->id;
+                $importedProduct->productName          = $request->product_name;
+                $importedProduct->productURL           = $request->filled('product_url') ? $request->product_url : null;
+                $importedProduct->productImage         = $productImage;
+                $importedProduct->productCategory      = $request->category;
+                $importedProduct->qte                  = $request->quantity;
+                $importedProduct->unitPrice            = 0;
+                $importedProduct->totalPrice           = 0;
+                $importedProduct->productSpecification = $request->note;
+                $importedProduct->statusProduct        = '-';
+                $importedProduct->save();
+            });
+
+            return redirect()->route('agent.productRequests')->with('success', __('pages.request_submitted_for_seller'));
+        } catch (\Exception $e) {
+            Log::error('Error in storeRequestForSeller (agent): ' . $e->getMessage());
+            return redirect()->back()->with('error', $e->getMessage())->withInput();
+        }
     }
 }

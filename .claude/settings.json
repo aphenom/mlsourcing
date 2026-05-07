@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(cmd /c \"dir c:\\\\wamp64\\\\www\\\\mlsourcing\\\\public\")",
+      "Bash(php -r ' *)",
+      "Bash(php -l app/Http/Controllers/AdminController.php)",
+      "Bash(php -l app/Http/Controllers/AgentController.php)",
+      "Bash(php -l app/Models/ImportedProduct.php)"
+    ]
+  }
+}

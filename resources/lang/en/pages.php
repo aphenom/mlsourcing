@@ -105,6 +105,14 @@ return [
     'enter_quote_details'   => 'Enter Quotation Details',
     'unit_price_input'      => 'Unit Price*',
     'weight'                => 'Weight*',
+    'measurement_type'      => 'Measurement Type',
+    'weight_kg'             => 'Weight (kg)',
+    'cbm_label'             => 'CBM (Cubic Meter)',
+    'weight_value'          => 'Weight (kg)',
+    'cbm_value'             => 'Volume (CBM)',
+    'weight_required'       => 'Weight is required when measurement type is Weight.',
+    'cbm_required'          => 'CBM value is required when measurement type is CBM.',
+    'measurement_col'       => 'Weight / CBM',
     'agent_note_input'      => 'Agent Note',
     'close'                 => 'Close',
     'submit_quote'          => 'Submit Quote',
@@ -318,9 +326,50 @@ return [
     'account_pending_message'   => 'Your account has been created but is awaiting activation by our team. You will receive an email once your account is activated.',
     'account_pending_contact'   => 'If you have any questions, please contact us at support@mlsourcing.net',
 
-    // --- Notifications ---
-    'notifications'             => 'Notifications',
-    'no_notifications'          => 'You have no notifications.',
+    'seller_col'                => 'Seller',
+    'profile'                   => 'My Profile',
+    'profile_info'              => 'Profile Information',
+    'change_password'           => 'Change Password',
+    'current_password'          => 'Current Password',
+    'new_password'              => 'New Password',
+    'confirm_new_password'      => 'Confirm New Password',
+    'profile_updated'           => 'Profile updated successfully.',
+    'password_updated'          => 'Password changed successfully.',
+    'wrong_current_password'    => 'The current password is incorrect.',
+    'seller_updated'            => 'Seller updated successfully.',
+    'edit_seller'               => 'Edit Seller',
+    'reset_password'            => 'Reset Password (leave empty to keep current)',
+    'seller_info'               => 'Seller Information',
+    'quantity_updated'          => 'Quantity updated successfully.',
+    'edit_quantity'             => 'Edit Quantity',
+    'save'                      => 'Save',
+
+    // --- Agent dashboard KPIs ---
+    'requests_arrived'          => 'Requests Arrived',
+    'requests_pending_quoting'  => 'Requests Pending Quoting',
+    'total_orders_paid'         => 'Total Orders Paid',
+    'orders_waiting_payment'    => 'Orders Waiting Payment',
+    'total_orders_arrived'      => 'Total Orders Arrived',
+
+    // --- Seller dashboard KPIs ---
+    'total_requests_received'   => 'Total Requests Received',
+    'pending_requests'          => 'Pending Requests',
+    'paid_requests'             => 'Paid Requests',
+    'awaiting_payment'          => 'Awaiting Payment',
+    'awaiting_shipping'         => 'Orders Waiting for Shipping',
+    'shipped_orders'            => 'Shipped Orders',
+    'arrived_products'          => 'Arrived Products',
+    'payments_made'             => 'Payments Made',
+
+    'request_note'                  => 'Note',
+
+    // --- Request on behalf of seller ---
+    'add_request_for_seller'        => 'Request for Seller',
+    'select_seller'                 => 'Select Seller',
+    'request_for_seller_hint'       => 'You are creating a sourcing request on behalf of a seller.',
+    'request_submitted_for_seller'  => 'Request submitted successfully for the seller.',
+
+    // --- Notifications (extended) ---
     'no_new_notifications'      => 'No new notifications.',
     'mark_all_read'             => 'Mark all as read',
     'mark_read'                 => 'Mark as read',

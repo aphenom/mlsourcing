@@ -607,4 +607,51 @@ class SellerController extends Controller
         }
         return view('auth.seller.pending');
     }
+
+    public function profile()
+    {
+        return view('auth.seller.profile', ['user' => Auth::user()]);
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'name'                => 'required|string|max:255',
+            'email'               => 'required|email|unique:users,email,' . $user->id,
+            'phone_number'        => 'nullable|string|max:30',
+            'address'             => 'nullable|string|max:500',
+            'user_type'           => 'required|in:particular,company',
+            'company_name'        => 'nullable|string|max:255',
+            'company_information' => 'nullable|string|max:1000',
+        ]);
+
+        $user->fill($request->only([
+            'name', 'email', 'phone_number', 'address',
+            'user_type', 'company_name', 'company_information',
+        ]));
+        $user->save();
+
+        return back()->with('success', __('pages.profile_updated'));
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password'          => 'required',
+            'password'                  => 'required|min:8|confirmed',
+        ]);
+
+        $user = Auth::user();
+
+        if (!\Illuminate\Support\Facades\Hash::check($request->current_password, $user->password)) {
+            return back()->withErrors(['current_password' => __('pages.wrong_current_password')])->withInput();
+        }
+
+        $user->password = \Illuminate\Support\Facades\Hash::make($request->password);
+        $user->save();
+
+        return back()->with('success', __('pages.password_updated'));
+    }
 }

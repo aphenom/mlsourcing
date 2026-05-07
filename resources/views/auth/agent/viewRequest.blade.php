@@ -7,6 +7,25 @@
     $product = $orderRequest->importedproducts->first();
 @endphp
 <div class="container-fluid py-4">
+
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    @if($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <ul class="mb-0">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     <div class="row">
         <div class="col-12">
             <!-- Page Header -->
@@ -62,6 +81,22 @@
             <!-- End Page Header -->
         </div>
     </div>
+    <!-- Seller Info -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body py-2 px-3 d-flex align-items-center gap-4 flex-wrap">
+                    <span class="text-xs text-uppercase font-weight-bold text-muted">{{ __('pages.seller_info') }}</span>
+                    <span class="text-sm"><i class="fa fa-user me-1"></i>{{ $orderRequest->seller->name ?? '-' }}</span>
+                    <span class="text-sm"><i class="fa fa-envelope me-1"></i>{{ $orderRequest->seller->email ?? '-' }}</span>
+                    @if($orderRequest->seller?->phone)
+                    <span class="text-sm"><i class="fa fa-phone me-1"></i>{{ $orderRequest->seller->phone }}</span>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Request Details -->
     <div class="row">
         <div class="col-lg-8">
@@ -205,13 +240,37 @@
                                 {{ $orderRequest->ShippingMethod }}
                             </div>
                         </li>
+                        @if($product->measurement_type === 'cbm' && $product->cbm)
                         <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
                             <div class="d-flex flex-column">
-                                <h6 class="text-dark mb-1 font-weight-bold text-sm">{{ __('pages.quantity_label') }}</h6>
+                                <h6 class="text-dark mb-1 font-weight-bold text-sm">{{ __('pages.cbm_value') }}</h6>
                             </div>
-                            <div class="d-flex align-items-center text-sm">
-                                {{ $product->qte }}
+                            <div class="d-flex align-items-center text-sm">{{ $product->cbm }} m³</div>
+                        </li>
+                        @elseif($product->weight)
+                        <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                            <div class="d-flex flex-column">
+                                <h6 class="text-dark mb-1 font-weight-bold text-sm">{{ __('pages.weight_value') }}</h6>
                             </div>
+                            <div class="d-flex align-items-center text-sm">{{ $product->weight }} kg</div>
+                        </li>
+                        @endif
+                        @if($product->productSpecification)
+                        <li class="list-group-item border-0 ps-0 mb-2 border-radius-lg">
+                            <h6 class="text-dark mb-1 font-weight-bold text-sm">{{ __('pages.request_note') }}</h6>
+                            <p class="mb-0 text-sm">{{ $product->productSpecification }}</p>
+                        </li>
+                        @endif
+                        <li class="list-group-item border-0 ps-0 mb-2 border-radius-lg">
+                            <h6 class="text-dark mb-2 font-weight-bold text-sm">{{ __('pages.quantity_label') }}</h6>
+                            <form method="POST" action="{{ route('agent.updateQuantity', $orderRequest->id) }}" class="d-flex align-items-center gap-2">
+                                @csrf
+                                <input type="number" name="qte" value="{{ $product->qte }}" min="1"
+                                       class="form-control form-control-sm" style="width:90px;">
+                                <button type="submit" class="btn btn-sm bg-gradient-success text-white mb-0">
+                                    {{ __('pages.save') }}
+                                </button>
+                            </form>
                         </li>
                         <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
                             <div class="d-flex flex-column">
@@ -335,8 +394,21 @@
                         <input type="number" class="form-control" id="unit_price" name="unit_price" step=".01" min="0.01" required>
                     </div>
                     <div class="mb-3">
-                        <label for="weight" class="form-label">{{ __('pages.weight') }}</label>
-                        <input type="text" class="form-control" id="weight" name="weight" required>
+                        <label class="form-label">{{ __('pages.measurement_type') }}*</label>
+                        <select class="form-control" id="measurement_type" name="measurement_type" required>
+                            <option value="weight" {{ old('measurement_type', $product->measurement_type ?? 'weight') === 'weight' ? 'selected' : '' }}>{{ __('pages.weight_kg') }}</option>
+                            <option value="cbm"    {{ old('measurement_type', $product->measurement_type ?? 'weight') === 'cbm'    ? 'selected' : '' }}>{{ __('pages.cbm_label') }}</option>
+                        </select>
+                    </div>
+                    <div class="mb-3" id="field_weight">
+                        <label for="weight" class="form-label">{{ __('pages.weight_value') }}*</label>
+                        <input type="number" step="0.01" min="0" class="form-control" id="weight" name="weight"
+                               value="{{ old('weight', $product->weight) }}">
+                    </div>
+                    <div class="mb-3 d-none" id="field_cbm">
+                        <label for="cbm" class="form-label">{{ __('pages.cbm_value') }}*</label>
+                        <input type="number" step="0.0001" min="0" class="form-control" id="cbm" name="cbm"
+                               value="{{ old('cbm', $product->cbm) }}">
                     </div>
                     <div class="mb-3">
                         <label for="note" class="form-label">{{ __('pages.agent_note_input') }}</label>
@@ -355,6 +427,33 @@
 @push('scripts')
 <!-- Include the necessary JS scripts -->
 <script>
+// Measurement type toggle for quote modal
+(function() {
+    function toggleMeasurementFields(type) {
+        if (type === 'cbm') {
+            document.getElementById('field_weight').classList.add('d-none');
+            document.getElementById('field_cbm').classList.remove('d-none');
+        } else {
+            document.getElementById('field_weight').classList.remove('d-none');
+            document.getElementById('field_cbm').classList.add('d-none');
+        }
+    }
+
+    var sel = document.getElementById('measurement_type');
+    if (sel) {
+        toggleMeasurementFields(sel.value);
+        sel.addEventListener('change', function() { toggleMeasurementFields(this.value); });
+    }
+
+    // Re-init on modal open so initial state is correct
+    var modal = document.getElementById('quoteModal');
+    if (modal) {
+        modal.addEventListener('show.bs.modal', function() {
+            if (sel) toggleMeasurementFields(sel.value);
+        });
+    }
+})();
+
 $(document).ready(function () {
     // Hardcoded sender and recipient IDs based on Blade variables
     var senderID = "{{ $orderRequest->agentID }}";  // Agent ID is fixed

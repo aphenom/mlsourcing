@@ -17,7 +17,8 @@ class ImportedProduct extends Model
 
     
     protected $fillable = [
-        'requestID', 'productName', 'qte', 'productCategory', 'unitPrice', 'totalPrice', 'weight',
+        'requestID', 'productName', 'qte', 'productCategory', 'unitPrice', 'totalPrice',
+        'weight', 'measurement_type', 'cbm',
         'productURL', 'productImage', 'productSpecification', 'agentNote', 'statusProduct', 'carrier', 'trackingNumber'
     ];
 

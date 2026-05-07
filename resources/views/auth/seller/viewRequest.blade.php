@@ -206,6 +206,27 @@
                                 {{ $orderRequest->ShippingMethod }}
                             </div>
                         </li>
+                        @if($product->measurement_type === 'cbm' && $product->cbm)
+                        <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                            <div class="d-flex flex-column">
+                                <h6 class="text-dark mb-1 font-weight-bold text-sm">{{ __('pages.cbm_value') }}</h6>
+                            </div>
+                            <div class="d-flex align-items-center text-sm">{{ $product->cbm }} m³</div>
+                        </li>
+                        @elseif($product->weight)
+                        <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                            <div class="d-flex flex-column">
+                                <h6 class="text-dark mb-1 font-weight-bold text-sm">{{ __('pages.weight_value') }}</h6>
+                            </div>
+                            <div class="d-flex align-items-center text-sm">{{ $product->weight }} kg</div>
+                        </li>
+                        @endif
+                        @if($product->productSpecification)
+                        <li class="list-group-item border-0 ps-0 mb-2 border-radius-lg">
+                            <h6 class="text-dark mb-1 font-weight-bold text-sm">{{ __('pages.request_note') }}</h6>
+                            <p class="mb-0 text-sm">{{ $product->productSpecification }}</p>
+                        </li>
+                        @endif
                         <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
                             <div class="d-flex flex-column">
                                 <h6 class="text-dark mb-1 font-weight-bold text-sm">{{ __('pages.quantity_label') }}</h6>
