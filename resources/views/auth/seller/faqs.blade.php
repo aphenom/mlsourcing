@@ -6,7 +6,7 @@
         <div class="col-12">
             <div class="card mb-4 shadow-sm">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h6 class="mb-0" style="color:white;"><i class="fas fa-question-circle"></i> Frequently Asked Questions (FAQ)</h6>
+                    <h6 class="mb-0" style="color:white;"><i class="fas fa-question-circle"></i> {{ __('pages.faqs_title') }}</h6>
                 </div>
                 <div class="card-body">
                     <div class="accordion" id="accordionExample">

@@ -6,10 +6,18 @@ use Illuminate\Support\Facades\Http;
 
 class SmsService
 {
-    protected string $apiUrl = 'https://smspro.smartsmsgroup.com/api/api_http.php';
-    protected string $username = 'ML SOURCING';
-    protected string $password = 'MLSOURCING123';
-    protected string $sender = 'ML SOURCING';
+    protected string $apiUrl;
+    protected string $username;
+    protected string $password;
+    protected string $sender;
+
+    public function __construct()
+    {
+        $this->apiUrl = config('services.sms.url', 'https://smspro.smartsmsgroup.com/api/api_http.php');
+        $this->username = config('services.sms.username', '');
+        $this->password = config('services.sms.password', '');
+        $this->sender = config('services.sms.sender', '');
+    }
 
     public function sendSms(array $recipients, string $message, string $datetime)
     {

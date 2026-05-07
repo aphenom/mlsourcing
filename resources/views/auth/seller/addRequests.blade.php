@@ -1,12 +1,11 @@
 @extends('auth.theme.dashboard')
-@section('title') {{ __('add_request') }} @endsection
+@section('title') {{ __('pages.add_request') }} @endsection
 @section('content')
 <div class="container-fluid py-4">
     <div class="row">
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
-                    <!-- Display general validation errors if there are any -->
                     @if ($errors->any())
                         <div class="alert alert-danger">
                             <ul>
@@ -17,33 +16,31 @@
                         </div>
                     @endif
 
-                    <!-- Display exception error messages if any -->
                     @if (session('error'))
                         <div class="alert alert-danger">
                             {{ session('error') }}
                         </div>
                     @endif
 
-                    <!-- Display success messages if any -->
                     @if (session('success'))
                         <div class="alert alert-success">
                             {{ session('success') }}
                         </div>
                     @endif
 
-                    <form action="{{ route('seller.storeProductRequests') }}" method="POST">
+                    <form action="{{ route('seller.storeProductRequests') }}" method="POST" enctype="multipart/form-data" id="request-form">
                         @csrf
                         <div class="d-md-flex align-items-center mb-4 row">
                         <div class="col-md-4 col-12"><img src="https://cdn.codpartner.com/assets/img/pngs/sourcing.png" style="width: 100%; height: auto;"></div>
                             <div class="col-md-8 col-12">
-                                <h4 class="font-weight-bold mb-3">We Source For You</h4>
-                                <p class="mb-4">Let our professional sourcing team take care of all your sourcing needs.</p>
-                                
+                                <h4 class="font-weight-bold mb-3">{{ __('pages.we_source_for_you') }}</h4>
+                                <p class="mb-4">{{ __('pages.sourcing_tagline') }}</p>
+
                                 <div class="row">
                                     <div class="col-md-4 productnew">
                                         <div class="mb-3">
-                                            <label for="product_name" class="form-label">Product Name*</label>
-                                            <input type="text" id="product_name" name="product_name" class="form-control" placeholder="Product name" value="{{ old('product_name') }}" required>
+                                            <label for="product_name" class="form-label">{{ __('pages.product_name') }}*</label>
+                                            <input type="text" id="product_name" name="product_name" class="form-control" placeholder="{{ __('pages.product_name') }}" value="{{ old('product_name') }}" required>
                                             @error('product_name')
                                                 <span class="text-danger">{{ $message }}</span>
                                             @enderror
@@ -51,8 +48,11 @@
                                     </div>
                                     <div class="col-md-4">
                                         <div class="mb-3">
-                                            <label for="product_url" class="form-label">Product URL</label>
-                                            <input type="text" id="product_url" name="product_url" class="form-control" placeholder="Product URL" value="{{ old('product_url') }}" required>
+                                            <label for="product_url" class="form-label">
+                                                {{ __('pages.product_url') }}
+                                                <small class="text-muted">({{ __('pages.or_image_required') }})</small>
+                                            </label>
+                                            <input type="url" id="product_url" name="product_url" class="form-control" placeholder="https://..." value="{{ old('product_url') }}">
                                             @error('product_url')
                                                 <span class="text-danger">{{ $message }}</span>
                                             @enderror
@@ -60,41 +60,47 @@
                                     </div>
                                     <div class="col-md-4">
                                         <div class="mb-3">
-                                            <label for="product_url" class="form-label">Product Image</label>
-                                            <input type="file" id="product_url" name="product_url" class="form-control" placeholder="Product URL" value="{{ old('product_url') }}" required>
-                                            @error('product_url')
+                                            <label for="product_image" class="form-label">
+                                                {{ __('pages.product_image') }}
+                                                <small class="text-muted">({{ __('pages.or_url_required') }})</small>
+                                            </label>
+                                            <input type="file" id="product_image" name="product_image" class="form-control" accept="image/jpeg,image/png,image/jpg,image/gif,image/webp">
+                                            @error('product_image')
                                                 <span class="text-danger">{{ $message }}</span>
                                             @enderror
                                         </div>
                                     </div>
+                                    <div class="col-md-8" id="media-error" style="display:none;">
+                                        <div class="alert alert-danger py-2">{{ __('pages.url_or_image_required') }}</div>
+                                    </div>
                                     <div class="col-md-4">
                                         <div class="mb-3">
-                                          <label for="category" class="form-label">Category</label>
+                                          <label for="category" class="form-label">{{ __('pages.category') }}</label>
                                             <select id="category" name="category" class="form-control">
-                                                <option value="none" selected disabled hidden>Select a Category</option>
-                                                <option value="Automobiles & Motorcycles" {{ old('category') == 'Automobiles & Motorcycles' ? 'selected' : '' }}>Automobiles & Motorcycles</option>
-                                                <option value="Bag & Shoes" {{ old('category') == 'Bag & Shoes' ? 'selected' : '' }}>Bag & Shoes</option>
-                                                <option value="Computer & Office" {{ old('category') == 'Computer & Office' ? 'selected' : '' }}>Computer & Office</option>
-                                                <option value="Health & Beauty, Hair" {{ old('category') == 'Health & Beauty, Hair' ? 'selected' : '' }}>Health & Beauty, Hair</option>
-                                                <option value="Home & Garden, Furniture" {{ old('category') == 'Home & Garden, Furniture' ? 'selected' : '' }}>Home & Garden, Furniture</option>
-                                                <option value="Home Improvement" {{ old('category') == 'Home Improvement' ? 'selected' : '' }}>Home Improvement</option>
-                                                <option value="Jewelry & Watches" {{ old('category') == 'Jewelry & Watches' ? 'selected' : '' }}>Jewelry & Watches</option>
-                                                <option value="Men's Clothing" {{ old('category') == 'Men\'s Clothing' ? 'selected' : '' }}>Men's Clothing</option>
-                                                <option value="Other" {{ old('category') == 'Other' ? 'selected' : '' }}>Other</option>
-                                                <option value="Phones & Accessories" {{ old('category') == 'Phones & Accessories' ? 'selected' : '' }}>Phones & Accessories</option>
-                                                <option value="Sports & Outdoors" {{ old('category') == 'Sports & Outdoors' ? 'selected' : '' }}>Sports & Outdoors</option>
-                                                <option value="Toys, Kids & Baby" {{ old('category') == 'Toys, Kids & Baby' ? 'selected' : '' }}>Toys, Kids & Baby</option>
-                                                <option value="Women's Clothing" {{ old('category') == 'Women\'s Clothing' ? 'selected' : '' }}>Women's Clothing</option>
+                                                <option value="none" selected disabled hidden>{{ __('pages.select_category') }}</option>
+                                                <option value="Automobiles & Motorcycles" {{ old('category') == 'Automobiles & Motorcycles' ? 'selected' : '' }}>{{ __('pages.cat_automobiles') }}</option>
+                                                <option value="Bag & Shoes" {{ old('category') == 'Bag & Shoes' ? 'selected' : '' }}>{{ __('pages.cat_bags_shoes') }}</option>
+                                                <option value="Computer & Office" {{ old('category') == 'Computer & Office' ? 'selected' : '' }}>{{ __('pages.cat_computer') }}</option>
+                                                <option value="Health & Beauty, Hair" {{ old('category') == 'Health & Beauty, Hair' ? 'selected' : '' }}>{{ __('pages.cat_health') }}</option>
+                                                <option value="Home & Garden, Furniture" {{ old('category') == 'Home & Garden, Furniture' ? 'selected' : '' }}>{{ __('pages.cat_home_garden') }}</option>
+                                                <option value="Home Improvement" {{ old('category') == 'Home Improvement' ? 'selected' : '' }}>{{ __('pages.cat_home_improvement') }}</option>
+                                                <option value="Jewelry & Watches" {{ old('category') == 'Jewelry & Watches' ? 'selected' : '' }}>{{ __('pages.cat_jewelry') }}</option>
+                                                <option value="Men's Clothing" {{ old('category') == 'Men\'s Clothing' ? 'selected' : '' }}>{{ __('pages.cat_mens_clothing') }}</option>
+                                                <option value="Other" {{ old('category') == 'Other' ? 'selected' : '' }}>{{ __('pages.cat_other') }}</option>
+                                                <option value="Phones & Accessories" {{ old('category') == 'Phones & Accessories' ? 'selected' : '' }}>{{ __('pages.cat_phones') }}</option>
+                                                <option value="Sports & Outdoors" {{ old('category') == 'Sports & Outdoors' ? 'selected' : '' }}>{{ __('pages.cat_sports') }}</option>
+                                                <option value="Toys, Kids & Baby" {{ old('category') == 'Toys, Kids & Baby' ? 'selected' : '' }}>{{ __('pages.cat_toys') }}</option>
+                                                <option value="Women's Clothing" {{ old('category') == 'Women\'s Clothing' ? 'selected' : '' }}>{{ __('pages.cat_womens_clothing') }}</option>
                                             </select>
                                             @error('category')
                                                 <span class="text-danger">{{ $message }}</span>
                                             @enderror
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-md-4">
                                         <div class="mb-3">
-                                            <label for="quantity" class="form-label">Quantity*</label>
+                                            <label for="quantity" class="form-label">{{ __('pages.quantity') }}*</label>
                                             <input id="quantity" name="quantity" type="number" min="30" class="form-control" value="{{ old('quantity', 30) }}" required>
                                             @error('quantity')
                                                 <span class="text-danger">{{ $message }}</span>
@@ -103,9 +109,9 @@
                                     </div>
                                     <div class="col-md-4">
                                         <div class="mb-3">
-                                            <label for="countryTo" class="form-label">Destination Country*</label>
+                                            <label for="countryTo" class="form-label">{{ __('pages.destination_country') }}*</label>
                                             <select id="countryTo" name="countryTo" class="form-control" required>
-                                                <option selected disabled hidden>Select a Country</option>
+                                                <option selected disabled hidden>{{ __('pages.select_country') }}</option>
                                                 @foreach($destinationCountries as $country)
                                                 <option value="{{ $country->id }}" {{ old('countryTo') == $country->id ? 'selected' : '' }}>{{ $country->country_name }}</option>
                                                 @endforeach
@@ -117,9 +123,9 @@
                                     </div>
                                     <div class="col-md-4">
                                         <div class="mb-3">
-                                            <label for="countryFrom" class="form-label">Sourcing Country*</label>
+                                            <label for="countryFrom" class="form-label">{{ __('pages.sourcing_country') }}*</label>
                                             <select id="countryFrom" name="countryFrom" class="form-control" required>
-                                                <option selected disabled hidden>Select a Country</option>
+                                                <option selected disabled hidden>{{ __('pages.select_country') }}</option>
                                                 @foreach($sourcingCountries as $country)
                                                 <option value="{{ $country->id }}" {{ old('countryFrom') == $country->id ? 'selected' : '' }}>{{ $country->country_name }}</option>
                                                 @endforeach
@@ -131,30 +137,30 @@
                                     </div>
                                     <div class="col-md-12">
                                         <div class="mb-3">
-                                            <label for="note" class="form-label">Note</label>
-                                            <textarea id="note" name="note" class="form-control" rows="4" placeholder="Special request..">{{ old('note') }}</textarea>
+                                            <label for="note" class="form-label">{{ __('pages.note') }}</label>
+                                            <textarea id="note" name="note" class="form-control" rows="4" placeholder="{{ __('pages.special_request') }}">{{ old('note') }}</textarea>
                                             @error('note')
                                                 <span class="text-danger">{{ $message }}</span>
                                             @enderror
                                         </div>
                                         <div class="mb-4">
-                                            <label class="form-label">Shipping Method</label>
+                                            <label class="form-label">{{ __('pages.shipping_method') }}</label>
                                             @error('shipping_method')
                                                 <span class="text-danger">{{ $message }}</span>
                                             @enderror
                                             <div class="form-check">
                                                 <input class="form-check-input" type="radio" name="shipping_method" id="air_freight" value="Air freight" {{ old('shipping_method') == 'Air freight' ? 'checked' : '' }}>
-                                                <label class="form-check-label" for="air_freight">Air freight</label>
+                                                <label class="form-check-label" for="air_freight">{{ __('pages.air_freight') }}</label>
                                             </div>
                                             <div class="form-check">
                                                 <input class="form-check-input" type="radio" name="shipping_method" id="ocean_freight" value="Ocean freight" {{ old('shipping_method') == 'Ocean freight' ? 'checked' : '' }}>
-                                                <label class="form-check-label" for="ocean_freight">Ocean freight</label>
+                                                <label class="form-check-label" for="ocean_freight">{{ __('pages.ocean_freight') }}</label>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="text-end">
-                                    <button type="submit" class="btn btn-primary">Request the Product</button>
+                                    <button type="submit" class="btn btn-primary">{{ __('pages.request_product') }}</button>
                                 </div>
                             </div>
                         </div>
@@ -164,4 +170,27 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+    document.getElementById('request-form').addEventListener('submit', function(e) {
+        var url = document.getElementById('product_url').value.trim();
+        var image = document.getElementById('product_image').files.length;
+        var errorDiv = document.getElementById('media-error');
+        if (!url && !image) {
+            e.preventDefault();
+            errorDiv.style.display = 'block';
+            document.getElementById('product_url').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+            errorDiv.style.display = 'none';
+        }
+    });
+    document.getElementById('product_url').addEventListener('input', function() {
+        document.getElementById('media-error').style.display = 'none';
+    });
+    document.getElementById('product_image').addEventListener('change', function() {
+        document.getElementById('media-error').style.display = 'none';
+    });
+</script>
+@endpush
 @endsection

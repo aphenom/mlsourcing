@@ -6,28 +6,28 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header pb-0">
-                    <h6>Payment History</h6>
+                    <h6>{{ __('pages.payment_history') }}</h6>
                     <!-- Add filters here -->
                     <form id="filter-form" class="row align-items-center">
                         <div class="form-group col-md-3">
-                            <label for="start_date">Start Date:</label>
+                            <label for="start_date">{{ __('pages.start_date') }}:</label>
                             <input type="date" class="form-control" id="start_date" name="start_date">
                         </div>
                         <div class="form-group col-md-3">
-                            <label for="end_date">End Date:</label>
+                            <label for="end_date">{{ __('pages.end_date') }}:</label>
                             <input type="date" class="form-control" id="end_date" name="end_date">
                         </div>
                         <div class="form-group col-md-3">
-                            <label for="status">Status:</label>
+                            <label for="status">{{ __('pages.status') }}:</label>
                             <select class="form-control" id="status" name="status">
-                                <option value="">All</option>
-                                <option value="approved">Approved</option>
-                                <option value="pending">Pending</option>
-                                <option value="disapproved">Disapproved</option>
+                                <option value="">{{ __('pages.all') }}</option>
+                                <option value="approved">{{ __('pages.approved') }}</option>
+                                <option value="pending">{{ __('pages.pending') }}</option>
+                                <option value="disapproved">{{ __('pages.disapproved') }}</option>
                             </select>
                         </div>
                         <div class="form-group col-md-3 mt-3">
-                            <button type="submit" class="btn btn-primary w-100">Filter</button>
+                            <button type="submit" class="btn btn-primary w-100">{{ __('pages.filter') }}</button>
                         </div>
                     </form>
                 </div>
@@ -39,12 +39,12 @@
                         <table id="example" class="table table-bordered table-striped table-hover" style="width:100%">
                             <thead class="thead-light">
                                 <tr>
-                                    <th>Payment ID</th>
-                                    <th>Date</th>
-                                    <th>Request NO</th>
-                                    <th>Product</th>
-                                    <th>Amount</th>
-                                    <th>Status</th>
+                                    <th>{{ __('pages.payment_id') }}</th>
+                                    <th>{{ __('pages.date') }}</th>
+                                    <th>{{ __('pages.request_no') }}</th>
+                                    <th>{{ __('pages.product_col') }}</th>
+                                    <th>{{ __('pages.amount') }}</th>
+                                    <th>{{ __('pages.status') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -52,12 +52,12 @@
                             </tbody>
                             <tfoot class="thead-light">
                                 <tr>
-                                    <th>Payment ID</th>
-                                    <th>Date</th>
-                                    <th>Request NO</th>
-                                    <th>Product</th>
-                                    <th>Amount</th>
-                                    <th>Status</th>
+                                    <th>{{ __('pages.payment_id') }}</th>
+                                    <th>{{ __('pages.date') }}</th>
+                                    <th>{{ __('pages.request_no') }}</th>
+                                    <th>{{ __('pages.product_col') }}</th>
+                                    <th>{{ __('pages.amount') }}</th>
+                                    <th>{{ __('pages.status') }}</th>
                                 </tr>
                             </tfoot>
                         </table>

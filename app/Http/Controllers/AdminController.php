@@ -25,6 +25,7 @@ use App\Mail\NotificationMail;
 use Illuminate\Support\Facades\Mail;
 use App\Notifications\SmsNotification;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
 
 
 class AdminController extends Controller
@@ -535,11 +536,14 @@ class AdminController extends Controller
                                             ->value('name');
 
                             return [
-                                'created_at' => $row->created_at->format('Y-m-d'),
-                                'agent' => $agentName,
-                                'request_no' => $row->requestNO,
-                                'product_name' => $importedProduct->productName,
-                                'product_url' => $importedProduct->productURL,
+                                'created_at'       => $row->created_at->format('Y-m-d'),
+                                'agent'            => $agentName,
+                                'request_no'       => $row->requestNO,
+                                'product_name'     => $importedProduct->productName,
+                                'product_url'      => $importedProduct->productURL,
+                                'product_image'    => $importedProduct->productImage
+                                                     ? asset('storage/' . $importedProduct->productImage)
+                                                     : null,
                                 'sourcing_country' => $row->countryFrom,
                                 'destination_country' => $row->countryTo,
                                 'qte' => $importedProduct->qte,
@@ -716,4 +720,74 @@ class AdminController extends Controller
         ));
     }
 
+    // Seller Management
+    public function sellers()
+    {
+        $sellers = User::where('role', 3)->get();
+        return view('auth.admin.sellers', compact('sellers'));
+    }
+
+    public function storeSeller(Request $request)
+    {
+        $request->validate([
+            'name'         => 'required|string|max:255',
+            'email'        => 'required|email|unique:users,email',
+            'phone_number' => 'required|string|max:20',
+            'address'      => 'required|string',
+            'user_type'    => 'required|in:particular,company',
+        ]);
+
+        $plainPassword = Str::random(12);
+
+        $seller = new User();
+        $seller->name         = $request->name;
+        $seller->email        = $request->email;
+        $seller->phone_number = $request->phone_number;
+        $seller->address      = $request->address;
+        $seller->user_type    = $request->user_type;
+        $seller->password     = Hash::make($plainPassword);
+        $seller->role         = 3;
+        $seller->status       = 'active';
+        $seller->save();
+
+        $subject = 'Your MLSourcing Account is Ready';
+        $message = "Hello {$seller->name},\n\nYour account has been created.\nEmail: {$seller->email}\nPassword: {$plainPassword}\n\nPlease log in and change your password.";
+        Mail::to($seller->email)->send(new NotificationMail($subject, $message, route('login')));
+
+        return redirect()->back()->with('success', __('pages.seller_created'));
+    }
+
+    public function activateSeller($id)
+    {
+        $seller = User::where('id', $id)->where('role', 3)->firstOrFail();
+        $seller->status = 'active';
+        $seller->save();
+
+        $subject = 'Your MLSourcing Account is Activated';
+        $message = "Hello {$seller->name},\n\nYour account has been activated. You can now log in and start using the platform.";
+        Mail::to($seller->email)->send(new NotificationMail($subject, $message, route('login')));
+
+        return redirect()->back()->with('success', __('pages.seller_activated'));
+    }
+
+    public function blockSeller($id)
+    {
+        $seller = User::where('id', $id)->where('role', 3)->firstOrFail();
+        $seller->status = 'blocked';
+        $seller->save();
+        return redirect()->back()->with('success', __('pages.seller_blocked'));
+    }
+
+    public function unblockSeller($id)
+    {
+        $seller = User::where('id', $id)->where('role', 3)->firstOrFail();
+        $seller->status = 'active';
+        $seller->save();
+
+        $subject = 'Your MLSourcing Account has been Unblocked';
+        $message = "Hello {$seller->name},\n\nYour account has been unblocked. You can now access the platform again.";
+        Mail::to($seller->email)->send(new NotificationMail($subject, $message, route('login')));
+
+        return redirect()->back()->with('success', __('pages.seller_unblocked'));
+    }
 }

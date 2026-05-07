@@ -6,74 +6,61 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header pb-0">
-                        <h6>All Requests</h6>
-                        <!-- Add filters here -->
+                        <h6>{{ __('pages.all_requests') }}</h6>
                         <div class="row">
                             <div class="col-md-12">
                                 <form id="filter-form" class="row">
-
                                     <div class="form-group col-md-3">
-                                        <label for="date_from">Date From:</label>
+                                        <label for="date_from">{{ __('pages.date_from') }}:</label>
                                         <input type="date" class="form-control" id="date_from" name="date_from">
                                     </div>
                                     <div class="form-group col-md-3">
-                                        <label for="date_to">Date To:</label>
+                                        <label for="date_to">{{ __('pages.date_to') }}:</label>
                                         <input type="date" class="form-control" id="date_to" name="date_to">
                                     </div>
                                     <div class="form-group col-md-3">
-                                        <label for="agent_id">Agent:</label>
+                                        <label for="agent_id">{{ __('pages.agent_col') }}:</label>
                                         <select class="form-control" id="agent_id" name="agent_id">
-                                            <option value="" selected disabled>Select an agent</option>
-                                            <option value="">All Agents</option>
-
+                                            <option value="" selected disabled>{{ __('pages.select_agent') }}</option>
+                                            <option value="">{{ __('pages.all_agents') }}</option>
                                             @foreach ($agents as $agent)
-                                                <option value="{{ $agent->id }}">{{ $agent->name }}
-                                                    ({{ $agent->email }})</option>
+                                                <option value="{{ $agent->id }}">{{ $agent->name }} ({{ $agent->email }})</option>
                                             @endforeach
                                         </select>
                                     </div>
                                     <div class="form-group col-md-3">
-                                        <label for="sourcing_country_name">Sourcing Country:</label>
-                                        <select class="form-control" id="sourcing_country_name"
-                                            name="sourcing_country_name">
-                                            <option value="" selected>Select a sourcing country</option>
-                                            <option value="">All Countries</option>
-
+                                        <label for="sourcing_country_name">{{ __('pages.sourcing_country_filter') }}:</label>
+                                        <select class="form-control" id="sourcing_country_name" name="sourcing_country_name">
+                                            <option value="" selected>{{ __('pages.select_sourcing_country') }}</option>
+                                            <option value="">{{ __('pages.all_countries') }}</option>
                                             @foreach ($sourcingCountries as $country)
-                                                <option value="{{ $country->country_name }}">{{ $country->country_name }}
-                                                </option>
+                                                <option value="{{ $country->country_name }}">{{ $country->country_name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                     <div class="form-group col-md-3">
-                                        <label for="destination_country_name">Destination Country:</label>
-                                        <select class="form-control" id="destination_country_name"
-                                            name="destination_country_name">
-                                            <option value="" selected>Select a destination country</option>
-                                            <option value="">All Countries</option>
-
+                                        <label for="destination_country_name">{{ __('pages.destination_country_filter') }}:</label>
+                                        <select class="form-control" id="destination_country_name" name="destination_country_name">
+                                            <option value="" selected>{{ __('pages.select_destination_country') }}</option>
+                                            <option value="">{{ __('pages.all_countries') }}</option>
                                             @foreach ($destinationCountries as $country)
-                                                <option value="{{ $country->country_name }}">{{ $country->country_name }}
-                                                </option>
+                                                <option value="{{ $country->country_name }}">{{ $country->country_name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                     <div class="form-group col-md-3">
-                                        <label for="status">Status:</label>
+                                        <label for="status">{{ __('pages.status') }}:</label>
                                         <select class="form-control" id="status" name="status">
-                                            <option value="">All</option>
-                                            <option value="quoting">Quoting</option>
-                                            <option value="quoted">Quoted</option>
-                                            <!-- Add more status options as needed -->
+                                            <option value="">{{ __('pages.all') }}</option>
+                                            <option value="quoting">{{ __('pages.status_quoting') }}</option>
+                                            <option value="quoted">{{ __('pages.status_quoted') }}</option>
                                         </select>
                                     </div>
                                     <div class="form-group col-md-3">
-                                        <button type="submit" class="btn btn-primary" style="width:100%;">Filter</button>
+                                        <button type="submit" class="btn btn-primary" style="width:100%;">{{ __('pages.filter') }}</button>
                                     </div>
-
                                 </form>
                             </div>
-
                         </div>
 
                     </div>
@@ -84,33 +71,31 @@
                             <table id="example" class="table table-bordered table-striped table-hover" style="width:100%">
                                 <thead class="thead-light">
                                     <tr>
-                                        <th>Requested At</th>
-                                        <th>Updated At</th>
-                                        <th>Agent</th>
-                                        <th>Product Name</th>
-                                        <th>Quantity</th>
-                                        <th>Country From</th>
-                                        <th>Country To</th>
-                                        <th>Request Status</th>
-                                        <th>Payment Status</th>
-                                        <th>See Request</th>
+                                        <th>{{ __('pages.requested_at') }}</th>
+                                        <th>{{ __('pages.updated_at') }}</th>
+                                        <th>{{ __('pages.agent_col') }}</th>
+                                        <th>{{ __('pages.product_name_col') }}</th>
+                                        <th>{{ __('pages.quantity_col') }}</th>
+                                        <th>{{ __('pages.country_from') }}</th>
+                                        <th>{{ __('pages.country_to') }}</th>
+                                        <th>{{ __('pages.request_status_col') }}</th>
+                                        <th>{{ __('pages.payment_status_col') }}</th>
+                                        <th>{{ __('pages.see_request') }}</th>
                                     </tr>
                                 </thead>
-                                <tbody class="text-center">
-                                    <!-- Data will be populated by DataTables -->
-                                </tbody>
+                                <tbody class="text-center"></tbody>
                                 <tfoot>
                                     <tr>
-                                        <th>Requested At</th>
-                                        <th>Updated At</th>
-                                        <th>Agent</th>
-                                        <th>Product Name</th>
-                                        <th>Quantity</th>
-                                        <th>Country From</th>
-                                        <th>Country To</th>
-                                        <th>Request Status</th>
-                                        <th>Payment Status</th>
-                                        <th>See Request</th>
+                                        <th>{{ __('pages.requested_at') }}</th>
+                                        <th>{{ __('pages.updated_at') }}</th>
+                                        <th>{{ __('pages.agent_col') }}</th>
+                                        <th>{{ __('pages.product_name_col') }}</th>
+                                        <th>{{ __('pages.quantity_col') }}</th>
+                                        <th>{{ __('pages.country_from') }}</th>
+                                        <th>{{ __('pages.country_to') }}</th>
+                                        <th>{{ __('pages.request_status_col') }}</th>
+                                        <th>{{ __('pages.payment_status_col') }}</th>
+                                        <th>{{ __('pages.see_request') }}</th>
                                     </tr>
                                 </tfoot>
                             </table>

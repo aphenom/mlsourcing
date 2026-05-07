@@ -6,32 +6,32 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header pb-0">
-                    <h6>Agent Requests</h6>
+                    <h6>{{ __('pages.agent_requests') }}</h6>
                     <div class="row justify-content-center align-items-center">
                         <div class="col-md-10">
                             <form id="filter-form" class="row align-items-center">
                                 <div class="form-group col-md-2">
-                                    <label for="date">Date:</label>
+                                    <label for="date">{{ __('pages.date') }}:</label>
                                     <input type="date" class="form-control" id="date" name="date">
                                 </div>
                                 <div class="form-group col-md-2">
-                                    <label for="country_from">Country From:</label>
+                                    <label for="country_from">{{ __('pages.country_from') }}:</label>
                                     <input type="text" class="form-control" id="country_from" name="country_from">
                                 </div>
                                 <div class="form-group col-md-2">
-                                    <label for="country_to">Country To:</label>
+                                    <label for="country_to">{{ __('pages.country_to') }}:</label>
                                     <input type="text" class="form-control" id="country_to" name="country_to">
                                 </div>
                                 <div class="form-group col-md-2">
-                                    <label for="status">Request Status:</label>
+                                    <label for="status">{{ __('pages.request_status_label') }}:</label>
                                     <select class="form-control" id="status" name="status">
-                                        <option value="">All</option>
-                                        <option value="quoting">Quoting</option>
-                                        <option value="quoted">Quoted</option>
+                                        <option value="">{{ __('pages.all') }}</option>
+                                        <option value="quoting">{{ __('pages.status_quoting') }}</option>
+                                        <option value="quoted">{{ __('pages.status_quoted') }}</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-3">
-                                    <button type="submit" class="btn btn-primary w-100">Filter</button>
+                                    <button type="submit" class="btn btn-primary w-100">{{ __('pages.filter') }}</button>
                                 </div>
                             </form>
                         </div>
@@ -44,33 +44,31 @@
                         <table id="example" class="table table-bordered table-striped table-hover" style="width:100%">
                             <thead class="thead-light">
                                 <tr>
-                                    <th>Request ID</th>
-                                    <th>Requested At</th>
-                                    <th>Updated At</th>
-                                    <th>Product Name</th>
-                                    <th>Quantity</th>
-                                    <th>Country From</th>
-                                    <th>Country To</th>
-                                    <th>Request Status</th>
-                                    <th>Payment Status</th>
-                                    <th>See Request</th>
+                                    <th>{{ __('pages.request_id') }}</th>
+                                    <th>{{ __('pages.requested_at') }}</th>
+                                    <th>{{ __('pages.updated_at') }}</th>
+                                    <th>{{ __('pages.product_name_col') }}</th>
+                                    <th>{{ __('pages.quantity_col') }}</th>
+                                    <th>{{ __('pages.country_from') }}</th>
+                                    <th>{{ __('pages.country_to') }}</th>
+                                    <th>{{ __('pages.request_status_col') }}</th>
+                                    <th>{{ __('pages.payment_status_col') }}</th>
+                                    <th>{{ __('pages.see_request') }}</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <!-- Data will be populated by DataTables -->
-                            </tbody>
+                            <tbody></tbody>
                             <tfoot class="thead-light">
                                 <tr>
-                                    <th>Request ID</th>
-                                    <th>Requested At</th>
-                                    <th>Updated At</th>
-                                    <th>Product Name</th>
-                                    <th>Quantity</th>
-                                    <th>Country From</th>
-                                    <th>Country To</th>
-                                    <th>Request Status</th>
-                                    <th>Payment Status</th>
-                                    <th>See Request</th>
+                                    <th>{{ __('pages.request_id') }}</th>
+                                    <th>{{ __('pages.requested_at') }}</th>
+                                    <th>{{ __('pages.updated_at') }}</th>
+                                    <th>{{ __('pages.product_name_col') }}</th>
+                                    <th>{{ __('pages.quantity_col') }}</th>
+                                    <th>{{ __('pages.country_from') }}</th>
+                                    <th>{{ __('pages.country_to') }}</th>
+                                    <th>{{ __('pages.request_status_col') }}</th>
+                                    <th>{{ __('pages.payment_status_col') }}</th>
+                                    <th>{{ __('pages.see_request') }}</th>
                                 </tr>
                             </tfoot>
                         </table>

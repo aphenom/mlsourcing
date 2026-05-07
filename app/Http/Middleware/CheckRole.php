@@ -14,10 +14,18 @@ class CheckRole
         $user = Auth::user();
         
         if ($user && $user->role === $role) {
+            if ($role === 3) {
+                if ($user->status === 'pending') {
+                    return redirect()->route('seller.pending');
+                }
+                if ($user->status === 'blocked') {
+                    auth()->logout();
+                    return redirect()->route('login')->withErrors(['email' => __('pages.account_blocked')]);
+                }
+            }
             return $next($request);
         }
 
-        // Redirect or return a 403 response if the user does not have the correct role
         return response()->view('errors.403', [], 403);
     }
 }

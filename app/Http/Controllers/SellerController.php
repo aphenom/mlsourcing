@@ -175,16 +175,20 @@ class SellerController extends Controller
             'countryFrom' => (int) $request->input('countryFrom'),
         ]);
     
-        // Create the validator instance
         $validator = Validator::make($request->all(), [
-            'product_name' => 'required|string|max:255',
-            'product_url' => 'required|string',
-            'category' => 'required|string|max:255',
-            'quantity' => 'required|integer|min:30',
-            'countryTo' => 'required|integer|exists:destination_countries,id',
-            'countryFrom' => 'required|integer|exists:sourcing_countries,id',
+            'product_name'    => 'required|string|max:255',
+            'product_url'     => 'nullable|url|max:2048',
+            'product_image'   => 'nullable|file|mimes:jpeg,jpg,png,gif,webp|max:5120',
+            'category'        => 'required|string|max:255',
+            'quantity'        => 'required|integer|min:30',
+            'countryTo'       => 'required|integer|exists:destination_countries,id',
+            'countryFrom'     => 'required|integer|exists:sourcing_countries,id',
             'shipping_method' => 'required|string|max:255',
-        ]);
+        ])->after(function ($v) use ($request) {
+            if (!$request->filled('product_url') && !$request->hasFile('product_image')) {
+                $v->errors()->add('product_url', __('pages.url_or_image_required'));
+            }
+        });
     
         if ($validator->fails()) {
             // Validation failed
@@ -209,22 +213,29 @@ class SellerController extends Controller
                 $orderRequest->ShippingMethod = $request->shipping_method;
                 $orderRequest->save();
     
-                // Create a new product request linked to the order request
+                // Handle product image upload
+                $productImage = null;
+                if ($request->hasFile('product_image')) {
+                    $file = $request->file('product_image');
+                    $filename = 'product_' . $orderRequest->id . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                    $productImage = $file->storeAs('product_images', $filename, 'public');
+                }
+
                 $importedProduct = new ImportedProduct();
-                $importedProduct->requestID = $orderRequest->id; // Link to the order request
-                $importedProduct->productName = $request->product_name;
-                $importedProduct->productURL = $request->product_url;
-                $importedProduct->productCategory = $request->category;
-                $importedProduct->qte = $request->quantity;
-                $importedProduct->unitPrice = 0; // Set initial price, you can update it later
-                $importedProduct->totalPrice = 0; // Set initial total price, you can update it later
-                $importedProduct->productSpecification = $request->note; // Add specifications if available
-                $importedProduct->statusProduct = '-'; // Set initial product status
+                $importedProduct->requestID            = $orderRequest->id;
+                $importedProduct->productName          = $request->product_name;
+                $importedProduct->productURL           = $request->filled('product_url') ? $request->product_url : null;
+                $importedProduct->productImage         = $productImage;
+                $importedProduct->productCategory      = $request->category;
+                $importedProduct->qte                  = $request->quantity;
+                $importedProduct->unitPrice            = 0;
+                $importedProduct->totalPrice           = 0;
+                $importedProduct->productSpecification = $request->note;
+                $importedProduct->statusProduct        = '-';
                 $importedProduct->save();
 
-                // Send the notification to the Agent
                 $m_agent = User::find($asAget);
-                $this->sendNotificationToAgent($m_agent,$orderRequest->id);
+                $this->sendNotificationToAgent($m_agent, $orderRequest->id);
                 
                 
                 
@@ -348,18 +359,21 @@ class SellerController extends Controller
                 ->get()
                 ->map(function ($row) {
                     return [
-                        'requested_at' => $row->created_at->format('Y-m-d'), // Order date
-                        'request_no' => $row->requestNO, // Order ID
-                        'product_name' => $row->importedproducts->pluck('productName')->implode(', '), // Product names
-                        'quantity' => $row->importedproducts->sum('qte'), // Total quantity
-                        'total_price' => $row->importedproducts->sum('totalPrice'), // Total price
-                        'view_product' => $row->importedproducts->pluck('productURL')->implode(', '), // View Product URL
-                        'tracking_number' => $row->importedproducts->pluck('trackingNumber')->implode(', '), // Tracking numbers
-                        'carrier' => $row->importedproducts->pluck('carrier')->implode(', '), // Carrier names
-                        'statusProduct' => $row->importedproducts->pluck('statusProduct')->implode(', '), // Status of products
-                        'country_from' => $row->countryFrom, // Origin country
-                        'country_to' => $row->countryTo, // Destination country
-                        'shipping_method' => $row->ShippingMethod, // Shipping method
+                        'requested_at'    => $row->created_at->format('Y-m-d'),
+                        'request_no'      => $row->requestNO,
+                        'product_name'    => $row->importedproducts->pluck('productName')->implode(', '),
+                        'quantity'        => $row->importedproducts->sum('qte'),
+                        'total_price'     => $row->importedproducts->sum('totalPrice'),
+                        'product_url'     => $row->importedproducts->first()?->productURL,
+                        'product_image'   => $row->importedproducts->first()?->productImage
+                                             ? asset('storage/' . $row->importedproducts->first()->productImage)
+                                             : null,
+                        'tracking_number' => $row->importedproducts->pluck('trackingNumber')->implode(', '),
+                        'carrier'         => $row->importedproducts->pluck('carrier')->implode(', '),
+                        'statusProduct'   => $row->importedproducts->pluck('statusProduct')->implode(', '),
+                        'country_from'    => $row->countryFrom,
+                        'country_to'      => $row->countryTo,
+                        'shipping_method' => $row->ShippingMethod,
                     ];
                 })->toArray();
 
@@ -586,5 +600,11 @@ class SellerController extends Controller
         ));
     }
 
-
+    public function pending()
+    {
+        if (Auth::user()->status !== 'pending') {
+            return redirect()->route('seller.dashboard');
+        }
+        return view('auth.seller.pending');
+    }
 }

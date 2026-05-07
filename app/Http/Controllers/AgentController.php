@@ -21,6 +21,8 @@ use App\Mail\NotificationMail;
 use Illuminate\Support\Facades\Mail;
 use App\Notifications\SmsNotification;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
 
 
 class AgentController extends Controller
@@ -304,10 +306,13 @@ class AgentController extends Controller
                             $importedProduct = $row->importedproducts->first();
 
                             return [
-                                'created_at' => $row->created_at->format('Y-m-d'),
-                                'request_no' => $row->requestNO,
-                                'product_name' => $importedProduct->productName,
-                                'product_url' => $importedProduct->productURL,
+                                'created_at'    => $row->created_at->format('Y-m-d'),
+                                'request_no'    => $row->requestNO,
+                                'product_name'  => $importedProduct->productName,
+                                'product_url'   => $importedProduct->productURL,
+                                'product_image' => $importedProduct->productImage
+                                                   ? asset('storage/' . $importedProduct->productImage)
+                                                   : null,
                                 'qte' => $importedProduct->qte,
                                 'unitPrice' => $importedProduct->unitPrice,
                                 'totalPrice' => $importedProduct->totalPrice,
@@ -394,4 +399,53 @@ class AgentController extends Controller
         Notification::route('sms', $recipients)->notify(new SmsNotification($recipients, $message));
     }
 
+    // Seller Management
+    public function sellers()
+    {
+        $sellers = User::where('role', 3)->get();
+        return view('auth.agent.sellers', compact('sellers'));
+    }
+
+    public function storeSeller(Request $request)
+    {
+        $request->validate([
+            'name'         => 'required|string|max:255',
+            'email'        => 'required|email|unique:users,email',
+            'phone_number' => 'required|string|max:20',
+            'address'      => 'required|string',
+            'user_type'    => 'required|in:particular,company',
+        ]);
+
+        $plainPassword = Str::random(12);
+
+        $seller = new User();
+        $seller->name         = $request->name;
+        $seller->email        = $request->email;
+        $seller->phone_number = $request->phone_number;
+        $seller->address      = $request->address;
+        $seller->user_type    = $request->user_type;
+        $seller->password     = Hash::make($plainPassword);
+        $seller->role         = 3;
+        $seller->status       = 'active';
+        $seller->save();
+
+        $subject = 'Your MLSourcing Account is Ready';
+        $message = "Hello {$seller->name},\n\nYour account has been created.\nEmail: {$seller->email}\nPassword: {$plainPassword}\n\nPlease log in and change your password.";
+        Mail::to($seller->email)->send(new NotificationMail($subject, $message, route('login')));
+
+        return redirect()->back()->with('success', __('pages.seller_created'));
+    }
+
+    public function activateSeller($id)
+    {
+        $seller = User::where('id', $id)->where('role', 3)->firstOrFail();
+        $seller->status = 'active';
+        $seller->save();
+
+        $subject = 'Your MLSourcing Account is Activated';
+        $message = "Hello {$seller->name},\n\nYour account has been activated. You can now log in and start using the platform.";
+        Mail::to($seller->email)->send(new NotificationMail($subject, $message, route('login')));
+
+        return redirect()->back()->with('success', __('pages.seller_activated'));
+    }
 }

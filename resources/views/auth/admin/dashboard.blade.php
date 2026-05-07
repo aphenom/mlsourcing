@@ -8,7 +8,7 @@
                     <div class="row">
                         <div class="col-8">
                             <div class="numbers">
-                                <p class="text-sm mb-0 text-capitalize font-weight-bold">Total Sellers</p>
+                                <p class="text-sm mb-0 text-capitalize font-weight-bold">{{ __('pages.total_sellers') }}</p>
                                 <h5 class="font-weight-bolder mb-0">{{ $totalSellers }}</h5>
                             </div>
                         </div>
@@ -22,14 +22,13 @@
             </div>
         </div>
 
-        <!-- Card 2: Total Agents -->
         <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
             <div class="card">
                 <div class="card-body p-3">
                     <div class="row">
                         <div class="col-8">
                             <div class="numbers">
-                                <p class="text-sm mb-0 text-capitalize font-weight-bold">Total Agents</p>
+                                <p class="text-sm mb-0 text-capitalize font-weight-bold">{{ __('pages.total_agents') }}</p>
                                 <h5 class="font-weight-bolder mb-0">{{ $totalAgents }}</h5>
                             </div>
                         </div>
@@ -43,14 +42,13 @@
             </div>
         </div>
 
-        <!-- Card 3: Total Requests -->
         <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
             <div class="card">
                 <div class="card-body p-3">
                     <div class="row">
                         <div class="col-8">
                             <div class="numbers">
-                                <p class="text-sm mb-0 text-capitalize font-weight-bold">Total Requests</p>
+                                <p class="text-sm mb-0 text-capitalize font-weight-bold">{{ __('pages.total_requests') }}</p>
                                 <h5 class="font-weight-bolder mb-0">{{ $totalRequests }}</h5>
                             </div>
                         </div>
@@ -64,14 +62,13 @@
             </div>
         </div>
 
-        <!-- Card 4: Requests Quoting -->
         <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
             <div class="card">
                 <div class="card-body p-3">
                     <div class="row">
                         <div class="col-8">
                             <div class="numbers">
-                                <p class="text-sm mb-0 text-capitalize font-weight-bold">Requests Quoting</p>
+                                <p class="text-sm mb-0 text-capitalize font-weight-bold">{{ __('pages.requests_quoting') }}</p>
                                 <h5 class="font-weight-bolder mb-0">{{ $totalQuotingRequests }}</h5>
                             </div>
                         </div>
@@ -85,14 +82,13 @@
             </div>
         </div>
 
-        <!-- Card 5: Requests Quoted -->
         <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
             <div class="card">
                 <div class="card-body p-3">
                     <div class="row">
                         <div class="col-8">
                             <div class="numbers">
-                                <p class="text-sm mb-0 text-capitalize font-weight-bold">Requests Quoted</p>
+                                <p class="text-sm mb-0 text-capitalize font-weight-bold">{{ __('pages.requests_quoted') }}</p>
                                 <h5 class="font-weight-bolder mb-0">{{ $totalQuotedRequests }}</h5>
                             </div>
                         </div>
@@ -106,14 +102,13 @@
             </div>
         </div>
 
-        <!-- Card 6: Orders Awaiting Payment -->
         <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
             <div class="card">
                 <div class="card-body p-3">
                     <div class="row">
                         <div class="col-8">
                             <div class="numbers">
-                                <p class="text-sm mb-0 text-capitalize font-weight-bold">Orders Awaiting Payment</p>
+                                <p class="text-sm mb-0 text-capitalize font-weight-bold">{{ __('pages.orders_awaiting_payment') }}</p>
                                 <h5 class="font-weight-bolder mb-0">{{ $totalOrdersAwaitingPayment }}</h5>
                             </div>
                         </div>
@@ -127,14 +122,13 @@
             </div>
         </div>
 
-        <!-- Card 7: Orders Paid -->
         <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
             <div class="card">
                 <div class="card-body p-3">
                     <div class="row">
                         <div class="col-8">
                             <div class="numbers">
-                                <p class="text-sm mb-0 text-capitalize font-weight-bold">Orders Paid</p>
+                                <p class="text-sm mb-0 text-capitalize font-weight-bold">{{ __('pages.orders_paid') }}</p>
                                 <h5 class="font-weight-bolder mb-0">{{ $totalOrdersPaid }}</h5>
                             </div>
                         </div>
@@ -148,14 +142,13 @@
             </div>
         </div>
 
-        <!-- Card 8: Orders Awaiting Shipping -->
         <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
             <div class="card">
                 <div class="card-body p-3">
                     <div class="row">
                         <div class="col-8">
                             <div class="numbers">
-                                <p class="text-sm mb-0 text-capitalize font-weight-bold">Orders Awaiting Shipping</p>
+                                <p class="text-sm mb-0 text-capitalize font-weight-bold">{{ __('pages.orders_awaiting_shipping') }}</p>
                                 <h5 class="font-weight-bolder mb-0">{{ $totalOrdersAwaitingShipping }}</h5>
                             </div>
                         </div>
@@ -169,14 +162,13 @@
             </div>
         </div>
 
-        <!-- Card 9: Orders In Transit -->
         <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
             <div class="card">
                 <div class="card-body p-3">
                     <div class="row">
                         <div class="col-8">
                             <div class="numbers">
-                                <p class="text-sm mb-0 text-capitalize font-weight-bold">Orders In Transit</p>
+                                <p class="text-sm mb-0 text-capitalize font-weight-bold">{{ __('pages.orders_in_transit') }}</p>
                                 <h5 class="font-weight-bolder mb-0">{{ $totalOrdersShipped }}</h5>
                             </div>
                         </div>
@@ -190,14 +182,13 @@
             </div>
         </div>
 
-        <!-- Card 10: Orders Delivered -->
         <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
             <div class="card">
                 <div class="card-body p-3">
                     <div class="row">
                         <div class="col-8">
                             <div class="numbers">
-                                <p class="text-sm mb-0 text-capitalize font-weight-bold">Orders Delivered</p>
+                                <p class="text-sm mb-0 text-capitalize font-weight-bold">{{ __('pages.orders_delivered') }}</p>
                                 <h5 class="font-weight-bolder mb-0">{{ $totalOrdersDelivered }}</h5>
                             </div>
                         </div>
@@ -211,14 +202,13 @@
             </div>
         </div>
 
-        <!-- Card 11: Amount Paid -->
         <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
             <div class="card">
                 <div class="card-body p-3">
                     <div class="row">
                         <div class="col-8">
                             <div class="numbers">
-                                <p class="text-sm mb-0 text-capitalize font-weight-bold">Amount Paid</p>
+                                <p class="text-sm mb-0 text-capitalize font-weight-bold">{{ __('pages.amount_paid') }}</p>
                                 <h5 class="font-weight-bolder mb-0">${{ number_format($totalAmountPaid, 2) }}</h5>
                             </div>
                         </div>
@@ -233,17 +223,16 @@
         </div>
     </div>
 
-    <!-- Sourcing and Destination Countries -->
     <div class="row g-4 mt-4">
         <div class="col-lg-6 col-md-12">
             <div class="card">
-                <div class="card-header bg-gradient-primary text-white text-center">Sourcing Countries</div>
+                <div class="card-header bg-gradient-primary text-white text-center">{{ __('pages.sourcing_countries') }}</div>
                 <div class="card-body">
                     <ul class="list-group">
                         @forelse($sourcingCountriesList as $country)
                             <li class="list-group-item">{{ $country->country_name }}</li>
                         @empty
-                            <li class="list-group-item">No sourcing countries managed</li>
+                            <li class="list-group-item">{{ __('pages.no_sourcing_countries') }}</li>
                         @endforelse
                     </ul>
                 </div>
@@ -252,13 +241,13 @@
 
         <div class="col-lg-6 col-md-12">
             <div class="card">
-                <div class="card-header bg-gradient-primary text-white text-center">Destination Countries</div>
+                <div class="card-header bg-gradient-primary text-white text-center">{{ __('pages.destination_countries') }}</div>
                 <div class="card-body">
                     <ul class="list-group">
                         @forelse($destinationCountriesList as $country)
                             <li class="list-group-item">{{ $country->country_name }}</li>
                         @empty
-                            <li class="list-group-item">No destination countries managed</li>
+                            <li class="list-group-item">{{ __('pages.no_destination_countries') }}</li>
                         @endforelse
                     </ul>
                 </div>
@@ -266,24 +255,22 @@
         </div>
     </div>
 
-
-    <!-- Notifications Section -->
     <div class="row mt-4 d-none">
     <div class="col-12">
         <div class="card">
         <div class="card-header pb-3">
-            <h5 class="mb-0 text-center">Notifications</h5>
+            <h5 class="mb-0 text-center">{{ __('pages.notifications') }}</h5>
         </div>
         <div class="card-body px-0 pt-0 pb-2">
             <div class="table-responsive p-3">
             <table class="table align-items-center table-hover">
                 <thead class="bg-gradient-primary text-white">
                 <tr>
-                    <th class="text-center text-uppercase text-xs font-weight-bold opacity-9">Date</th>
-                    <th class="text-center text-uppercase text-xs font-weight-bold opacity-9">Subject</th>
-                    <th class="text-center text-uppercase text-xs font-weight-bold opacity-9">Message</th>
-                    <th class="text-center text-uppercase text-xs font-weight-bold opacity-9">Link</th>
-                    <th class="text-center text-uppercase text-xs font-weight-bold opacity-9">Actions</th>
+                    <th class="text-center text-uppercase text-xs font-weight-bold opacity-9">{{ __('pages.date') }}</th>
+                    <th class="text-center text-uppercase text-xs font-weight-bold opacity-9">{{ __('pages.subject') }}</th>
+                    <th class="text-center text-uppercase text-xs font-weight-bold opacity-9">{{ __('pages.message_col') }}</th>
+                    <th class="text-center text-uppercase text-xs font-weight-bold opacity-9">{{ __('pages.link_label') }}</th>
+                    <th class="text-center text-uppercase text-xs font-weight-bold opacity-9">{{ __('pages.actions') }}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -299,20 +286,20 @@
                         <p class="text-sm mb-0">{{ $notification->data['message'] }}</p>
                     </td>
                     <td class="text-center" style="border: 1px solid #d3d3d3">
-                        <a href="{{ $notification->data['link'] }}" class="badge btn bg-gradient-dark">View</a>
+                        <a href="{{ $notification->data['link'] }}" class="badge btn bg-gradient-dark">{{ __('pages.view') }}</a>
                     </td>
                     <td class="text-center" style="border: 1px solid #d3d3d3">
                         <form action="{{ route('notifications.delete', $notification->id) }}" method="POST" style="display: inline;">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-sm btn-danger btn-rounded">Delete</button>
+                        <button type="submit" class="btn btn-sm btn-danger btn-rounded">{{ __('pages.delete') }}</button>
                         </form>
                     </td>
                     </tr>
                 @empty
                     <tr>
                     <td colspan="5" class="text-center">
-                        <p class="text-sm font-weight-bold mb-0">No notifications available.</p>
+                        <p class="text-sm font-weight-bold mb-0">{{ __('pages.no_notifications') }}</p>
                     </td>
                     </tr>
                 @endforelse

@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    'sms' => [
+        'url'      => env('SMS_API_URL', 'https://smspro.smartsmsgroup.com/api/api_http.php'),
+        'username' => env('SMS_USERNAME'),
+        'password' => env('SMS_PASSWORD'),
+        'sender'   => env('SMS_SENDER'),
+    ],
+
 ];

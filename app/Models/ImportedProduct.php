@@ -17,7 +17,8 @@ class ImportedProduct extends Model
 
     
     protected $fillable = [
-        'requestID', 'productName', 'qte', 'productCategory', 'unitPrice', 'totalPrice','weight', 'productURL', 'productSpecification' , 'agentNote' ,'statusProduct', 'carrier','trackingNumber'
+        'requestID', 'productName', 'qte', 'productCategory', 'unitPrice', 'totalPrice', 'weight',
+        'productURL', 'productImage', 'productSpecification', 'agentNote', 'statusProduct', 'carrier', 'trackingNumber'
     ];
 
     public function ordersrequests()

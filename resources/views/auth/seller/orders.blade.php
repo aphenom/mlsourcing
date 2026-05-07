@@ -6,35 +6,34 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header pb-0">
-                    <h6>Orders</h6>
-                    <!-- Add filters here -->
+                    <h6>{{ __('pages.orders') }}</h6>
                     <div class="row justify-content-center align-items-center">
                         <div class="col-md-10">
                             <form id="filter-form" class="row align-items-center">
                                 <div class="form-group col-md-2">
-                                    <label for="date">Date:</label>
+                                    <label for="date">{{ __('pages.date') }}:</label>
                                     <input type="date" class="form-control" id="date" name="date">
                                 </div>
                                 <div class="form-group col-md-2">
-                                    <label for="country_from">Country From:</label>
+                                    <label for="country_from">{{ __('pages.country_from') }}:</label>
                                     <input type="text" class="form-control" id="country_from" name="country_from">
                                 </div>
                                 <div class="form-group col-md-2">
-                                    <label for="country_to">Country To:</label>
+                                    <label for="country_to">{{ __('pages.country_to') }}:</label>
                                     <input type="text" class="form-control" id="country_to" name="country_to">
                                 </div>
                                 <div class="form-group col-md-2">
-                                    <label for="status_product">Status:</label>
+                                    <label for="status_product">{{ __('pages.status') }}:</label>
                                     <select class="form-control" id="status_product" name="status_product">
-                                        <option value="">All</option>
-                                        <option value="preparing">Preparing</option>
-                                        <option value="in transit">In Transit</option>
-                                        <option value="shipped">Shipped</option>
-                                        <option value="delivered">Delivered</option>
+                                        <option value="">{{ __('pages.all') }}</option>
+                                        <option value="preparing">{{ __('pages.status_preparing') }}</option>
+                                        <option value="in transit">{{ __('pages.status_in_transit') }}</option>
+                                        <option value="shipped">{{ __('pages.status_shipped') }}</option>
+                                        <option value="delivered">{{ __('pages.status_delivered') }}</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-3">
-                                    <button type="submit" class="btn btn-primary w-100">Filter</button>
+                                    <button type="submit" class="btn btn-primary w-100">{{ __('pages.filter') }}</button>
                                 </div>
                             </form>
                         </div>
@@ -49,37 +48,35 @@
                         <table id="example" class="table table-bordered table-striped table-hover" style="width:100%">
                             <thead class="thead-light">
                                 <tr>
-                                    <th>Requested At</th>
-                                    <th>Request NO</th>
-                                    <th>Product Name</th>
-                                    <th>Qte</th>
-                                    <th>Total Price</th>
-                                    <th>View Product</th>
-                                    <th>Tracking Number</th>
-                                    <th>Carrier</th>
-                                    <th>Status Product</th>
-                                    <th>Country From</th>
-                                    <th>Country To</th>
-                                    <th>Shipping Method</th>
+                                    <th>{{ __('pages.requested_at') }}</th>
+                                    <th>{{ __('pages.request_no') }}</th>
+                                    <th>{{ __('pages.product_name_col') }}</th>
+                                    <th>{{ __('pages.qte') }}</th>
+                                    <th>{{ __('pages.total_price') }}</th>
+                                    <th>{{ __('pages.view_product') }}</th>
+                                    <th>{{ __('pages.tracking_number_col') }}</th>
+                                    <th>{{ __('pages.carrier') }}</th>
+                                    <th>{{ __('pages.status_product_col') }}</th>
+                                    <th>{{ __('pages.country_from') }}</th>
+                                    <th>{{ __('pages.country_to') }}</th>
+                                    <th>{{ __('pages.shipping_method_col') }}</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <!-- Data will be populated by DataTables -->
-                            </tbody>
+                            <tbody></tbody>
                             <tfoot class="thead-light">
                                 <tr>
-                                    <th>Requested At</th>
-                                    <th>Request NO</th>
-                                    <th>Product Name</th>
-                                    <th>Qte</th>
-                                    <th>Total Price</th>
-                                    <th>View Product</th>
-                                    <th>Tracking Number</th>
-                                    <th>Carrier</th>
-                                    <th>Status Product</th>
-                                    <th>Country From</th>
-                                    <th>Country To</th>
-                                    <th>Shipping Method</th>
+                                    <th>{{ __('pages.requested_at') }}</th>
+                                    <th>{{ __('pages.request_no') }}</th>
+                                    <th>{{ __('pages.product_name_col') }}</th>
+                                    <th>{{ __('pages.qte') }}</th>
+                                    <th>{{ __('pages.total_price') }}</th>
+                                    <th>{{ __('pages.view_product') }}</th>
+                                    <th>{{ __('pages.tracking_number_col') }}</th>
+                                    <th>{{ __('pages.carrier') }}</th>
+                                    <th>{{ __('pages.status_product_col') }}</th>
+                                    <th>{{ __('pages.country_from') }}</th>
+                                    <th>{{ __('pages.country_to') }}</th>
+                                    <th>{{ __('pages.shipping_method_col') }}</th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -121,10 +118,15 @@
                 { data: 'quantity', name: 'quantity' },
                 { data: 'total_price', name: 'total_price' },
                 {
-                    data: 'view_product',
-                    name: 'view_product',
+                    data: 'product_url',
+                    name: 'product_url',
                     render: function(data, type, row) {
-                        return `<a class="badge btn bg-gradient-dark" href="${data}" target="_blank">Product Link</a>`;
+                        if (row.product_url) {
+                            return `<a class="badge btn bg-gradient-dark" href="${row.product_url}" target="_blank">{{ __('pages.view_product') }}</a>`;
+                        } else if (row.product_image) {
+                            return `<a href="${row.product_image}" target="_blank"><img src="${row.product_image}" style="max-height:48px;border-radius:4px;border:1px solid #dee2e6;"></a>`;
+                        }
+                        return '-';
                     }
                 },
                 { data: 'tracking_number', name: 'tracking_number' },

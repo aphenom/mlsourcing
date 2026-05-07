@@ -46,5 +46,10 @@ return [
     'menu_orders' => 'Orders',
     'menu_profile' => 'Profile',
     'menu_logout' => 'Logout',
+    'dashboard_title' => 'Dashboard',
+    'account_pages' => 'Account pages',
+    'support' => 'Support',
+    'faqs' => 'FAQs',
+    'configuration' => 'Configuration',
 
 ];

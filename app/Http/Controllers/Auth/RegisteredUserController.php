@@ -70,7 +70,8 @@ class RegisteredUserController extends Controller
         $user->phone_number = $request->phone_number;
         $user->email = $request->email;
         $user->address = $request->address;
-        $user->role = 3; // Default role value as 3
+        $user->role = 3;
+        $user->status = 'pending';
         $user->user_type = $request->user_type;
         $user->password = Hash::make($request->password);
 
@@ -116,8 +117,7 @@ class RegisteredUserController extends Controller
             session(['locale' => $locale]);
 
 
-            // Redirect to dashboard or other page
-            return redirect(route('dashboard'));
+            return redirect()->route('seller.pending');
         } catch (\Exception $e) {
             // Handle any errors and redirect back with the error message
             return back()->withErrors(['error' => 'There was an issue creating your account. Please try again.'])->withInput();

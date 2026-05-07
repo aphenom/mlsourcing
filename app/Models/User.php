@@ -31,6 +31,18 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->role === 3;
     }
 
+    public function isPending(){
+        return $this->status === 'pending';
+    }
+
+    public function isBlocked(){
+        return $this->status === 'blocked';
+    }
+
+    public function isActive(){
+        return $this->status === 'active';
+    }
+
     // Other model methods and properties
 
     public function sourcingCountries()

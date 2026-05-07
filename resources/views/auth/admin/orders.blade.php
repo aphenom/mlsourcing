@@ -6,53 +6,47 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header pb-0">
-                        <h6>Orders</h6>
-                        <!-- Add filters here -->
+                        <h6>{{ __('pages.orders') }}</h6>
                         <div class="row">
                             <div class="col-md-12">
                                 <form id="filter-form" class="row">
                                     <div class="form-group col-md-2">
-                                        <label for="dateFrom">Date From:</label>
+                                        <label for="dateFrom">{{ __('pages.date_from') }}:</label>
                                         <input type="date" class="form-control" id="dateFrom" name="date_from">
                                     </div>
                                     <div class="form-group col-md-2">
-                                        <label for="dateTo">Date To:</label>
+                                        <label for="dateTo">{{ __('pages.date_to') }}:</label>
                                         <input type="date" class="form-control" id="dateTo" name="date_to">
                                     </div>
                                     <div class="form-group col-md-4">
-                                        <label for="agentFilter">Agent:</label>
+                                        <label for="agentFilter">{{ __('pages.agent_col') }}:</label>
                                         <select class="form-control" id="agentFilter" name="agent_id">
-                                            <option value="">All</option>
+                                            <option value="">{{ __('pages.all') }}</option>
                                             @foreach ($agents as $agent)
-                                                <option value="{{ $agent->id }}">{{ $agent->name }}
-                                                    ({{ $agent->email }})</option>
+                                                <option value="{{ $agent->id }}">{{ $agent->name }} ({{ $agent->email }})</option>
                                             @endforeach
                                         </select>
                                     </div>
                                     <div class="form-group col-md-2">
-                                        <label for="sourcingCountryFilter">Sourcing Country:</label>
-                                        <select class="form-control" id="sourcingCountryFilter"
-                                            name="sourcing_country_name">
-                                            <option value="">All</option>
+                                        <label for="sourcingCountryFilter">{{ __('pages.sourcing_country_filter') }}:</label>
+                                        <select class="form-control" id="sourcingCountryFilter" name="sourcing_country_name">
+                                            <option value="">{{ __('pages.all') }}</option>
                                             @foreach ($sourcingCountries as $country)
-                                                <option value="{{ $country->country_name }}">{{ $country->country_name }}
-                                                </option>
+                                                <option value="{{ $country->country_name }}">{{ $country->country_name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                     <div class="form-group col-md-2">
-                                        <label for="destinationCountryFilter">Destination Country:</label>
-                                        <select class="form-control" id="destinationCountryFilter"
-                                            name="destination_country_name">
-                                            <option value="">All</option>
+                                        <label for="destinationCountryFilter">{{ __('pages.destination_country_filter') }}:</label>
+                                        <select class="form-control" id="destinationCountryFilter" name="destination_country_name">
+                                            <option value="">{{ __('pages.all') }}</option>
                                             @foreach ($destinationCountries as $country)
-                                                <option value="{{ $country->country_name }}">{{ $country->country_name }}
-                                                </option>
+                                                <option value="{{ $country->country_name }}">{{ $country->country_name }}</option>
                                             @endforeach
                                         </select>
-                                    </div>                                    
+                                    </div>
                                     <div class="form-group col-md-12">
-                                        <button type="submit" class="btn btn-primary" style="width:100%;">Filter</button>
+                                        <button type="submit" class="btn btn-primary" style="width:100%;">{{ __('pages.filter') }}</button>
                                     </div>
                                 </form>
                             </div>
@@ -64,41 +58,39 @@
                             <table id="example" class="table table-bordered table-striped table-hover" style="width:100%">
                                 <thead class="thead-light">
                                     <tr>
-                                        <th>Date</th>
-                                        <th>Agent</th>
-                                        <th>Request No</th>
-                                        <th>Product Name</th>
-                                        <th>Product Link</th>
-                                        <th>Sourcing Country</th>
-                                        <th>Destination Country</th>
-                                        <th>Quantity</th>
-                                        <th>Unit Price</th>
-                                        <th>Total Price</th>
-                                        <th>Weight</th>
-                                        <th>Tracking Number</th>
-                                        <th>Carrier</th>
-                                        <th>Status Product</th>
+                                        <th>{{ __('pages.date') }}</th>
+                                        <th>{{ __('pages.agent_col') }}</th>
+                                        <th>{{ __('pages.request_no') }}</th>
+                                        <th>{{ __('pages.product_name_col') }}</th>
+                                        <th>{{ __('pages.product_link') }}</th>
+                                        <th>{{ __('pages.sourcing_country_filter') }}</th>
+                                        <th>{{ __('pages.destination_country_filter') }}</th>
+                                        <th>{{ __('pages.quantity_col') }}</th>
+                                        <th>{{ __('pages.unit_price_col') }}</th>
+                                        <th>{{ __('pages.total_price') }}</th>
+                                        <th>{{ __('pages.weight_col') }}</th>
+                                        <th>{{ __('pages.tracking_number_col') }}</th>
+                                        <th>{{ __('pages.carrier') }}</th>
+                                        <th>{{ __('pages.status_product_col') }}</th>
                                     </tr>
                                 </thead>
-                                <tbody class="text-center">
-                                    <!-- Data will be populated by DataTables -->
-                                </tbody>
+                                <tbody class="text-center"></tbody>
                                 <tfoot class="thead-light">
                                     <tr>
-                                        <th>Date</th>
-                                        <th>Agent</th>
-                                        <th>Request No</th>
-                                        <th>Product Name</th>
-                                        <th>Product Link</th>
-                                        <th>Sourcing Country</th>
-                                        <th>Destination Country</th>
-                                        <th>Quantity</th>
-                                        <th>Unit Price</th>
-                                        <th>Total Price</th>
-                                        <th>Weight</th>
-                                        <th>Tracking Number</th>
-                                        <th>Carrier</th>
-                                        <th>Status Product</th>
+                                        <th>{{ __('pages.date') }}</th>
+                                        <th>{{ __('pages.agent_col') }}</th>
+                                        <th>{{ __('pages.request_no') }}</th>
+                                        <th>{{ __('pages.product_name_col') }}</th>
+                                        <th>{{ __('pages.product_link') }}</th>
+                                        <th>{{ __('pages.sourcing_country_filter') }}</th>
+                                        <th>{{ __('pages.destination_country_filter') }}</th>
+                                        <th>{{ __('pages.quantity_col') }}</th>
+                                        <th>{{ __('pages.unit_price_col') }}</th>
+                                        <th>{{ __('pages.total_price') }}</th>
+                                        <th>{{ __('pages.weight_col') }}</th>
+                                        <th>{{ __('pages.tracking_number_col') }}</th>
+                                        <th>{{ __('pages.carrier') }}</th>
+                                        <th>{{ __('pages.status_product_col') }}</th>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -139,7 +131,12 @@
                             data: 'product_url',
                             name: 'product_url',
                             render: function(data, type, row) {
-                                return `<a class="badge btn bg-gradient-dark" href="${data}">View Product</a>`;
+                                if (row.product_url) {
+                                    return `<a class="badge btn bg-gradient-dark" href="${row.product_url}" target="_blank">{{ __('pages.view_product') }}</a>`;
+                                } else if (row.product_image) {
+                                    return `<a href="${row.product_image}" target="_blank"><img src="${row.product_image}" style="max-height:48px;border-radius:4px;border:1px solid #dee2e6;"></a>`;
+                                }
+                                return '-';
                             }
                         },
                         {data: 'sourcing_country',name: 'sourcing_country'},

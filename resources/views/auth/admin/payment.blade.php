@@ -6,29 +6,29 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header pb-0">
-                    <h6>Payment History</h6>
+                    <h6>{{ __('pages.payment_history') }}</h6>
                     <!-- Add filters here -->
-                    <form id="filter-form" class="row">        
+                    <form id="filter-form" class="row">
                         <div class="form-group col-md-4">
-                            <label for="statusFilter">Status:</label>
+                            <label for="statusFilter">{{ __('pages.status') }}:</label>
                             <select class="form-control" id="status" name="status">
-                                <option value="">All</option>
-                                <option value="pending">Pending</option>
-                                <option value="approved">Approved</option>
-                                <option value="disapproved">Disapproved</option>
+                                <option value="">{{ __('pages.all') }}</option>
+                                <option value="pending">{{ __('pages.pending') }}</option>
+                                <option value="approved">{{ __('pages.approved') }}</option>
+                                <option value="disapproved">{{ __('pages.disapproved') }}</option>
                             </select>
                         </div>
                         <div class="form-group col-md-4">
-                            <label for="sellerFilter">Sellers:</label>
+                            <label for="sellerFilter">{{ __('pages.sellers_filter') }}:</label>
                             <select class="form-control" id="sellerID" name="sellerID">
-                                <option value="">All</option>
+                                <option value="">{{ __('pages.all') }}</option>
                                 @foreach($sellers as $seller)
                                 <option value="{{$seller->id}}">ID:{{$seller->id}} - {{$seller->name}}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="form-group col-md-4">
-                            <button type="submit" class="btn btn-primary" style="width:100%;">Filter</button>
+                            <button type="submit" class="btn btn-primary" style="width:100%;">{{ __('pages.filter') }}</button>
                         </div>
                     </form>
                 </div>
@@ -38,17 +38,17 @@
                         <table id="example" class="table table-bordered table-striped table-hover" style="width:100%">
                             <thead class="thead-light">
                                 <tr>
-                                    <th>Payment ID</th>
-                                    <th>Created At</th>
-                                    <th>Request No</th>
-                                    <th>Seller ID</th>
-                                    <th>Seller Name</th>
-                                    <th>Amount</th>
-                                    <th>Payment Option</th>
-                                    <th>Screenshot</th>
-                                    <th>Status</th>
-                                    <th>Approve</th>
-                                    <th>Disapprove</th>
+                                    <th>{{ __('pages.payment_id') }}</th>
+                                    <th>{{ __('pages.created_at_col') }}</th>
+                                    <th>{{ __('pages.request_no') }}</th>
+                                    <th>{{ __('pages.seller_id') }}</th>
+                                    <th>{{ __('pages.seller_name') }}</th>
+                                    <th>{{ __('pages.amount') }}</th>
+                                    <th>{{ __('pages.payment_option_col') }}</th>
+                                    <th>{{ __('pages.screenshot_col') }}</th>
+                                    <th>{{ __('pages.status') }}</th>
+                                    <th>{{ __('pages.approve') }}</th>
+                                    <th>{{ __('pages.disapprove') }}</th>
                                 </tr>
                             </thead>
                             <tbody class="text-center">
@@ -56,17 +56,17 @@
                             </tbody>
                             <tfoot class="thead-light">
                                 <tr>
-                                    <th>Payment ID</th>
-                                    <th>Created At</th>
-                                    <th>Request No</th>
-                                    <th>Seller ID</th>
-                                    <th>Seller Name</th>
-                                    <th>Amount</th>
-                                    <th>Payment Option</th>
-                                    <th>Screenshot</th>
-                                    <th>Status</th>
-                                    <th>Approve</th>
-                                    <th>Disapprove</th>
+                                    <th>{{ __('pages.payment_id') }}</th>
+                                    <th>{{ __('pages.created_at_col') }}</th>
+                                    <th>{{ __('pages.request_no') }}</th>
+                                    <th>{{ __('pages.seller_id') }}</th>
+                                    <th>{{ __('pages.seller_name') }}</th>
+                                    <th>{{ __('pages.amount') }}</th>
+                                    <th>{{ __('pages.payment_option_col') }}</th>
+                                    <th>{{ __('pages.screenshot_col') }}</th>
+                                    <th>{{ __('pages.status') }}</th>
+                                    <th>{{ __('pages.approve') }}</th>
+                                    <th>{{ __('pages.disapprove') }}</th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -134,7 +134,7 @@
                     render: function(data, type, row) {
                         // Only display the Approve button if data is not '-'
                         if (data !== '-') {
-                            return `<a type="button" class="btn btn-success" href="${data}">Approve</a>`;
+                            return `<a type="button" class="btn btn-success" href="${data}">{{ __('pages.approve') }}</a>`;
                         }
                         return ''; // Return an empty string if data is '-'
                 }},
@@ -145,7 +145,7 @@
                     render: function(data, type, row) {
                         // Only display the Disapprove button if data is not '-'
                         if (data !== '-') {
-                            return `<a type="button" class="btn btn-danger" href="${data}">Disapprove</a>`;
+                            return `<a type="button" class="btn btn-danger" href="${data}">{{ __('pages.disapprove') }}</a>`;
                         }
                         return ''; // Return an empty string if data is '-'
                 }}
@@ -176,7 +176,7 @@
                 styledMode: true
             },
             title: {
-                text: 'Payment Status Distribution'
+                text: '{{ __("pages.chart_payment_dist") }}'
             },
             plotOptions: {
                 pie: {

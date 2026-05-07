@@ -47,5 +47,9 @@ return [
     'menu_profile' => 'Profil',
     'menu_logout' => 'Déconnexion',
     'dashboard_title' => 'Tableau de bord',
+    'account_pages' => 'Mon compte',
+    'support' => 'Assistance',
+    'faqs' => 'FAQs',
+    'configuration' => 'Configuration',
 
 ];

@@ -6,28 +6,28 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header pb-0">
-                    <h6>Orders</h6>
+                    <h6>{{ __('pages.orders') }}</h6>
                     <!-- Add filters here -->
                     <div class="row justify-content-center align-items-center">
                         <div class="col-md-12">
                             <form id="filter-form" class="row align-items-center">
                                 <div class="form-group col-md-4">
-                                    <label for="date">Date:</label>
+                                    <label for="date">{{ __('pages.date') }}:</label>
                                     <input type="date" class="form-control" id="date" name="date">
                                 </div>
                                 <div class="form-group col-md-4">
-                                    <label for="status">Status:</label>
+                                    <label for="status">{{ __('pages.status') }}:</label>
                                     <select class="form-control" id="status" name="status">
-                                        <option value="">All</option>
-                                        <option value="-">Not Yet</option>
-                                        <option value="preparing">Preparing</option>
-                                        <option value="in transit">In Transit</option>
-                                        <option value="shipped">Shipped</option>
-                                        <option value="delivered">Delivered</option>
+                                        <option value="">{{ __('pages.all') }}</option>
+                                        <option value="-">{{ __('pages.not_yet') }}</option>
+                                        <option value="preparing">{{ __('pages.preparing') }}</option>
+                                        <option value="in transit">{{ __('pages.in_transit') }}</option>
+                                        <option value="shipped">{{ __('pages.shipped') }}</option>
+                                        <option value="delivered">{{ __('pages.delivered') }}</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-4">
-                                    <button type="submit" class="btn btn-primary w-100">Filter</button>
+                                    <button type="submit" class="btn btn-primary w-100">{{ __('pages.filter') }}</button>
                                 </div>
                             </form>
                         </div>
@@ -42,18 +42,18 @@
                         <table id="example" class="table table-bordered table-striped table-hover" style="width:100%">
                             <thead class="thead-light">
                                 <tr>
-                                    <th>Date</th>
-                                    <th>Request No</th>
-                                    <th>Product Name</th>
-                                    <th>Product Link</th>
-                                    <th>Quantity</th>
-                                    <th>Unit Price</th>
-                                    <th>Total Price</th>
-                                    <th>Weight</th>
-                                    <th>Tracking Number</th>
-                                    <th>Carrier</th>
-                                    <th>Status Product</th>
-                                    <th>Dispatch</th>
+                                    <th>{{ __('pages.date') }}</th>
+                                    <th>{{ __('pages.request_no') }}</th>
+                                    <th>{{ __('pages.product_name_col') }}</th>
+                                    <th>{{ __('pages.product_link') }}</th>
+                                    <th>{{ __('pages.quantity_col') }}</th>
+                                    <th>{{ __('pages.unit_price_col') }}</th>
+                                    <th>{{ __('pages.total_price') }}</th>
+                                    <th>{{ __('pages.weight_col') }}</th>
+                                    <th>{{ __('pages.tracking_number_col') }}</th>
+                                    <th>{{ __('pages.carrier') }}</th>
+                                    <th>{{ __('pages.status_product_col') }}</th>
+                                    <th>{{ __('pages.dispatch') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -61,18 +61,18 @@
                             </tbody>
                             <tfoot class="thead-light">
                                 <tr>
-                                    <th>Date</th>
-                                    <th>Request No</th>
-                                    <th>Product Name</th>
-                                    <th>Product Link</th>
-                                    <th>Quantity</th>
-                                    <th>Unit Price</th>
-                                    <th>Total Price</th>
-                                    <th>Weight</th>
-                                    <th>Tracking Number</th>
-                                    <th>Carrier</th>
-                                    <th>Status Product</th>
-                                    <th>Dispatch</th>
+                                    <th>{{ __('pages.date') }}</th>
+                                    <th>{{ __('pages.request_no') }}</th>
+                                    <th>{{ __('pages.product_name_col') }}</th>
+                                    <th>{{ __('pages.product_link') }}</th>
+                                    <th>{{ __('pages.quantity_col') }}</th>
+                                    <th>{{ __('pages.unit_price_col') }}</th>
+                                    <th>{{ __('pages.total_price') }}</th>
+                                    <th>{{ __('pages.weight_col') }}</th>
+                                    <th>{{ __('pages.tracking_number_col') }}</th>
+                                    <th>{{ __('pages.carrier') }}</th>
+                                    <th>{{ __('pages.status_product_col') }}</th>
+                                    <th>{{ __('pages.dispatch') }}</th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -108,11 +108,16 @@
                 { data: 'created_at', name: 'created_at' },
                 { data: 'request_no', name: 'request_no' },
                 { data: 'product_name', name: 'product_name' },
-                { 
-                    data: 'product_url', 
-                    name: 'product_url', 
+                {
+                    data: 'product_url',
+                    name: 'product_url',
                     render: function(data, type, row) {
-                        return `<a href="${data}" target="_blank">View Product</a>`;
+                        if (row.product_url) {
+                            return `<a class="badge btn bg-gradient-dark" href="${row.product_url}" target="_blank">{{ __('pages.view_product') }}</a>`;
+                        } else if (row.product_image) {
+                            return `<a href="${row.product_image}" target="_blank"><img src="${row.product_image}" style="max-height:48px;border-radius:4px;border:1px solid #dee2e6;"></a>`;
+                        }
+                        return '-';
                     }
                 },
                 { data: 'qte', name: 'qte' },

@@ -175,47 +175,82 @@
             </li>
  
             <!-- CLOCHE NOTIFICATIONS -->
+            @php
+                $unreadNotifs = Auth::user()->unreadNotifications()->take(5)->get();
+                $unreadCount  = Auth::user()->unreadNotifications()->count();
+            @endphp
             <li class="nav-item dropdown pe-2">
               <a href="#"
                 class="nav-link text-body p-0 position-relative"
-                id="dropdownMenuButton"
+                id="notifDropdown"
                 data-bs-toggle="dropdown"
                 aria-expanded="false">
 
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16">
                   <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/>
                 </svg>
 
-                <!-- Badge 
-                <span class="position-absolute top-0 start-100 translate-middle
-                            badge rounded-pill bg-danger">
-                  3
-                </span>-->
+                @if($unreadCount > 0)
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                      style="font-size:9px; padding:3px 5px;">
+                  {{ $unreadCount > 99 ? '99+' : $unreadCount }}
+                </span>
+                @endif
               </a>
 
-              <!-- MENU DEROULANT -->
-              <ul class="dropdown-menu dropdown-menu-end px-2 py-3"
-                  aria-labelledby="dropdownMenuButton">
+              <ul class="dropdown-menu dropdown-menu-end py-0 overflow-hidden"
+                  style="min-width:340px; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,.12);"
+                  aria-labelledby="notifDropdown">
 
-                <li class="mb-2">
-                  <a class="dropdown-item border-radius-md" href="#">
-                    <div class="d-flex py-1">
-                      <!--<img src="assets/img/team-2.jpg"
-                          class="avatar avatar-sm me-3">
+                {{-- Header --}}
+                <li class="px-3 py-2 d-flex justify-content-between align-items-center border-bottom bg-light">
+                  <span class="text-sm font-weight-bold">{{ __('pages.notifications') }}</span>
+                  @if($unreadCount > 0)
+                  <form method="POST" action="{{ route('notifications.markAllRead') }}" class="mb-0">
+                    @csrf
+                    <button type="submit" class="btn btn-link p-0 text-xs text-muted" style="font-size:11px;">
+                      {{ __('pages.mark_all_read') }}
+                    </button>
+                  </form>
+                  @endif
+                </li>
+
+                {{-- Notification items --}}
+                @forelse($unreadNotifs as $notif)
+                <li>
+                  <a class="dropdown-item px-3 py-2 border-bottom"
+                     href="{{ route('notifications.markRead', $notif->id) }}"
+                     style="white-space:normal;">
+                    <div class="d-flex align-items-start gap-2">
+                      <span class="mt-1 flex-shrink-0"
+                            style="width:8px;height:8px;border-radius:50%;background:#00A752;display:inline-block;"></span>
                       <div>
-                        <h6 class="text-sm mb-0">
-                          <strong>Nouveau message</strong> de Laur
-                        </h6>
-                        <p class="text-xs text-secondary mb-0">
-                          <i class="fa fa-clock me-1"></i> 13 min
-                        </p>
-                      </div>-->
+                        <div class="text-sm font-weight-bold mb-0">{{ $notif->data['subject'] ?? '' }}</div>
+                        <div class="text-xs text-secondary mb-1" style="line-height:1.3;">
+                          {{ \Illuminate\Support\Str::limit($notif->data['message'] ?? '', 70) }}
+                        </div>
+                        <div class="text-xs text-muted">
+                          <i class="fa fa-clock me-1"></i>{{ $notif->created_at->diffForHumans() }}
+                        </div>
+                      </div>
                     </div>
+                  </a>
+                </li>
+                @empty
+                <li class="text-center py-4 text-muted text-sm">
+                  <i class="fa fa-bell-slash me-1"></i>{{ __('pages.no_new_notifications') }}
+                </li>
+                @endforelse
+
+                {{-- Footer --}}
+                <li class="text-center py-2 bg-light border-top">
+                  <a href="{{ route('notifications.index') }}" class="text-sm font-weight-bold" style="color:#00A752;">
+                    {{ __('pages.view_all_notifications') }}
                   </a>
                 </li>
               </ul>
             </li>
-                   
+
             <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
               <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
                 <div class="sidenav-toggler-inner">
@@ -224,80 +259,6 @@
                   <i class="sidenav-toggler-line"></i>
                 </div>
               </a>
-            </li>
-            
-            <li class="nav-item dropdown pe-2 d-flex align-items-center">
-              <a href="javascript:;" class="nav-link text-body p-0" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fa fa-bell cursor-pointer"></i>
-              </a>
-              <ul class="dropdown-menu  dropdown-menu-end  px-2 py-3 me-sm-n4" aria-labelledby="dropdownMenuButton">
-                <li class="mb-2">
-                  <a class="dropdown-item border-radius-md" href="javascript:;">
-                    <div class="d-flex py-1">
-                      <div class="my-auto">
-                        <img src="{{ asset('adminTheme/assets/img/team-2.jpg') }}" class="avatar avatar-sm  me-3 ">
-                      </div>
-                      <div class="d-flex flex-column justify-content-center">
-                        <h6 class="text-sm font-weight-normal mb-1">
-                          <span class="font-weight-bold">New message</span> from Laur
-                        </h6>
-                        <p class="text-xs text-secondary mb-0 ">
-                          <i class="fa fa-clock me-1"></i>
-                          13 minutes ago
-                        </p>
-                      </div>
-                    </div>
-                  </a>
-                </li>
-                <li class="mb-2">
-                  <a class="dropdown-item border-radius-md" href="javascript:;">
-                    <div class="d-flex py-1">
-                      <div class="my-auto">
-                        <img src="{{ asset('adminTheme/assets/img/small-logos/logo-spotify.svg') }}" class="avatar avatar-sm bg-gradient-dark  me-3 ">
-                      </div>
-                      <div class="d-flex flex-column justify-content-center">
-                        <h6 class="text-sm font-weight-normal mb-1">
-                          <span class="font-weight-bold">New album</span> by Travis Scott
-                        </h6>
-                        <p class="text-xs text-secondary mb-0 ">
-                          <i class="fa fa-clock me-1"></i>
-                          1 day
-                        </p>
-                      </div>
-                    </div>
-                  </a>
-                </li>
-                <li>
-                  <a class="dropdown-item border-radius-md" href="javascript:;">
-                    <div class="d-flex py-1">
-                      <div class="avatar avatar-sm bg-gradient-secondary  me-3  my-auto">
-                        <svg width="12px" height="12px" viewBox="0 0 43 36" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                          <title>credit-card</title>
-                          <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                            <g transform="translate(-2169.000000, -745.000000)" fill="#FFFFFF" fill-rule="nonzero">
-                              <g transform="translate(1716.000000, 291.000000)">
-                                <g transform="translate(453.000000, 454.000000)">
-                                  <path class="color-background" d="M43,10.7482083 L43,3.58333333 C43,1.60354167 41.3964583,0 39.4166667,0 L3.58333333,0 C1.60354167,0 0,1.60354167 0,3.58333333 L0,10.7482083 L43,10.7482083 Z" opacity="0.593633743"></path>
-                                  <path class="color-background" d="M0,16.125 L0,32.25 C0,34.2297917 1.60354167,35.8333333 3.58333333,35.8333333 L39.4166667,35.8333333 C41.3964583,35.8333333 43,34.2297917 43,32.25 L43,16.125 L0,16.125 Z M19.7083333,26.875 L7.16666667,26.875 L7.16666667,23.2916667 L19.7083333,23.2916667 L19.7083333,26.875 Z M35.8333333,26.875 L28.6666667,26.875 L28.6666667,23.2916667 L35.8333333,23.2916667 L35.8333333,26.875 Z"></path>
-                                </g>
-                              </g>
-                            </g>
-                          </g>
-                        </svg>
-                      </div>
-                      <div class="d-flex flex-column justify-content-center">
-                        <h6 class="text-sm font-weight-normal mb-1">
-                          Payment successfully completed
-                        </h6>
-                        <p class="text-xs text-secondary mb-0 ">
-                          <i class="fa fa-clock me-1"></i>
-                          2 days
-                        </p>
-                      </div>
-                    </div>
-                  </a>
-                </li>
-              </ul>
             </li>
           </ul>
         </div>

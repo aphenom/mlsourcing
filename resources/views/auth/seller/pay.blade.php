@@ -8,18 +8,18 @@
         <div class="col-lg-12">
             <div class="card mb-4">
                 <div class="card-header pb-0">
-                    <h6>ATTENTION :</h6>
+                    <h6>{{ __('pages.attention') }}</h6>
                 </div>
                 <div class="card-body">
-                    <p>Insert Request Number in Reference when you try to make payment</p>
-                    <p><strong>Request Number:</strong> {{ $orderRequest->requestNO }}</p>
-                    <p><strong>Total Price:</strong> ${{ $orderRequest->importedproducts->first()->totalPrice }}</p>
+                    <p>{{ __('pages.insert_reference') }}</p>
+                    <p><strong>{{ __('pages.request_number') }}:</strong> {{ $orderRequest->requestNO }}</p>
+                    <p><strong>{{ __('pages.total_price') }}:</strong> ${{ $orderRequest->importedproducts->first()->totalPrice }}</p>
                 </div>
             </div>
 
             <div class="card mb-6">
                 <div class="card-header pb-0">
-                    <h6>Select Payment Method</h6>
+                    <h6>{{ __('pages.select_payment_method') }}</h6>
                 </div>
                 <div class="card-body">
                     @php
@@ -47,7 +47,7 @@
                         </div>
                     @elseif($paymentExists && !$paymentDisapproved)
                         <div class="alert alert-info">
-                            Your payment has already been processed and is either pending or approved.
+                            {{ __('pages.payment_already_processed') }}
                         </div>
                     @endif
                 </div>
@@ -55,7 +55,7 @@
             
             <div class="card mb-4 d-none" id="payment-info-card">
                 <div class="card-header pb-0">
-                    <h6>Payment Details</h6>
+                    <h6>{{ __('pages.payment_details') }}</h6>
                 </div>
                 <div class="card-body">
                     <div id="payment-info-content">
@@ -113,13 +113,13 @@
                         @csrf
                         <input type="hidden" name="payment_option_id" value="${data.id}">
                         <div class="mb-3">
-                            <label for="screenshot" class="form-label">Upload Payment Proof</label>
+                            <label for="screenshot" class="form-label">{{ __('pages.upload_payment_proof') }}</label>
                             <input type="file" name="screenshot" id="screenshot-${data.id}" class="form-control screenshot-input @error('screenshot') is-invalid @enderror" required>
                             @error('screenshot')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                        <button type="submit" class="btn btn-primary submit-button" disabled>Submit Payment</button>
+                        <button type="submit" class="btn btn-primary submit-button" disabled>{{ __('pages.submit_payment') }}</button>
                     </form>
                 `;
 

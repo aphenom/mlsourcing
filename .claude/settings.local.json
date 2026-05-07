@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(ls -Recurse \"c:\\\\wamp64\\\\www\\\\mlsourcing\\\\config\" | Where-Object {-not $_.PSIsContainer} | Select-Object -ExpandProperty Name)",
+      "PowerShell(ls -Recurse \"c:\\\\wamp64\\\\www\\\\mlsourcing\\\\database\" | Where-Object {-not $_.PSIsContainer} | Select-Object -ExpandProperty Name | Select-Object -First 20)",
+      "PowerShell(ls -Recurse \"c:\\\\wamp64\\\\www\\\\mlsourcing\\\\app\" -Depth 1 | Where-Object {$_.PSIsContainer})",
+      "Bash(Get-ChildItem -Path \"c:\\\\wamp64\\\\www\\\\mlsourcing\\\\resources\\\\lang\" -Recurse -Force)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(findstr -i \"seller\")",
+      "Bash(php artisan *)",
+      "Bash(Get-Content \"c:\\\\wamp64\\\\www\\\\mlsourcing\\\\app\\\\Http\\\\Controllers\\\\AdminController.php\")",
+      "Bash(Measure-Object -Line)"
+    ]
+  }
+}

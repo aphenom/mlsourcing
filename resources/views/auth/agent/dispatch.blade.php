@@ -33,26 +33,26 @@
 
                     <!-- Display product info -->
                     <div class="mb-4">
-                        <h4 class="font-weight-bold mb-3">Product Information</h4>
+                        <h4 class="font-weight-bold mb-3">{{ __('pages.product_information') }}</h4>
                         <div class="row">
                             <div class="col-md-2">
-                                <strong>Request No:</strong>
+                                <strong>{{ __('pages.request_no') }}:</strong>
                                 <p class="mb-0">{{ $orderRequest->requestNO }}</p>
                             </div>
                             <div class="col-md-2">
-                                <strong>Product Name:</strong>
+                                <strong>{{ __('pages.product_name_col') }}:</strong>
                                 <p class="mb-0">{{ $importedProduct->productName }}</p>
                             </div>
                             <div class="col-md-2">
-                                <strong>Quantity:</strong>
+                                <strong>{{ __('pages.quantity_col') }}:</strong>
                                 <p class="mb-0">{{ $importedProduct->qte }}</p>
                             </div>
                             <div class="col-md-2">
-                                <strong>Country From:</strong>
+                                <strong>{{ __('pages.country_from') }}:</strong>
                                 <p class="mb-0">{{ $orderRequest->countryFrom }}</p>
                             </div>
                             <div class="col-md-2">
-                                <strong>Country To:</strong>
+                                <strong>{{ __('pages.country_to') }}:</strong>
                                 <p class="mb-0">{{ $orderRequest->countryTo }}</p>
                             </div>
                         </div>
@@ -69,10 +69,10 @@
                             
                             <!-- Form on the right -->
                             <div class="col-md-7">
-                                <h4 class="font-weight-bold mb-3">Ship The Order</h4>
+                                <h4 class="font-weight-bold mb-3">{{ __('pages.ship_the_order') }}</h4>
 
                                 <div class="mb-3">
-                                    <label for="carrier" class="form-label">Carrier Name*</label>
+                                    <label for="carrier" class="form-label">{{ __('pages.carrier_name_input') }}</label>
                                     <input type="text" id="carrier" name="carrier" class="form-control" placeholder="Carrier name" value="{{ old('carrier', $importedProduct->carrier) }}" required>
                                     @error('carrier')
                                         <span class="text-danger">{{ $message }}</span>
@@ -80,7 +80,7 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="tracking_number" class="form-label">Tracking Number*</label>
+                                    <label for="tracking_number" class="form-label">{{ __('pages.tracking_number_input') }}</label>
                                     <input type="text" id="tracking_number" name="tracking_number" class="form-control" placeholder="Tracking number" value="{{ old('tracking_number', $importedProduct->trackingNumber) }}" required>
                                     @error('tracking_number')
                                         <span class="text-danger">{{ $message }}</span>
@@ -88,14 +88,14 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="shipping_status" class="form-label">Shipping Status*</label>
+                                    <label for="shipping_status" class="form-label">{{ __('pages.shipping_status') }}</label>
                                     <select id="shipping_status" name="shipping_status" class="form-select" required>
-                                        <option value="" disabled {{ old('shipping_status', $importedProduct->statusProduct) === null ? 'selected' : '' }}>Select Status</option>
-                                        <option value="-" {{ old('shipping_status', $importedProduct->statusProduct) == '-' ? 'selected' : '' }}>Not Yet</option>
-                                        <option value="preparing" {{ old('shipping_status', $importedProduct->statusProduct) == 'preparing' ? 'selected' : '' }}>Preparing</option>
-                                        <option value="shipped" {{ old('shipping_status', $importedProduct->statusProduct) == 'shipped' ? 'selected' : '' }}>Shipped</option>
-                                        <option value="in transit" {{ old('shipping_status', $importedProduct->statusProduct) == 'in transit' ? 'selected' : '' }}>In Transit</option>
-                                        <option value="delivered" {{ old('shipping_status', $importedProduct->statusProduct) == 'delivered' ? 'selected' : '' }}>Delivered</option>
+                                        <option value="" disabled {{ old('shipping_status', $importedProduct->statusProduct) === null ? 'selected' : '' }}>{{ __('pages.select_status') }}</option>
+                                        <option value="-" {{ old('shipping_status', $importedProduct->statusProduct) == '-' ? 'selected' : '' }}>{{ __('pages.not_yet') }}</option>
+                                        <option value="preparing" {{ old('shipping_status', $importedProduct->statusProduct) == 'preparing' ? 'selected' : '' }}>{{ __('pages.preparing') }}</option>
+                                        <option value="shipped" {{ old('shipping_status', $importedProduct->statusProduct) == 'shipped' ? 'selected' : '' }}>{{ __('pages.shipped') }}</option>
+                                        <option value="in transit" {{ old('shipping_status', $importedProduct->statusProduct) == 'in transit' ? 'selected' : '' }}>{{ __('pages.in_transit') }}</option>
+                                        <option value="delivered" {{ old('shipping_status', $importedProduct->statusProduct) == 'delivered' ? 'selected' : '' }}>{{ __('pages.delivered') }}</option>
                                     </select>
                                     @error('shipping_status')
                                         <span class="text-danger">{{ $message }}</span>
@@ -103,7 +103,7 @@
                                 </div>
 
                                 <div class="text-center">
-                                    <button type="submit" class="btn btn-primary">Mark As Shipped</button>
+                                    <button type="submit" class="btn btn-primary">{{ __('pages.mark_as_shipped') }}</button>
                                 </div>
                             </div>
                         </div>

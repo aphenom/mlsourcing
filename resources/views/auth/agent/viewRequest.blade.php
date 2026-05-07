@@ -13,7 +13,7 @@
             <div class="card mb-4">
                 <div class="card-body d-flex justify-content-between align-items-center">
                     <div>
-                        <h4 class="mb-1">Quotation #{{ $orderRequest->requestNO }}</h4>
+                        <h4 class="mb-1">{{ __('pages.quotation') }} #{{ $orderRequest->requestNO }}</h4>
                         <p class="mb-0 text-sm">{{ $orderRequest->created_at->format('F j, Y h:i A') }}</p>
                     </div>
                     <div>
@@ -67,16 +67,16 @@
         <div class="col-lg-8">
             <div class="card mb-4 font-14">
                 <div class="card-header pb-0">
-                    <h6>Request Details</h6>
+                    <h6>{{ __('pages.request_details') }}</h6>
                 </div>
                 <div class="card-body">
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <strong>Requested at:</strong>
+                            <strong>{{ __('pages.requested_at_label') }}</strong>
                             <p class="mb-0">{{ $orderRequest->created_at->format('F j, Y h:i A') }}</p>
                         </div>
                         <div class="col-md-4">
-                            <strong>Paid at:</strong>
+                            <strong>{{ __('pages.paid_at') }}</strong>
                             <p class="mb-0">
                                 @if($isPaid)
                                     {{ $payment->created_at->format('F j, Y h:i A') }}
@@ -86,7 +86,7 @@
                             </p>
                         </div>
                         <div class="col-md-4">
-                            <strong>Shipping Status:</strong>
+                            <strong>{{ __('pages.shipping_status') }}</strong>
                             <p class="mb-0">
                                 @if($product->statusProduct)
                                     {{ $product->statusProduct }}
@@ -98,7 +98,7 @@
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <strong>Carrier name:</strong>
+                            <strong>{{ __('pages.carrier_name') }}</strong>
                             <p class="mb-0">
                                 @if($product->carrier)
                                     {{ $product->carrier }}
@@ -108,7 +108,7 @@
                             </p>
                         </div>
                         <div class="col-md-4">
-                            <strong>Tracking number:</strong>
+                            <strong>{{ __('pages.tracking_number') }}</strong>
                             <p class="mb-0">
                                 @if($product->trackingNumber)
                                     {{ $product->trackingNumber }}
@@ -118,7 +118,7 @@
                             </p>
                         </div>
                         <div class="col-md-4">
-                            <strong>Agent note:</strong>
+                            <strong>{{ __('pages.agent_note') }}</strong>
                             <p class="mb-0">
                                 @if($product->agentNote)
                                     {{ $product->agentNote }}
@@ -128,7 +128,7 @@
                             </p>
                         </div>
                     </div>
-                    <strong>Payment Proof:</strong>
+                    <strong>{{ __('pages.payment_proof') }}</strong>
                     <div class="row pt-3">
                         <div class="col-12 col-md-6">
                             @if($payment && $payment->screenshot)
@@ -151,7 +151,7 @@
                     <ul class="list-group">
                         <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
                             <div class="d-flex flex-column">
-                                <h6 class="mb-1 text-dark font-weight-bold text-sm">Product :</h6>
+                                <h6 class="mb-1 text-dark font-weight-bold text-sm">{{ __('pages.product_label') }}</h6>
                             </div>
                             <div class="d-flex align-items-center text-sm">
                                 {{ $product->productName }}
@@ -159,7 +159,7 @@
                         </li>
                         <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
                             <div class="d-flex flex-column">
-                                <h6 class="mb-1 text-dark font-weight-bold text-sm">Category :</h6>
+                                <h6 class="mb-1 text-dark font-weight-bold text-sm">{{ __('pages.category_label') }}</h6>
                             </div>
                             <div class="d-flex align-items-center text-sm">
                             {{ $product->productCategory }}
@@ -167,15 +167,23 @@
                         </li>
                         <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
                             <div class="d-flex flex-column">
-                                <h6 class="mb-1 text-dark font-weight-bold text-sm">Link :</h6>
+                                <h6 class="mb-1 text-dark font-weight-bold text-sm">{{ __('pages.link_label') }}</h6>
                             </div>
                             <div class="d-flex align-items-center text-sm">
-                            <a href="{{ $product->productURL }}" target="_blank">Product</a>
+                                @if($product->productURL)
+                                    <a href="{{ $product->productURL }}" target="_blank" class="badge btn bg-gradient-dark">{{ __('pages.view_product') }}</a>
+                                @elseif($product->productImage)
+                                    <a href="{{ asset('storage/' . $product->productImage) }}" target="_blank">
+                                        <img src="{{ asset('storage/' . $product->productImage) }}" class="img-thumbnail" style="max-height:80px;">
+                                    </a>
+                                @else
+                                    -
+                                @endif
                             </div>
                         </li>
                         <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
                             <div class="d-flex flex-column">
-                                <h6 class="mb-1 text-dark font-weight-bold text-sm">Sourcing Country:</h6>
+                                <h6 class="mb-1 text-dark font-weight-bold text-sm">{{ __('pages.sourcing_country_label') }}</h6>
                             </div>
                             <div class="d-flex align-items-center text-sm">
                                 {{ $orderRequest->countryFrom }}
@@ -183,7 +191,7 @@
                         </li>
                         <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
                             <div class="d-flex flex-column">
-                                <h6 class="text-dark mb-1 font-weight-bold text-sm">Destination Country:</h6>
+                                <h6 class="text-dark mb-1 font-weight-bold text-sm">{{ __('pages.destination_country_label') }}</h6>
                             </div>
                             <div class="d-flex align-items-center text-sm">
                                 {{ $orderRequest->countryTo }}
@@ -191,7 +199,7 @@
                         </li>
                         <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
                             <div class="d-flex flex-column">
-                                <h6 class="text-dark mb-1 font-weight-bold text-sm">Shipping Method:</h6>
+                                <h6 class="text-dark mb-1 font-weight-bold text-sm">{{ __('pages.shipping_method_label') }}</h6>
                             </div>
                             <div class="d-flex align-items-center text-sm">
                                 {{ $orderRequest->ShippingMethod }}
@@ -199,7 +207,7 @@
                         </li>
                         <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
                             <div class="d-flex flex-column">
-                                <h6 class="text-dark mb-1 font-weight-bold text-sm">Quantity:</h6>
+                                <h6 class="text-dark mb-1 font-weight-bold text-sm">{{ __('pages.quantity_label') }}</h6>
                             </div>
                             <div class="d-flex align-items-center text-sm">
                                 {{ $product->qte }}
@@ -207,7 +215,7 @@
                         </li>
                         <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
                             <div class="d-flex flex-column">
-                                <h6 class="text-dark mb-1 font-weight-bold text-sm">Unit Price:</h6>
+                                <h6 class="text-dark mb-1 font-weight-bold text-sm">{{ __('pages.unit_price_label') }}</h6>
                             </div>
                             <div class="d-flex align-items-center text-sm">
                                 @if($product->unitPrice != 0)
@@ -219,7 +227,7 @@
                         </li>
                         <li class="list-group-item border-0 d-flex justify-content-between ps-0 border-radius-lg">
                             <div class="d-flex flex-column">
-                                <h6 class="text-dark mb-1 font-weight-bold text-sm">Total:</h6>
+                                <h6 class="text-dark mb-1 font-weight-bold text-sm">{{ __('pages.total_label') }}</h6>
                             </div>
                             <div class="d-flex align-items-center text-sm">
                                 <strong>
@@ -236,7 +244,7 @@
                     @if(!$Quoted)
                     <div class="d-flex justify-content-center my-4">
                         <a class="btn bg-gradient-dark mb-0" href="#" data-bs-toggle="modal" data-bs-target="#quoteModal">
-                            <i class="fas fa-plus me-2" aria-hidden="true"></i> Quote It
+                            <i class="fas fa-plus me-2" aria-hidden="true"></i> {{ __('pages.quote_it') }}
                         </a>
                     </div>
                     @endif
@@ -251,7 +259,7 @@
         <div class="col-lg-6">
             <div class="card shadow-sm border-0">
                 <div class="card-body">
-                    <h5 class="mb-4">Chat</h5>
+                    <h5 class="mb-4">{{ __('pages.chat') }}</h5>
                     
                     <!-- Chat Messages -->
                     <div id="chat-box" class="p-3" style="max-height: 400px; overflow-y: auto;">
@@ -283,7 +291,7 @@
                                 <small class="d-block text-muted">{{ $message->created_at->format('F j, Y h:i A') }}</small>
                             </div>
                         @empty
-                            <p class="text-center text-muted">No messages yet.</p>
+                            <p class="text-center text-muted">{{ __('pages.no_messages') }}</p>
                         @endforelse
                     </div>
 
@@ -291,13 +299,13 @@
                     <form id="chat-form" enctype="multipart/form-data" method="POST" class="mt-3">
                         @csrf
                         <div class="form-group">
-                            <textarea name="message_content" id="message_content" placeholder="Type a message..." class="form-control" rows="3" required></textarea>
+                            <textarea name="message_content" id="message_content" placeholder="{{ __('pages.type_message') }}" class="form-control" rows="3" required></textarea>
                         </div>
 
                         <div class="d-flex align-items-center mt-2">
                             <input type="file" name="file" id="file" class="form-control me-2" accept="image/*,video/*">
                             <button type="submit" class="btn btn-primary px-4 mt-2 mt-sm-0" id="send-message-btn">
-                                <i class="fas fa-paper-plane"></i> Send
+                                <i class="fas fa-paper-plane"></i> {{ __('pages.send') }}
                             </button>
                         </div>
                     </form>
@@ -314,7 +322,7 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="quoteModalLabel">Enter Quotation Details</h5>
+                <h5 class="modal-title" id="quoteModalLabel">{{ __('pages.enter_quote_details') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -323,21 +331,21 @@
                 @csrf
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="unit_price" class="form-label">Unit Price*</label>
+                        <label for="unit_price" class="form-label">{{ __('pages.unit_price_input') }}</label>
                         <input type="number" class="form-control" id="unit_price" name="unit_price" step=".01" min="0.01" required>
                     </div>
                     <div class="mb-3">
-                        <label for="weight" class="form-label">Weight*</label>
+                        <label for="weight" class="form-label">{{ __('pages.weight') }}</label>
                         <input type="text" class="form-control" id="weight" name="weight" required>
                     </div>
                     <div class="mb-3">
-                        <label for="note" class="form-label">Agent Note</label>
+                        <label for="note" class="form-label">{{ __('pages.agent_note_input') }}</label>
                         <textarea class="form-control" id="note" name="note" rows="3"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Submit Quote</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('pages.close') }}</button>
+                    <button type="submit" class="btn btn-primary">{{ __('pages.submit_quote') }}</button>
                 </div>
             </form>
         </div>

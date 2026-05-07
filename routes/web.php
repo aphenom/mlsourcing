@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Middleware\CheckRole;
 use App\Http\Controllers\SellerController;
 use App\Http\Controllers\AgentController;
@@ -32,6 +33,11 @@ Route::get('/', function () {
         case 2: // Agent
             return redirect()->route('agent.dashboard');
         case 3: // Seller
+            if ($user->status === 'pending') return redirect()->route('seller.pending');
+            if ($user->status === 'blocked') {
+                Auth::logout();
+                return redirect()->route('login')->withErrors(['email' => __('pages.account_blocked')]);
+            }
             return redirect()->route('seller.dashboard');
         default:
             // Default action if role is undefined or invalid
@@ -53,8 +59,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Send a message
     Route::post('/chat/send/{orderRequestId}', [ChatController::class, 'sendMessage'])->name('chat.send');
 
+    Route::get('/notifications', [UserNotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/{id}/read', [UserNotificationController::class, 'markRead'])->name('notifications.markRead');
+    Route::post('/notifications/mark-all-read', [UserNotificationController::class, 'markAllRead'])->name('notifications.markAllRead');
     Route::delete('/notifications/delete/{notificationId}', [UserNotificationController::class, 'delete'])->name('notifications.delete');
 
+
+    // Seller pending page (accessible to all authenticated sellers regardless of status)
+    Route::get('/seller/pending', [SellerController::class, 'pending'])->name('seller.pending');
 
     // Seller Routing
     Route::middleware(CheckRole::class . ':3')->group(function () {
@@ -107,6 +119,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('agent/orders-data', [AgentController::class, 'filteredOrders'])->name('agent.ordersData');
         Route::get('agent/orders/dispatching/{id}', [AgentController::class, 'dispatching'])->name('agent.dispatching');
         Route::post('agent/orders/dispatch/{id}', [AgentController::class, 'dispatch'])->name('agent.dispatch');
+
+        // Agent Seller Management
+        Route::get('agent/sellers', [AgentController::class, 'sellers'])->name('agent.sellers');
+        Route::post('agent/sellers/create', [AgentController::class, 'storeSeller'])->name('agent.storeSeller');
+        Route::post('agent/sellers/{id}/activate', [AgentController::class, 'activateSeller'])->name('agent.activateSeller');
     });
 
     // Admin
@@ -163,6 +180,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // See and filter orders
         Route::get('admin/orders', [AdminController::class, 'orders'])->name('admin.orders');
         Route::get('admin/orders-data', [AdminController::class, 'filteredAdminOrders'])->name('admin.ordersData');
+
+        // Admin Seller Management
+        Route::get('admin/sellers', [AdminController::class, 'sellers'])->name('admin.sellers');
+        Route::post('admin/sellers/create', [AdminController::class, 'storeSeller'])->name('admin.storeSeller');
+        Route::post('admin/sellers/{id}/activate', [AdminController::class, 'activateSeller'])->name('admin.activateSeller');
+        Route::post('admin/sellers/{id}/block', [AdminController::class, 'blockSeller'])->name('admin.blockSeller');
+        Route::post('admin/sellers/{id}/unblock', [AdminController::class, 'unblockSeller'])->name('admin.unblockSeller');
     });
 });
 
