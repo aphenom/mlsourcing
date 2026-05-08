@@ -170,14 +170,16 @@
                             <div class="d-flex flex-column">
                                 <h6 class="mb-1 text-dark font-weight-bold text-sm">{{ __('pages.link_label') }}</h6>
                             </div>
-                            <div class="d-flex align-items-center text-sm">
+                            <div class="d-flex align-items-center gap-2 flex-wrap text-sm">
                                 @if($product->productURL)
                                     <a href="{{ $product->productURL }}" target="_blank" class="badge btn bg-gradient-dark">{{ __('pages.view_product') }}</a>
-                                @elseif($product->productImage)
+                                @endif
+                                @if($product->productImage)
                                     <a href="{{ asset('storage/' . $product->productImage) }}" target="_blank">
                                         <img src="{{ asset('storage/' . $product->productImage) }}" class="img-thumbnail" style="max-height:80px;">
                                     </a>
-                                @else
+                                @endif
+                                @if(!$product->productURL && !$product->productImage)
                                     -
                                 @endif
                             </div>
