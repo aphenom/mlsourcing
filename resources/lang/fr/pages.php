@@ -450,4 +450,14 @@ return [
     'no_comptables'             => 'Aucun comptable trouvé.',
     'confirm_delete_comptable'  => 'Êtes-vous sûr de vouloir supprimer ce comptable ?',
 
+    // DataTables UI
+    'dt_processing'   => 'Chargement...',
+    'dt_search'       => 'Rechercher',
+    'dt_per_page'     => 'par page',
+    'dt_no_data'      => 'Aucune donnée disponible',
+    'dt_info'         => 'Affichage de _START_ à _END_ sur _TOTAL_ résultats',
+    'dt_info_empty'   => 'Aucun résultat',
+    'dt_info_filtered'=> '(filtré sur _MAX_ résultats)',
+    'dt_loading'      => 'Chargement des données...',
+
 ];

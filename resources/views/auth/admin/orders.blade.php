@@ -110,7 +110,7 @@
                     dom: 't<"bottom"ip>', // Remove the search box and only show table, info, and pagination
 
                     ajax: {
-                        url: '{{ route('admin.ordersData') }}',
+                        url: "{{ route('admin.ordersData') }}",
                         data: function(d) {
                             d.agent_id = $('#agentFilter').val();
                             d.sourcing_country_name = $('#sourcingCountryFilter').val();
@@ -175,7 +175,17 @@
                             }
                         }
                     ],
-
+                    language: {
+                        processing:   "{{ __('pages.dt_processing') }}",
+                        search:       "{{ __('pages.dt_search') }}:",
+                        zeroRecords:  "{{ __('pages.dt_no_data') }}",
+                        emptyTable:   "{{ __('pages.dt_no_data') }}",
+                        info:         "{{ __('pages.dt_info') }}",
+                        infoEmpty:    "{{ __('pages.dt_info_empty') }}",
+                        infoFiltered: "{{ __('pages.dt_info_filtered') }}",
+                        loadingRecords: "{{ __('pages.dt_loading') }}",
+                        paginate:     { previous: "‹", next: "›" }
+                    }
                 });
 
                 const chart = Highcharts.chart('chart-container', {

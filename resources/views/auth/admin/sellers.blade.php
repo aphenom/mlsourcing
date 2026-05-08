@@ -249,11 +249,16 @@ $(document).ready(function() {
         ],
         pageLength: 25,
         language: {
-            search:      "{{ __('pages.search') ?? 'Rechercher' }}:",
-            lengthMenu:  "_MENU_ {{ __('pages.per_page') ?? 'par page' }}",
-            zeroRecords: "{{ __('pages.no_sellers') }}",
-            info:        "{{ __('pages.showing') ?? 'Affichage de' }} _START_ {{ __('pages.to') ?? 'à' }} _END_ {{ __('pages.of') ?? 'sur' }} _TOTAL_",
-            paginate: { previous: "‹", next: "›" }
+            processing:   "{{ __('pages.dt_processing') }}",
+            search:       "{{ __('pages.dt_search') }}:",
+            lengthMenu:   "_MENU_ {{ __('pages.dt_per_page') }}",
+            zeroRecords:  "{{ __('pages.no_sellers') }}",
+            emptyTable:   "{{ __('pages.no_sellers') }}",
+            info:         "{{ __('pages.dt_info') }}",
+            infoEmpty:    "{{ __('pages.dt_info_empty') }}",
+            infoFiltered: "{{ __('pages.dt_info_filtered') }}",
+            loadingRecords: "{{ __('pages.dt_loading') }}",
+            paginate:     { previous: "‹", next: "›" }
         }
     });
 });

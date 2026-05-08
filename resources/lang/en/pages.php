@@ -448,4 +448,14 @@ return [
     'no_comptables'             => 'No accountants found.',
     'confirm_delete_comptable'  => 'Are you sure you want to delete this accountant?',
 
+    // DataTables UI
+    'dt_processing'   => 'Loading...',
+    'dt_search'       => 'Search',
+    'dt_per_page'     => 'per page',
+    'dt_no_data'      => 'No data available',
+    'dt_info'         => 'Showing _START_ to _END_ of _TOTAL_ entries',
+    'dt_info_empty'   => 'No entries to show',
+    'dt_info_filtered'=> '(filtered from _MAX_ total entries)',
+    'dt_loading'      => 'Loading data...',
+
 ];
