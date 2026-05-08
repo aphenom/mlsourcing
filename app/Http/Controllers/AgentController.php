@@ -232,6 +232,11 @@ class AgentController extends Controller
         $request->validate(['qte' => 'required|integer|min:1']);
 
         $orderRequest = OrdersRequest::findOrFail($id);
+
+        if ($orderRequest->statusRequest !== 'quoting') {
+            return back()->withErrors(['msg' => __('pages.quantity_locked')]);
+        }
+
         $product = $orderRequest->importedproducts()->first();
 
         $product->qte = $request->qte;

@@ -341,6 +341,7 @@ return [
     'reset_password'            => 'Reset Password (leave empty to keep current)',
     'seller_info'               => 'Seller Information',
     'quantity_updated'          => 'Quantity updated successfully.',
+    'quantity_locked'           => 'Quantity locked after quoting.',
     'edit_quantity'             => 'Edit Quantity',
     'save'                      => 'Save',
 

@@ -341,6 +341,7 @@ return [
     'reset_password'            => 'Réinitialiser le mot de passe (laisser vide pour conserver l\'actuel)',
     'seller_info'               => 'Informations Vendeur',
     'quantity_updated'          => 'Quantité mise à jour avec succès.',
+    'quantity_locked'           => 'Quantité verrouillée après cotation.',
     'edit_quantity'             => 'Modifier la quantité',
     'save'                      => 'Enregistrer',
 

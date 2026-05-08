@@ -269,14 +269,23 @@
                         @endif
                         <li class="list-group-item border-0 ps-0 mb-2 border-radius-lg">
                             <h6 class="text-dark mb-2 font-weight-bold text-sm">{{ __('pages.quantity_label') }}</h6>
-                            <form method="POST" action="{{ route('admin.updateQuantity', $orderRequest->id) }}" class="d-flex align-items-center gap-2">
-                                @csrf
-                                <input type="number" name="qte" value="{{ $product->qte }}" min="1"
-                                       class="form-control form-control-sm" style="width:90px;">
-                                <button type="submit" class="btn btn-sm bg-gradient-success text-white mb-0">
-                                    {{ __('pages.save') }}
-                                </button>
-                            </form>
+                            @if ($orderRequest->statusRequest === 'quoting')
+                                <form method="POST" action="{{ route('admin.updateQuantity', $orderRequest->id) }}" class="d-flex align-items-center gap-2">
+                                    @csrf
+                                    <input type="number" name="qte" value="{{ $product->qte }}" min="1"
+                                           class="form-control form-control-sm" style="width:90px;">
+                                    <button type="submit" class="btn btn-sm bg-gradient-success text-white mb-0">
+                                        {{ __('pages.save') }}
+                                    </button>
+                                </form>
+                            @else
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="text-sm font-weight-bold">{{ $product->qte }}</span>
+                                    <span class="badge bg-gradient-secondary text-xs">
+                                        <i class="fa fa-lock me-1"></i>{{ __('pages.quantity_locked') }}
+                                    </span>
+                                </div>
+                            @endif
                         </li>
                         <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
                             <div class="d-flex flex-column">
