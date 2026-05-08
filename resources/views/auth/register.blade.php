@@ -268,7 +268,7 @@
 
     <!-- Footer -->
     <footer>
-        <p>© 2025 ML Sourcing. All Rights Reserved.</p>
+        <p>© <?php echo date('Y'); ?> ML Sourcing. All Rights Reserved.</p>
     </footer>
 
     <!-- JavaScript to Toggle Fields -->
