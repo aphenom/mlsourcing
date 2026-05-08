@@ -245,14 +245,14 @@
                             <div class="d-flex flex-column">
                                 <h6 class="text-dark mb-1 font-weight-bold text-sm">{{ __('pages.cbm_value') }}</h6>
                             </div>
-                            <div class="d-flex align-items-center text-sm">{{ $product->cbm }} m³</div>
+                            <div class="d-flex align-items-center text-sm">{{ $product->cbm + 0 }} m³</div>
                         </li>
                         @elseif($product->weight)
                         <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
                             <div class="d-flex flex-column">
                                 <h6 class="text-dark mb-1 font-weight-bold text-sm">{{ __('pages.weight_value') }}</h6>
                             </div>
-                            <div class="d-flex align-items-center text-sm">{{ $product->weight }} kg</div>
+                            <div class="d-flex align-items-center text-sm">{{ $product->weight + 0 }} kg</div>
                         </li>
                         @endif
                         @if($product->productSpecification)
@@ -287,7 +287,7 @@
                             </div>
                             <div class="d-flex align-items-center text-sm">
                                 @if($product->unitPrice != 0)
-                                ${{ $product->unitPrice }}
+                                ${{ $product->unitPrice + 0 }}
                                 @else
                                     -
                                 @endif
@@ -300,7 +300,7 @@
                             <div class="d-flex align-items-center text-sm">
                                 <strong>
                                     @if($product->totalPrice != 0)
-                                       ${{$product->totalPrice}}
+                                       ${{ $product->totalPrice + 0 }}
                                     @else
                                         -
                                     @endif

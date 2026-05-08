@@ -21,14 +21,14 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header pb-0 d-flex justify-content-between align-items-center">
-                    <h6>{{ __('pages.sellers') }}</h6>
+                    <h6 class="mb-0">{{ __('pages.sellers') }}</h6>
                 </div>
-                <div class="card-body px-0 pt-0 pb-2">
-                    <div class="table-responsive p-3">
-                        <table class="table table-bordered table-striped table-hover">
-                            <thead class="thead-light">
+                <div class="card-body px-3 pt-3 pb-2">
+                    <div class="table-responsive">
+                        <table id="sellersTable" class="table table-hover align-middle" style="width:100%">
+                            <thead>
                                 <tr>
-                                    <th>#</th>
+                                    <th style="width:50px">#</th>
                                     <th>{{ __('pages.seller_name') }}</th>
                                     <th>{{ __('pages.email') }}</th>
                                     <th>{{ __('pages.phone') }}</th>
@@ -39,58 +39,68 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($sellers as $seller)
+                                @foreach($sellers as $seller)
                                 <tr>
-                                    <td>{{ $seller->id }}</td>
-                                    <td>{{ $seller->name }}</td>
-                                    <td>{{ $seller->email }}</td>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td class="fw-semibold">{{ $seller->name }}</td>
+                                    <td class="text-secondary">{{ $seller->email }}</td>
                                     <td>{{ $seller->phone_number ?? '-' }}</td>
                                     <td>{{ ucfirst($seller->user_type) }}</td>
                                     <td>
                                         @if($seller->status === 'active')
-                                            <span class="badge bg-gradient-success">{{ __('pages.active') }}</span>
+                                            <span class="badge bg-gradient-success text-xs">{{ __('pages.active') }}</span>
                                         @elseif($seller->status === 'pending')
-                                            <span class="badge bg-gradient-warning">{{ __('pages.pending') }}</span>
+                                            <span class="badge bg-gradient-warning text-xs">{{ __('pages.pending') }}</span>
                                         @else
-                                            <span class="badge bg-gradient-danger">{{ __('pages.blocked') }}</span>
+                                            <span class="badge bg-gradient-danger text-xs">{{ __('pages.blocked') }}</span>
                                         @endif
                                     </td>
-                                    <td>{{ $seller->created_at->isoFormat('L') }}</td>
-                                    <td class="d-flex gap-1 flex-wrap">
-                                        <button class="btn btn-sm bg-gradient-info text-white"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#editSellerModal"
-                                                data-id="{{ $seller->id }}"
-                                                data-name="{{ $seller->name }}"
-                                                data-email="{{ $seller->email }}"
-                                                data-phone="{{ $seller->phone_number }}"
-                                                data-address="{{ $seller->address }}"
-                                                data-usertype="{{ $seller->user_type }}"
-                                                data-company="{{ $seller->company_name }}"
-                                                data-companyinfo="{{ $seller->company_information }}">
-                                            <i class="fa fa-edit"></i> {{ __('pages.edit_seller') }}
-                                        </button>
-                                        @if($seller->status === 'pending')
-                                            <form method="POST" action="{{ route('admin.activateSeller', $seller->id) }}" class="d-inline">
-                                                @csrf
-                                                <button class="btn btn-sm bg-gradient-success text-white">{{ __('pages.activate') }}</button>
-                                            </form>
-                                        @elseif($seller->status === 'active')
-                                            <form method="POST" action="{{ route('admin.blockSeller', $seller->id) }}" class="d-inline" onsubmit="return confirm('{{ __('pages.confirm_block') }}')">
-                                                @csrf
-                                                <button class="btn btn-sm bg-gradient-danger text-white">{{ __('pages.block') }}</button>
-                                            </form>
-                                        @elseif($seller->status === 'blocked')
-                                            <form method="POST" action="{{ route('admin.unblockSeller', $seller->id) }}" class="d-inline">
-                                                @csrf
-                                                <button class="btn btn-sm bg-gradient-primary text-white">{{ __('pages.unblock') }}</button>
-                                            </form>
-                                        @endif
+                                    <td data-order="{{ $seller->created_at->timestamp }}">
+                                        {{ $seller->created_at->isoFormat('L') }}
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-1 flex-wrap">
+                                            <button type="button"
+                                                    class="btn btn-xs btn-outline-info py-1 px-2"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#editSellerModal"
+                                                    data-id="{{ $seller->id }}"
+                                                    data-name="{{ $seller->name }}"
+                                                    data-email="{{ $seller->email }}"
+                                                    data-phone="{{ $seller->phone_number }}"
+                                                    data-address="{{ $seller->address }}"
+                                                    data-usertype="{{ $seller->user_type }}"
+                                                    data-company="{{ $seller->company_name }}"
+                                                    data-companyinfo="{{ $seller->company_information }}">
+                                                <i class="fa fa-edit me-1"></i>{{ __('pages.edit_seller') }}
+                                            </button>
+                                            @if($seller->status === 'pending')
+                                                <form method="POST" action="{{ route('admin.activateSeller', $seller->id) }}" class="d-inline">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-xs btn-outline-success py-1 px-2">
+                                                        <i class="fa fa-check me-1"></i>{{ __('pages.activate') }}
+                                                    </button>
+                                                </form>
+                                            @elseif($seller->status === 'active')
+                                                <form method="POST" action="{{ route('admin.blockSeller', $seller->id) }}" class="d-inline"
+                                                      onsubmit="return confirm('{{ __('pages.confirm_block') }}')">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-xs btn-outline-danger py-1 px-2">
+                                                        <i class="fa fa-ban me-1"></i>{{ __('pages.block') }}
+                                                    </button>
+                                                </form>
+                                            @elseif($seller->status === 'blocked')
+                                                <form method="POST" action="{{ route('admin.unblockSeller', $seller->id) }}" class="d-inline">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-xs btn-outline-primary py-1 px-2">
+                                                        <i class="fa fa-unlock me-1"></i>{{ __('pages.unblock') }}
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
-                                @empty
-                                <tr><td colspan="8" class="text-center">{{ __('pages.no_sellers') }}</td></tr>
-                                @endforelse
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -105,7 +115,7 @@
             <div class="card">
                 <div class="card-header pb-0">
                     <h6>{{ __('pages.create_seller') }}</h6>
-                    <p class="text-sm text-muted">{{ __('pages.create_seller_hint') }}</p>
+                    <p class="text-sm text-muted mb-0">{{ __('pages.create_seller_hint') }}</p>
                 </div>
                 <div class="card-body">
                     <form method="POST" action="{{ route('admin.storeSeller') }}">
@@ -216,8 +226,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('pages.close') }}</button>
-                    <button type="submit" class="btn bg-gradient-success text-white">{{ __('pages.save') }}</button>
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">{{ __('pages.close') }}</button>
+                    <button type="submit" class="btn bg-gradient-success btn-sm text-white">{{ __('pages.save') }}</button>
                 </div>
             </form>
         </div>
@@ -225,7 +235,29 @@
 </div>
 
 @push('scripts')
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 <script>
+$(document).ready(function() {
+    $('#sellersTable').DataTable({
+        order: [[6, 'desc']],
+        columnDefs: [
+            { targets: 0, orderable: false, searchable: false,
+              render: function(data, type, row, meta) { return meta.row + 1; } },
+            { targets: -1, orderable: false, searchable: false }
+        ],
+        pageLength: 25,
+        language: {
+            search:      "{{ __('pages.search') ?? 'Rechercher' }}:",
+            lengthMenu:  "_MENU_ {{ __('pages.per_page') ?? 'par page' }}",
+            zeroRecords: "{{ __('pages.no_sellers') }}",
+            info:        "{{ __('pages.showing') ?? 'Affichage de' }} _START_ {{ __('pages.to') ?? 'à' }} _END_ {{ __('pages.of') ?? 'sur' }} _TOTAL_",
+            paginate: { previous: "‹", next: "›" }
+        }
+    });
+});
+
 // Create form: show/hide company fields
 var createType = document.getElementById('create_usertype_admin');
 if (createType) {
@@ -261,8 +293,7 @@ document.getElementById('edit_usertype').addEventListener('change', function() {
 });
 
 function toggleCompanyFields(type) {
-    var fields = document.getElementById('edit_company_fields');
-    fields.style.display = (type === 'company') ? '' : 'none';
+    document.getElementById('edit_company_fields').style.display = (type === 'company') ? '' : 'none';
 }
 </script>
 @endpush

@@ -600,11 +600,11 @@ class AdminController extends Controller
                                 'sourcing_country' => $row->countryFrom,
                                 'destination_country' => $row->countryTo,
                                 'qte' => $importedProduct->qte,
-                                'unitPrice' => $importedProduct->unitPrice,
-                                'totalPrice' => $importedProduct->totalPrice,
+                                'unitPrice' => $importedProduct->unitPrice + 0,
+                                'totalPrice' => $importedProduct->totalPrice + 0,
                                 'weight' => $importedProduct->measurement_type === 'cbm' && $importedProduct->cbm
-                                    ? $importedProduct->cbm . ' m³'
-                                    : ($importedProduct->weight ? $importedProduct->weight . ' kg' : '-'),
+                                    ? ($importedProduct->cbm + 0) . ' m³'
+                                    : ($importedProduct->weight ? ($importedProduct->weight + 0) . ' kg' : '-'),
                                 'trackingNumber' => $importedProduct->trackingNumber ?? '-',
                                 'carrier' => $importedProduct->carrier ?? '-',
                                 'statusProduct' => $importedProduct->statusProduct
@@ -727,7 +727,7 @@ class AdminController extends Controller
     // Seller Management
     public function sellers()
     {
-        $sellers = User::where('role', 3)->get();
+        $sellers = User::where('role', 3)->orderBy('created_at', 'desc')->get();
         return view('auth.admin.sellers', compact('sellers'));
     }
 
