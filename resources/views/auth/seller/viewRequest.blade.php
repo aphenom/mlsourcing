@@ -240,30 +240,67 @@
                                 <h6 class="text-dark mb-1 font-weight-bold text-sm">{{ __('pages.unit_price_label') }}</h6>
                             </div>
                             <div class="d-flex align-items-center text-sm">
-                                @if($product->unitPrice != 0)
-                                ${{ $product->unitPrice }}
-                                @else
-                                    -
-                                @endif
+                                {{ $product->client_unit_price ? format_currency($product->client_unit_price) : ($product->unitPrice != 0 ? format_currency($product->unitPrice) : '-') }}
                             </div>
                         </li>
-                        <li class="list-group-item border-0 d-flex justify-content-between ps-0 border-radius-lg">
+                        <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
                             <div class="d-flex flex-column">
                                 <h6 class="text-dark mb-1 font-weight-bold text-sm">{{ __('pages.total_label') }}</h6>
                             </div>
                             <div class="d-flex align-items-center text-sm">
-                                <strong>
-                                    @if($product->totalPrice != 0)
-                                       ${{$product->totalPrice}}
-                                    @else
-                                        -
+                                {{ $product->client_total_price ? format_currency($product->client_total_price) : ($product->totalPrice != 0 ? format_currency($product->totalPrice) : '-') }}
+                            </div>
+                        </li>
+                        @if($orderRequest->commission_amount)
+                        <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                            <div class="d-flex flex-column">
+                                <h6 class="text-dark mb-1 font-weight-bold text-sm">{{ __('pages.service_fees_label') }}</h6>
+                            </div>
+                            <div class="d-flex align-items-center text-sm">
+                                {{ format_currency($orderRequest->commission_amount) }}
+                            </div>
+                        </li>
+                        @endif
+                        @if($orderRequest->transit_client_amount)
+                        <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                            <div class="d-flex flex-column">
+                                <h6 class="text-dark mb-1 font-weight-bold text-sm">{{ __('pages.transit_fees_label') }}</h6>
+                            </div>
+                            <div class="d-flex align-items-center text-sm">
+                                {{ format_currency($orderRequest->transit_client_amount) }}
+                            </div>
+                        </li>
+                        @if($orderRequest->transit_payment_mode)
+                        <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                            <div class="d-flex flex-column">
+                                <h6 class="text-dark mb-1 font-weight-bold text-sm">{{ __('pages.transit_payment_mode_label') }}</h6>
+                            </div>
+                            <div class="d-flex align-items-center text-sm text-end" style="max-width:55%">
+                                {{ __('pages.transit_' . $orderRequest->transit_payment_mode) }}
+                            </div>
+                        </li>
+                        @endif
+                        @endif
+                        @php
+                            $clientTotal  = $product->client_total_price ?? $product->totalPrice ?? 0;
+                            $serviceFees  = $orderRequest->commission_amount ?? 0;
+                            $grandTotal   = $clientTotal + $serviceFees;
+                        @endphp
+                        @if($grandTotal > 0)
+                        <li class="list-group-item border-0 ps-0 border-radius-lg">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="text-dark mb-0 font-weight-bold text-sm">{{ __('pages.grand_total_label') }}</h6>
+                                <strong class="text-sm text-primary">{{ format_currency($grandTotal) }}
+                                    @if($orderRequest->transit_client_amount)
+                                        + {{ format_currency($orderRequest->transit_client_amount) }}
                                     @endif
                                 </strong>
                             </div>
                         </li>
+                        @endif
                     </ul>
 
-                    @if(($product->totalPrice != 0) && (!$payment || $payment->status === 'disapproved'))
+                    @if(($clientTotal != 0) && (!$payment || $payment->status === 'disapproved'))
                     <div class="d-flex justify-content-center my-4">
                             <a class="btn bg-gradient-dark mb-0" href="{{ route('seller.pay-option', ['orderRequestId' => $orderRequest->id]) }}">
                                 <i class="fas fa-plus me-2" aria-hidden="true"></i>{{ __('pages.make_payment') }}

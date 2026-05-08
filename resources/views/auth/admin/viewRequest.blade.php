@@ -287,32 +287,92 @@
                                 </div>
                             @endif
                         </li>
-                        <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
-                            <div class="d-flex flex-column">
-                                <h6 class="text-dark mb-1 font-weight-bold text-sm">{{ __('pages.unit_price_label') }}</h6>
-                            </div>
-                            <div class="d-flex align-items-center text-sm">
-                                @if($product->unitPrice != 0)
-                                ${{ $product->unitPrice + 0 }}
-                                @else
-                                    -
-                                @endif
+                        {{-- Internal pricing --}}
+                        @if($product->purchase_price || $product->unitPrice != 0)
+                        <li class="list-group-item border-0 ps-0 mb-1 border-radius-lg">
+                            <div class="bg-light rounded p-2 text-xs text-muted mb-0">
+                                <strong>{{ __('pages.internal_pricing_label') }}</strong>
                             </div>
                         </li>
-                        <li class="list-group-item border-0 d-flex justify-content-between ps-0 border-radius-lg">
+                        @if($product->purchase_price)
+                        <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-1 border-radius-lg">
                             <div class="d-flex flex-column">
-                                <h6 class="text-dark mb-1 font-weight-bold text-sm">{{ __('pages.total_label') }}</h6>
+                                <h6 class="text-muted mb-0 text-xs">{{ __('pages.purchase_price_label') }}</h6>
+                            </div>
+                            <div class="d-flex align-items-center text-xs text-muted">
+                                {{ format_currency($product->purchase_price) }}
+                            </div>
+                        </li>
+                        @endif
+                        <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-1 border-radius-lg">
+                            <div class="d-flex flex-column">
+                                <h6 class="text-muted mb-0 text-xs">{{ __('pages.sale_price_label') }}</h6>
+                            </div>
+                            <div class="d-flex align-items-center text-xs text-muted">
+                                {{ $product->unitPrice != 0 ? format_currency($product->unitPrice) : '-' }}
+                            </div>
+                        </li>
+                        @if($product->margin_percent)
+                        <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-1 border-radius-lg">
+                            <div class="d-flex flex-column">
+                                <h6 class="text-muted mb-0 text-xs">{{ __('pages.margin_percent_label') }}</h6>
+                            </div>
+                            <div class="d-flex align-items-center text-xs text-muted">{{ $product->margin_percent + 0 }}%</div>
+                        </li>
+                        @endif
+                        @if($orderRequest->transit_internal_margin)
+                        <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                            <div class="d-flex flex-column">
+                                <h6 class="text-muted mb-0 text-xs">{{ __('pages.transit_margin_label') }}</h6>
+                            </div>
+                            <div class="d-flex align-items-center text-xs text-muted">
+                                {{ format_currency($orderRequest->transit_internal_margin) }}
+                            </div>
+                        </li>
+                        @endif
+                        @endif
+                        {{-- Client-facing pricing --}}
+                        <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                            <div class="d-flex flex-column">
+                                <h6 class="text-dark mb-1 font-weight-bold text-sm">{{ __('pages.client_unit_price_label') }}</h6>
+                            </div>
+                            <div class="d-flex align-items-center text-sm">
+                                {{ $product->client_unit_price ? format_currency($product->client_unit_price) : ($product->unitPrice != 0 ? format_currency($product->unitPrice) : '-') }}
+                            </div>
+                        </li>
+                        <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                            <div class="d-flex flex-column">
+                                <h6 class="text-dark mb-1 font-weight-bold text-sm">{{ __('pages.client_total_label') }}</h6>
                             </div>
                             <div class="d-flex align-items-center text-sm">
                                 <strong>
-                                    @if($product->totalPrice != 0)
-                                       ${{ $product->totalPrice + 0 }}
-                                    @else
-                                        -
-                                    @endif
+                                    {{ $product->client_total_price ? format_currency($product->client_total_price) : ($product->totalPrice != 0 ? format_currency($product->totalPrice) : '-') }}
                                 </strong>
                             </div>
                         </li>
+                        @if($orderRequest->commission_amount)
+                        <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                            <div class="d-flex flex-column">
+                                <h6 class="text-dark mb-1 font-weight-bold text-sm">{{ __('pages.service_fees_label') }}</h6>
+                            </div>
+                            <div class="d-flex align-items-center text-sm">
+                                {{ format_currency($orderRequest->commission_amount) }}
+                            </div>
+                        </li>
+                        @endif
+                        @if($orderRequest->transit_client_amount)
+                        <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                            <div class="d-flex flex-column">
+                                <h6 class="text-dark mb-1 font-weight-bold text-sm">{{ __('pages.transit_fees_label') }}</h6>
+                                @if($orderRequest->transit_mode)
+                                <span class="text-xs text-muted">{{ __('pages.transit_' . $orderRequest->transit_mode) }}</span>
+                                @endif
+                            </div>
+                            <div class="d-flex align-items-center text-sm">
+                                {{ format_currency($orderRequest->transit_client_amount) }}
+                            </div>
+                        </li>
+                        @endif
                     </ul>
 
                     @if($payment && ($payment->status != 'approved'))

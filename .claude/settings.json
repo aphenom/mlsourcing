@@ -14,7 +14,15 @@
       "Bash(php -l app/Http/Middleware/SetLocale.php)",
       "Bash(findstr \"app.php\")",
       "Bash(findstr \"Kernel.php\")",
-      "Bash(findstr -i kernel)"
+      "Bash(findstr -i kernel)",
+      "Bash(Get-ChildItem -Path \"c:\\\\wamp64\\\\www\\\\mlsourcing\\\\database\\\\migrations\" -Name)",
+      "Bash(Sort-Object)",
+      "Bash(Get-ChildItem -Path \"c:\\\\wamp64\\\\www\\\\mlsourcing\\\\database\\\\migrations\")",
+      "Bash(Select-Object -ExpandProperty Name)",
+      "Bash(php -r 'require '\\\\''vendor/autoload.php'\\\\''; $app = require '\\\\''bootstrap/app.php'\\\\''; echo '\\\\''OK'\\\\'';')",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(d.get\\('autoload',{}\\)\\)\")",
+      "Bash(composer dump-autoload *)",
+      "Bash(php -r 'echo $_SERVER['\\\\''HTTP_ACCEPT_LANGUAGE'\\\\''] ?? '\\\\''n/a'\\\\'';')"
     ]
   }
 }

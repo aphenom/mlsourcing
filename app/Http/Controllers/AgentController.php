@@ -23,6 +23,12 @@ use Illuminate\Support\Facades\Hash;
 
 class AgentController extends Controller
 {
+    private const TRANSIT_RATES = [
+        'normal'   => ['client' => 10500,  'margin' => 1500,  'unit' => 'kg'],
+        'express'  => ['client' => 15900,  'margin' => 2900,  'unit' => 'kg'],
+        'maritime' => ['client' => 280000, 'margin' => 50000, 'unit' => 'cbm'],
+    ];
+
     // This function return data of agent in Dashboard agent : DONE
     public function dashboard()
     {
@@ -251,11 +257,16 @@ class AgentController extends Controller
     public function quote(Request $request, $id)
     {
         $validated = $request->validate([
-            'unit_price'       => 'required|numeric|min:0.01',
-            'measurement_type' => 'required|in:weight,cbm',
-            'weight'           => 'nullable|numeric|min:0',
-            'cbm'              => 'nullable|numeric|min:0',
-            'note'             => 'nullable|string',
+            'unit_price'           => 'required|numeric|min:0.01',
+            'purchase_price'       => 'nullable|numeric|min:0',
+            'margin_percent'       => 'nullable|numeric|min:0|max:9999',
+            'commission_percent'   => 'nullable|numeric|min:0|max:100',
+            'transit_mode'         => 'required|in:normal,express,maritime',
+            'transit_payment_mode' => 'required|in:at_delivery,half_half,at_order',
+            'measurement_type'     => 'required|in:weight,cbm',
+            'weight'               => 'nullable|numeric|min:0',
+            'cbm'                  => 'nullable|numeric|min:0',
+            'note'                 => 'nullable|string',
         ]);
 
         if ($validated['measurement_type'] === 'weight' && empty($validated['weight'])) {
@@ -269,27 +280,53 @@ class AgentController extends Controller
         $importedProduct = $orderRequest->importedproducts->first();
 
         if ($importedProduct) {
-            $unitPrice  = $validated['unit_price'];
-            $totalPrice = $unitPrice * $importedProduct->qte;
+            // Convert input amounts (in active display currency) to FCFA for storage
+            $activeCurrency  = session('currency', 'XOF');
+            $fxRate          = \App\Models\Currency::getRate($activeCurrency);
 
-            $importedProduct->unitPrice        = $unitPrice;
-            $importedProduct->totalPrice       = $totalPrice;
-            $importedProduct->agentNote        = $validated['note'] ?? null;
-            $importedProduct->measurement_type = $validated['measurement_type'];
-            $importedProduct->weight           = $validated['measurement_type'] === 'weight' ? $validated['weight'] : null;
-            $importedProduct->cbm              = $validated['measurement_type'] === 'cbm'    ? $validated['cbm']    : null;
+            $unitPrice       = to_fcfa($validated['unit_price'], $activeCurrency);
+            $totalPrice      = $unitPrice * $importedProduct->qte;
+            $marginPct       = (float) ($validated['margin_percent'] ?? 0);
+            $clientUnitPrice = $unitPrice * (1 + $marginPct / 100);
+            $clientTotal     = $clientUnitPrice * $importedProduct->qte;
+
+            $importedProduct->unitPrice          = $unitPrice;
+            $importedProduct->totalPrice         = $totalPrice;
+            $importedProduct->purchase_price     = isset($validated['purchase_price']) ? to_fcfa($validated['purchase_price'], $activeCurrency) : null;
+            $importedProduct->margin_percent     = $marginPct;
+            $importedProduct->client_unit_price  = $clientUnitPrice;
+            $importedProduct->client_total_price = $clientTotal;
+            $importedProduct->agentNote          = $validated['note'] ?? null;
+            $importedProduct->measurement_type   = $validated['measurement_type'];
+            $importedProduct->weight             = $validated['measurement_type'] === 'weight' ? $validated['weight'] : null;
+            $importedProduct->cbm                = $validated['measurement_type'] === 'cbm'    ? $validated['cbm']    : null;
             $importedProduct->save();
+
+            $transitMode   = $validated['transit_mode'];
+            $rates         = self::TRANSIT_RATES[$transitMode];
+            $measureValue  = $rates['unit'] === 'kg'
+                ? (float) ($validated['weight'] ?? 0)
+                : (float) ($validated['cbm']    ?? 0);
+            $commissionPct = (float) ($validated['commission_percent'] ?? 0);
+
+            $orderRequest->commission_percent      = $commissionPct;
+            $orderRequest->commission_amount       = $clientTotal * $commissionPct / 100;
+            $orderRequest->transit_mode            = $transitMode;
+            $orderRequest->transit_client_amount   = $rates['client'] * $measureValue;   // already FCFA
+            $orderRequest->transit_internal_margin = $rates['margin'] * $measureValue;   // already FCFA
+            $orderRequest->transit_payment_mode    = $validated['transit_payment_mode'];
+            $orderRequest->currency_code           = $activeCurrency;
+            $orderRequest->currency_rate           = $fxRate;
         }
 
-        // Mark the order request as quoted
         $orderRequest->statusRequest = 'quoted';
         $orderRequest->save();
 
         $m_seller = User::find($orderRequest->sellerID);
-        $this->sendNotificationToSeller($m_seller,$orderRequest->id,$orderRequest->requestNO,'request_quoted');
+        $this->sendNotificationToSeller($m_seller, $orderRequest->id, $orderRequest->requestNO, 'request_quoted');
 
         return redirect()->route('agent.followUpProductRequest', ['id' => $id])
-        ->with('success', 'Quotation submitted successfully.');
+            ->with('success', 'Quotation submitted successfully.');
     }
 
     public function orders()

@@ -84,6 +84,17 @@
             </li>
 
             <li class="nav-item">
+                <a class="nav-link {{ Request::is('admin/currencies*') ? 'active' : '' }}" href="{{ route('admin.currencies') }}">
+                    <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#000" viewBox="0 0 16 16">
+                            <path d="M8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/><path d="M0 4a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V6a2 2 0 0 1-2-2z"/>
+                        </svg>
+                    </div>
+                    <span class="nav-link-text ms-1">{{ __('pages.currency_management') }}</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
                 <a class="nav-link {{ Request::is('admin/sellers*') ? 'active' : '' }}" href="{{ route('admin.sellers') }}">
                     <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#000" viewBox="0 0 16 16">
@@ -259,6 +270,16 @@
                         </svg>
                     </div>
                     <span class="nav-link-text ms-1">{{ __('global.menu_payments') }}</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ Request::is('comptable/currencies*') ? 'active' : '' }}" href="{{ route('comptable.currencies') }}">
+                    <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#000" viewBox="0 0 16 16">
+                            <path d="M8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/><path d="M0 4a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V6a2 2 0 0 1-2-2z"/>
+                        </svg>
+                    </div>
+                    <span class="nav-link-text ms-1">{{ __('pages.currency_management') }}</span>
                 </a>
             </li>
             <li class="nav-item">

@@ -135,13 +135,8 @@
                   <path d="M0 4a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V6a2 2 0 0 1-2-2z"/>
                 </svg> 
                 -->
-                @if(Session::get('currency')=="USD")
-                USD
-                @elseif(Session::get('locale')=="RMB")
-                RMB
-                @else
-                FCFA
-                @endif
+                @php $cur = session('currency','XOF'); @endphp
+                {{ $cur === 'USD' ? 'USD $' : ($cur === 'RMB' ? 'RMB ¥' : 'FCFA') }}
               </a>
 
               <!-- MENU DEROULANT -->

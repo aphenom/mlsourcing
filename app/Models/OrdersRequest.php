@@ -17,7 +17,10 @@ class OrdersRequest extends Model
     protected $dates = ['deleted_at'];    protected $table = 'ordersrequests';
 
     protected $fillable = [
-        'sellerID', 'agentID', 'requestNO', 'statusRequest', 'countryFrom', 'countryTo', 'ShippingMethod'
+        'sellerID', 'agentID', 'requestNO', 'statusRequest', 'countryFrom', 'countryTo', 'ShippingMethod',
+        'commission_percent', 'commission_amount', 'transit_mode',
+        'transit_client_amount', 'transit_internal_margin', 'transit_payment_mode',
+        'currency_code', 'currency_rate',
     ];
 
     public function seller()

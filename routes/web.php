@@ -147,6 +147,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Admin Configurator
         Route::get('admin/configuration', [AdminController::class, 'configuration'])->name('admin.configuration');
 
+        // Currency management
+        Route::get('admin/currencies', [AdminController::class, 'currencies'])->name('admin.currencies');
+        Route::post('admin/currencies/{code}/update', [AdminController::class, 'updateCurrencyRate'])->name('admin.currencies.update');
+        Route::post('admin/currencies/sync', [AdminController::class, 'syncCurrencyRates'])->name('admin.currencies.sync');
+
         // Sourcing and Destination Countries - Controller:
         // Delete
         Route::delete('/admin/sourcing-countries/{sourcingCountryId}', [AdminController::class, 'deleteSourcingCountry'])->name('admin.deleteSourcingCountry');
@@ -219,6 +224,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('comptable/profile', [ComptableController::class, 'profile'])->name('comptable.profile');
         Route::post('comptable/profile', [ComptableController::class, 'updateProfile'])->name('comptable.updateProfile');
         Route::post('comptable/profile/password', [ComptableController::class, 'updatePassword'])->name('comptable.updatePassword');
+        Route::get('comptable/currencies', [ComptableController::class, 'currencies'])->name('comptable.currencies');
+        Route::post('comptable/currencies/{code}/update', [ComptableController::class, 'updateCurrencyRate'])->name('comptable.currencies.update');
+        Route::post('comptable/currencies/sync', [ComptableController::class, 'syncCurrencyRates'])->name('comptable.currencies.sync');
     });
 });
 

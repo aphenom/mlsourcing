@@ -11,12 +11,13 @@ use App\Models\SourcingCountry;
 use App\Models\DestinationCountry;
 use App\Services\NotificationService;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Yajra\DataTables\DataTables;
 
 class ComptableController extends Controller
 {
-    public function dashboard()
+    public function dashboard(Request $request)
     {
         $totalQuotedRequests = OrdersRequest::where('statusRequest', 'quoted')->count();
 
@@ -40,6 +41,35 @@ class ComptableController extends Controller
 
         $totalAmountPaid = Payment::where('status', 'approved')->sum('amount');
 
+        // Financial KPIs with optional period filter
+        $periodStart = $request->input('period_start');
+        $periodEnd   = $request->input('period_end');
+
+        $paidOrders = OrdersRequest::with(['importedproducts'])
+            ->whereHas('payments', function ($q) { $q->where('status', 'approved'); })
+            ->when($periodStart, fn($q) => $q->whereDate('created_at', '>=', $periodStart))
+            ->when($periodEnd,   fn($q) => $q->whereDate('created_at', '<=', $periodEnd))
+            ->get();
+
+        $financialCA         = 0;
+        $financialPurchase   = 0;
+        $financialCommission = 0;
+        $financialTransit    = 0;
+
+        foreach ($paidOrders as $order) {
+            $prod = $order->importedproducts->first();
+            if ($prod) {
+                $clientTotal          = $prod->client_total_price ?? ($prod->totalPrice ?? 0);
+                $financialCA         += $clientTotal + ($order->commission_amount ?? 0) + ($order->transit_client_amount ?? 0);
+                $financialPurchase   += ($prod->purchase_price ?? 0) * $prod->qte;
+                $financialCommission += $order->commission_amount ?? 0;
+                $financialTransit    += $order->transit_internal_margin ?? 0;
+            }
+        }
+
+        $financialGlobalProfit = $financialCA - $financialPurchase
+            - ($paidOrders->sum(fn($o) => $o->transit_client_amount ?? 0) - $financialTransit);
+
         return view('auth.comptable.dashboard', compact(
             'totalQuotedRequests',
             'totalOrdersAwaitingPayment',
@@ -47,7 +77,14 @@ class ComptableController extends Controller
             'totalOrdersPaid',
             'totalOrdersAwaitingShipping',
             'totalOrdersDelivered',
-            'totalAmountPaid'
+            'totalAmountPaid',
+            'periodStart',
+            'periodEnd',
+            'financialCA',
+            'financialPurchase',
+            'financialCommission',
+            'financialTransit',
+            'financialGlobalProfit'
         ));
     }
 
@@ -210,5 +247,41 @@ class ComptableController extends Controller
             $link = route('agent.followUpProductRequest', ['id' => $requestID]);
             NotificationService::notify($agent, $requestID, $key, $params, $link, ['db', 'mail', 'sms']);
         }
+    }
+
+    public function currencies()
+    {
+        $currencies = \App\Models\Currency::orderBy('code')->get();
+        $history    = DB::table('currency_rate_history')->orderByDesc('changed_at')->limit(20)->get();
+        return view('auth.comptable.currencies', compact('currencies', 'history'));
+    }
+
+    public function updateCurrencyRate(Request $request, string $code)
+    {
+        $request->validate(['fcfa_per_unit' => 'required|numeric|min:0.000001']);
+        $currency = \App\Models\Currency::where('code', $code)->firstOrFail();
+
+        DB::table('currency_rate_history')->insert([
+            'code'          => $code,
+            'fcfa_per_unit' => $currency->fcfa_per_unit,
+            'changed_by'    => Auth::id(),
+            'source'        => 'manual',
+            'changed_at'    => now(),
+        ]);
+
+        $currency->update([
+            'fcfa_per_unit'   => $request->fcfa_per_unit,
+            'rate_updated_at' => now(),
+        ]);
+        \App\Models\Currency::forgetCache();
+
+        return back()->with('success', 'Taux ' . $code . ' mis à jour.');
+    }
+
+    public function syncCurrencyRates()
+    {
+        $exitCode = \Illuminate\Support\Facades\Artisan::call('currency:update-rates');
+        $msg      = $exitCode === 0 ? 'Taux synchronisés depuis l\'API.' : 'Échec de la synchronisation — taux conservés.';
+        return back()->with($exitCode === 0 ? 'success' : 'error', $msg);
     }
 }

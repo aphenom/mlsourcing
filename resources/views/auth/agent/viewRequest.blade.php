@@ -286,11 +286,7 @@
                                 <h6 class="text-dark mb-1 font-weight-bold text-sm">{{ __('pages.unit_price_label') }}</h6>
                             </div>
                             <div class="d-flex align-items-center text-sm">
-                                @if($product->unitPrice != 0)
-                                ${{ $product->unitPrice + 0 }}
-                                @else
-                                    -
-                                @endif
+                                {{ $product->unitPrice != 0 ? format_currency($product->client_unit_price ?? $product->unitPrice) : '-' }}
                             </div>
                         </li>
                         <li class="list-group-item border-0 d-flex justify-content-between ps-0 border-radius-lg">
@@ -299,11 +295,7 @@
                             </div>
                             <div class="d-flex align-items-center text-sm">
                                 <strong>
-                                    @if($product->totalPrice != 0)
-                                       ${{ $product->totalPrice + 0 }}
-                                    @else
-                                        -
-                                    @endif
+                                    {{ $product->totalPrice != 0 ? format_currency($product->client_total_price ?? $product->totalPrice) : '-' }}
                                 </strong>
                             </div>
                         </li>
@@ -387,42 +379,217 @@
 
 <!-- Quote Modal -->
 <div class="modal fade" id="quoteModal" tabindex="-1" role="dialog" aria-labelledby="quoteModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="quoteModalLabel">{{ __('pages.enter_quote_details') }}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="{{ route('agent.quote', ['id' => $orderRequest->id]) }}" method="POST">
+            <form action="{{ route('agent.quote', ['id' => $orderRequest->id]) }}" method="POST"
+                  style="display:flex;flex-direction:column;flex:1 1 auto;overflow:hidden;min-height:0;">
                 @csrf
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="unit_price" class="form-label">{{ __('pages.unit_price_input') }}</label>
-                        <input type="number" class="form-control" id="unit_price" name="unit_price" step=".01" min="0.01" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">{{ __('pages.measurement_type') }}*</label>
-                        <select class="form-control" id="measurement_type" name="measurement_type" required>
-                            <option value="weight" {{ old('measurement_type', $product->measurement_type ?? 'weight') === 'weight' ? 'selected' : '' }}>{{ __('pages.weight_kg') }}</option>
-                            <option value="cbm"    {{ old('measurement_type', $product->measurement_type ?? 'weight') === 'cbm'    ? 'selected' : '' }}>{{ __('pages.cbm_label') }}</option>
-                        </select>
-                    </div>
-                    <div class="mb-3" id="field_weight">
-                        <label for="weight" class="form-label">{{ __('pages.weight_value') }}*</label>
-                        <input type="number" step="0.01" min="0" class="form-control" id="weight" name="weight"
-                               value="{{ old('weight', $product->weight) }}">
-                    </div>
-                    <div class="mb-3 d-none" id="field_cbm">
-                        <label for="cbm" class="form-label">{{ __('pages.cbm_value') }}*</label>
-                        <input type="number" step="0.0001" min="0" class="form-control" id="cbm" name="cbm"
-                               value="{{ old('cbm', $product->cbm) }}">
-                    </div>
-                    <div class="mb-3">
-                        <label for="note" class="form-label">{{ __('pages.agent_note_input') }}</label>
-                        <textarea class="form-control" id="note" name="note" rows="3"></textarea>
-                    </div>
+                <div class="modal-body" style="overflow-y:auto;flex:1 1 auto;">
+                    <div class="row g-4">
+                        {{-- LEFT COLUMN: Inputs --}}
+                        <div class="col-lg-7">
+
+                            {{-- Section 1: Pricing --}}
+                            <div class="card border mb-3">
+                                <div class="card-header py-2 bg-light">
+                                    <h6 class="mb-0 text-sm font-weight-bold">{{ __('pages.internal_pricing_label') }}</h6>
+                                </div>
+                                <div class="card-body py-3">
+                                    <div class="mb-3">
+                                        <label class="form-label text-xs">{{ __('pages.purchase_price_label') }}</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">{{ currency_symbol() }}</span>
+                                            <input type="text" inputmode="decimal" class="form-control" id="q_purchase_price" name="purchase_price"
+                                                   placeholder="0.00">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label text-xs">{{ __('pages.sale_price_label') }}* <span class="badge bg-gradient-info text-xs">{{ active_currency() }}</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">{{ currency_symbol() }}</span>
+                                            <input type="text" inputmode="decimal" class="form-control" id="q_unit_price" name="unit_price"
+                                                   required>
+                                        </div>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label text-xs">{{ __('pages.margin_percent_label') }}</label>
+                                        <div class="row g-2">
+                                            <div class="col-8">
+                                                <select class="form-control form-control-sm" id="q_margin_preset">
+                                                    <option value="0">0%</option>
+                                                    <option value="5">5%</option>
+                                                    <option value="10">10%</option>
+                                                    <option value="15">15%</option>
+                                                    <option value="20">20%</option>
+                                                    <option value="custom">{{ __('pages.margin_custom') }}</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-4">
+                                                <input type="number" class="form-control form-control-sm d-none" id="q_margin_custom"
+                                                       step="0.01" min="0" placeholder="%">
+                                            </div>
+                                        </div>
+                                        <input type="hidden" id="q_margin_percent" name="margin_percent" value="0">
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Section 2: Commission --}}
+                            <div class="card border mb-3">
+                                <div class="card-header py-2 bg-light">
+                                    <h6 class="mb-0 text-sm font-weight-bold">{{ __('pages.service_fees_label') }}</h6>
+                                </div>
+                                <div class="card-body py-3">
+                                    <label class="form-label text-xs">{{ __('pages.commission_percent_label') }}</label>
+                                    <div class="row g-2">
+                                        <div class="col-8">
+                                            <select class="form-control form-control-sm" id="q_commission_preset">
+                                                <option value="0">0%</option>
+                                                <option value="5">5%</option>
+                                                <option value="10">10%</option>
+                                                <option value="15">15%</option>
+                                                <option value="20">20%</option>
+                                                <option value="custom">{{ __('pages.margin_custom') }}</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-4">
+                                            <input type="number" class="form-control form-control-sm d-none" id="q_commission_custom"
+                                                   step="0.01" min="0" max="100" placeholder="%">
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="q_commission_percent" name="commission_percent" value="0">
+                                </div>
+                            </div>
+
+                            {{-- Section 3: Transit --}}
+                            <div class="card border mb-3">
+                                <div class="card-header py-2 bg-light">
+                                    <h6 class="mb-0 text-sm font-weight-bold">{{ __('pages.transit_mode_label') }}</h6>
+                                </div>
+                                <div class="card-body py-3">
+                                    <div class="mb-3">
+                                        <label class="form-label text-xs">{{ __('pages.transit_mode_label') }}*</label>
+                                        <select class="form-control" id="q_transit_mode" name="transit_mode" required>
+                                            <option value="normal">{{ __('pages.transit_normal') }} — 10 500 FCFA/kg</option>
+                                            <option value="express">{{ __('pages.transit_express') }} — 15 900 FCFA/kg</option>
+                                            <option value="maritime">{{ __('pages.transit_maritime') }} — 280 000 FCFA/m³</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label text-xs">{{ __('pages.transit_payment_mode_label') }}*</label>
+                                        <select class="form-control" id="q_transit_payment_mode" name="transit_payment_mode" required>
+                                            <option value="at_delivery">{{ __('pages.transit_at_delivery') }}</option>
+                                            <option value="half_half">{{ __('pages.transit_half_half') }}</option>
+                                            <option value="at_order">{{ __('pages.transit_at_order') }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Section 4: Logistics --}}
+                            <div class="card border mb-3">
+                                <div class="card-header py-2 bg-light">
+                                    <h6 class="mb-0 text-sm font-weight-bold">{{ __('pages.measurement_type') }}</h6>
+                                </div>
+                                <div class="card-body py-3">
+                                    <div class="mb-3">
+                                        <label class="form-label text-xs">{{ __('pages.measurement_type') }}*</label>
+                                        <select class="form-control" id="measurement_type" name="measurement_type" required>
+                                            <option value="weight" {{ old('measurement_type', $product->measurement_type ?? 'weight') === 'weight' ? 'selected' : '' }}>{{ __('pages.weight_kg') }}</option>
+                                            <option value="cbm"    {{ old('measurement_type', $product->measurement_type ?? 'weight') === 'cbm'    ? 'selected' : '' }}>{{ __('pages.cbm_label') }}</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3" id="field_weight">
+                                        <label class="form-label text-xs">{{ __('pages.weight_value') }}*</label>
+                                        <div class="input-group">
+                                            <input type="text" inputmode="decimal" class="ps-5 form-control" id="q_weight" name="weight"
+                                                   value="{{ old('weight', $product->weight) }}">
+                                            <span class="input-group-text">kg</span>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3 d-none" id="field_cbm">
+                                        <label class="form-label text-xs">{{ __('pages.cbm_value') }}*</label>
+                                        <div class="input-group">
+                                            <input type="text" inputmode="decimal" class="ps-5 form-control" id="q_cbm" name="cbm"
+                                                   value="{{ old('cbm', $product->cbm) }}">
+                                            <span class="input-group-text">m³</span>
+                                        </div>
+                                    </div>
+                                    <div class="mb-0">
+                                        <label class="form-label text-xs">{{ __('pages.agent_note_input') }}</label>
+                                        <textarea class="form-control" id="note" name="note" rows="2"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>{{-- end left col --}}
+
+                        {{-- RIGHT COLUMN: Live preview --}}
+                        <div class="col-lg-5">
+                            <div class="card border border-primary h-100">
+                                <div class="card-header py-2 bg-gradient-primary text-white">
+                                    <h6 class="mb-0 text-sm">{{ __('pages.preview_label') }}</h6>
+                                </div>
+                                <div class="card-body py-3 font-14">
+                                    <p class="text-xs text-muted mb-2">{{ __('pages.quantity_label') }}: <strong>{{ $product->qte }}</strong></p>
+
+                                    <hr class="my-2">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="text-xs text-muted">{{ __('pages.sale_price_label') }}</span>
+                                        <span class="text-xs" id="prev_sale_price">—</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="text-xs text-muted">{{ __('pages.margin_percent_label') }}</span>
+                                        <span class="text-xs" id="prev_margin_pct">0%</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-1 fw-semibold">
+                                        <span class="text-xs">{{ __('pages.client_unit_price_label') }}</span>
+                                        <span class="text-xs" id="prev_client_unit">—</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2 fw-semibold">
+                                        <span class="text-xs">{{ __('pages.client_total_label') }}</span>
+                                        <span class="text-xs" id="prev_client_total">—</span>
+                                    </div>
+
+                                    <hr class="my-2">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="text-xs text-muted">{{ __('pages.commission_percent_label') }}</span>
+                                        <span class="text-xs" id="prev_comm_pct">0%</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-xs">{{ __('pages.service_fees_label') }}</span>
+                                        <span class="text-xs text-success fw-semibold" id="prev_service_fees">—</span>
+                                    </div>
+
+                                    <hr class="my-2">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="text-xs text-muted">{{ __('pages.transit_mode_label') }}</span>
+                                        <span class="text-xs" id="prev_transit_mode">—</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-xs">{{ __('pages.transit_fees_label') }}</span>
+                                        <span class="text-xs text-info fw-semibold" id="prev_transit_fees">—</span>
+                                    </div>
+
+                                    <hr class="my-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span class="text-sm fw-bold">{{ __('pages.grand_total_label') }}</span>
+                                        <span class="text-sm fw-bold text-primary" id="prev_grand_total">—</span>
+                                    </div>
+
+                                    <div class="alert alert-secondary mt-3 py-2 px-3 text-xs mb-0 text-white">
+                                        <strong>{{ __('pages.transit_payment_mode_label') }}:</strong>
+                                        <span id="prev_transit_payment">—</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>{{-- end right col --}}
+
+                    </div>{{-- end row --}}
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('pages.close') }}</button>
@@ -434,33 +601,165 @@
 </div>
 
 @push('scripts')
-<!-- Include the necessary JS scripts -->
 <script>
-// Measurement type toggle for quote modal
 (function() {
-    function toggleMeasurementFields(type) {
-        if (type === 'cbm') {
-            document.getElementById('field_weight').classList.add('d-none');
-            document.getElementById('field_cbm').classList.remove('d-none');
-        } else {
-            document.getElementById('field_weight').classList.remove('d-none');
-            document.getElementById('field_cbm').classList.add('d-none');
+    var qte       = {{ $product->qte }};
+    var fxRate    = {{ fx_rate() }};         // FCFA per 1 active currency unit (e.g. 600 for USD)
+    var curCode   = '{{ active_currency() }}';
+    var curSymbol = '{{ currency_symbol() }}';
+
+    var TRANSIT_RATES = {
+        normal:   { client: 10500,  margin: 1500,  unit: 'kg'  },
+        express:  { client: 15900,  margin: 2900,  unit: 'kg'  },
+        maritime: { client: 280000, margin: 50000, unit: 'cbm' }
+    };
+
+    var TRANSIT_LABELS = {
+        normal:      '{{ __('pages.transit_normal') }}',
+        express:     '{{ __('pages.transit_express') }}',
+        maritime:    '{{ __('pages.transit_maritime') }}'
+    };
+
+    var PAYMENT_LABELS = {
+        at_delivery: '{{ __('pages.transit_at_delivery') }}',
+        half_half:   '{{ __('pages.transit_half_half') }}',
+        at_order:    '{{ __('pages.transit_at_order') }}'
+    };
+
+    // Format in active display currency (input is in active currency, multiply by fxRate → FCFA → display)
+    function fmt(n) {
+        if (!n && n !== 0) return '—';
+        var decimals = (curCode === 'XOF') ? 0 : 2;
+        if (curCode === 'XOF') {
+            return parseFloat(n).toLocaleString('fr-FR', {maximumFractionDigits: 0}) + ' FCFA';
         }
+        return curSymbol + parseFloat(n).toLocaleString('fr-FR', {minimumFractionDigits: decimals, maximumFractionDigits: decimals});
     }
+    // Format FCFA amount for display (transit fees are always stored/entered in FCFA)
+    function fmtFcfa(fcfaAmount) {
+        if (!fcfaAmount && fcfaAmount !== 0) return '—';
+        var display = fcfaAmount / fxRate;
+        return fmt(display);
+    }
+
+    function normalizeNum(val) { return (val || '').toString().replace(',', '.'); }
+    function getVal(id) { return parseFloat(normalizeNum(document.getElementById(id)?.value)) || 0; }
+
+    function updatePreview() {
+        var salePrice    = getVal('q_unit_price');
+        var marginPct    = getVal('q_margin_percent');
+        var commPct      = getVal('q_commission_percent');
+        var transitMode  = document.getElementById('q_transit_mode')?.value || 'normal';
+        var payMode      = document.getElementById('q_transit_payment_mode')?.value || 'at_delivery';
+        var measType     = document.getElementById('measurement_type')?.value || 'weight';
+        var weight       = getVal('q_weight');
+        var cbm          = getVal('q_cbm');
+
+        var clientUnit   = salePrice > 0 ? salePrice * (1 + marginPct / 100) : 0;
+        var clientTotal  = clientUnit * qte;
+        var serviceFees  = clientTotal * commPct / 100;
+
+        var rates        = TRANSIT_RATES[transitMode];
+        var measure      = rates.unit === 'kg' ? weight : cbm;
+        var transitFees  = rates.client * measure;
+        var grandTotal   = clientTotal + serviceFees + transitFees;
+
+        document.getElementById('prev_sale_price').textContent    = salePrice > 0 ? fmt(salePrice) : '—';
+        document.getElementById('prev_margin_pct').textContent    = marginPct + '%';
+        document.getElementById('prev_client_unit').textContent   = clientUnit > 0 ? fmt(clientUnit) : '—';
+        document.getElementById('prev_client_total').textContent  = clientTotal > 0 ? fmt(clientTotal) : '—';
+        document.getElementById('prev_comm_pct').textContent      = commPct + '%';
+        document.getElementById('prev_service_fees').textContent  = serviceFees > 0 ? fmt(serviceFees) : '0';
+        document.getElementById('prev_transit_mode').textContent  = TRANSIT_LABELS[transitMode] || '—';
+        document.getElementById('prev_transit_fees').textContent  = measure > 0 ? fmtFcfa(transitFees) : '—';
+        document.getElementById('prev_grand_total').textContent   = grandTotal > 0
+            ? fmt(clientTotal + serviceFees) + ' + ' + fmtFcfa(transitFees)
+            : '—';
+        document.getElementById('prev_transit_payment').textContent = PAYMENT_LABELS[payMode] || '—';
+    }
+
+    // Measurement type toggle
+    function toggleMeasurementFields(type) {
+        var fw = document.getElementById('field_weight');
+        var fc = document.getElementById('field_cbm');
+        if (type === 'cbm') {
+            fw.classList.add('d-none');
+            fc.classList.remove('d-none');
+        } else {
+            fw.classList.remove('d-none');
+            fc.classList.add('d-none');
+        }
+        updatePreview();
+    }
+
+    // Preset dropdowns
+    function wirePreset(presetId, customId, hiddenId) {
+        var preset = document.getElementById(presetId);
+        var custom = document.getElementById(customId);
+        var hidden = document.getElementById(hiddenId);
+        if (!preset) return;
+
+        preset.addEventListener('change', function() {
+            if (this.value === 'custom') {
+                custom.classList.remove('d-none');
+                hidden.value = parseFloat(custom.value) || 0;
+            } else {
+                custom.classList.add('d-none');
+                hidden.value = parseFloat(this.value) || 0;
+            }
+            updatePreview();
+        });
+        custom.addEventListener('input', function() {
+            hidden.value = parseFloat(this.value) || 0;
+            updatePreview();
+        });
+    }
+
+    wirePreset('q_margin_preset',     'q_margin_custom',     'q_margin_percent');
+    wirePreset('q_commission_preset', 'q_commission_custom', 'q_commission_percent');
 
     var sel = document.getElementById('measurement_type');
     if (sel) {
-        toggleMeasurementFields(sel.value);
         sel.addEventListener('change', function() { toggleMeasurementFields(this.value); });
     }
 
-    // Re-init on modal open so initial state is correct
+    ['q_unit_price', 'q_purchase_price', 'q_weight', 'q_cbm'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('input', updatePreview);
+        el.addEventListener('blur', function() {
+            var norm = normalizeNum(this.value);
+            var n = parseFloat(norm);
+            if (!isNaN(n)) { this.value = norm; }
+        });
+    });
+    ['q_transit_mode', 'q_transit_payment_mode'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.addEventListener('change', updatePreview);
+    });
+
+    // Normalize decimal separators before form submission (support both . and ,)
+    var quoteForm = document.querySelector('#quoteModal form');
+    if (quoteForm) {
+        quoteForm.addEventListener('submit', function() {
+            ['q_purchase_price', 'q_unit_price', 'q_weight', 'q_cbm'].forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) el.value = normalizeNum(el.value);
+            });
+        });
+    }
+
     var modal = document.getElementById('quoteModal');
     if (modal) {
         modal.addEventListener('show.bs.modal', function() {
-            if (sel) toggleMeasurementFields(sel.value);
+            var type = sel ? sel.value : 'weight';
+            toggleMeasurementFields(type);
+            updatePreview();
         });
     }
+
+    toggleMeasurementFields(sel ? sel.value : 'weight');
+    updatePreview();
 })();
 
 $(document).ready(function () {
