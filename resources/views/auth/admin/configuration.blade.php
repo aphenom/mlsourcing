@@ -207,7 +207,7 @@
       <div class="col-lg-12 col-md-12 mb-4">
          <div class="card">
             <div class="card-header bg-gradient-primary text-white text-center">{{ __('pages.payment_options') }}</div>
-            <div class="card-body">
+            <div class="card-body table-responsive">
                <table class="table align-items-center mb-0">
                   <thead>
                      <tr>
