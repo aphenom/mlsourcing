@@ -673,8 +673,8 @@ class AdminController extends Controller
                                 'sourcing_country' => $row->countryFrom,
                                 'destination_country' => $row->countryTo,
                                 'qte' => $importedProduct->qte,
-                                'unitPrice' => $importedProduct->unitPrice + 0,
-                                'totalPrice' => $importedProduct->totalPrice + 0,
+                                'unitPrice' => format_currency($importedProduct->unitPrice),
+                                'totalPrice' => format_currency($importedProduct->totalPrice),
                                 'weight' => $importedProduct->measurement_type === 'cbm' && $importedProduct->cbm
                                     ? ($importedProduct->cbm + 0) . ' m³'
                                     : ($importedProduct->weight ? ($importedProduct->weight + 0) . ' kg' : '-'),
@@ -750,7 +750,7 @@ class AdminController extends Controller
                                 'request_no' => $payment->ordersrequests->requestNO,
                                 'seller_id' => $payment->seller_id,
                                 'seller_name' => $payment->seller_name,
-                                'amount' => $payment->amount,
+                                'amount' => format_currency($payment->amount),
                                 'payment_option' => $payment->paymentMethod,
                                 'screenshot' => '<a class="badge btn bg-gradient-dark" href="' . $screenshotUrl . '" target="_blank">View Document</a>',
                                 'status' => $payment->status,
@@ -970,6 +970,18 @@ class AdminController extends Controller
                             route('agent.followUpProductRequest', ['id' => $orderRequest->id])
                         );
                     }
+                }
+
+                // Always notify the seller that a request was created for them
+                $seller = User::find($orderRequest->sellerID);
+                if ($seller) {
+                    NotificationService::notify(
+                        $seller,
+                        $orderRequest->id,
+                        'new_request_seller',
+                        [],
+                        route('seller.followUpProductRequest', ['id' => $orderRequest->id])
+                    );
                 }
             });
 

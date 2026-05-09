@@ -67,4 +67,14 @@ return [
     'payment_submitted_admin_message' => "A seller has submitted a payment for request #:request_no.\n\nPlease review it in the payments section.",
     'payment_submitted_admin_sms'     => 'ML Sourcing: Payment received for request #:request_no.',
 
+    // ── New request created — seller (by agent or admin) ──────────────────────
+    'new_request_seller_subject' => 'A new request has been created for you',
+    'new_request_seller_message' => "A new request has been created for you.\n\nPlease check the details of your request.",
+    'new_request_seller_sms'     => 'ML Sourcing: A new request has been created for you. Check your account.',
+
+    // ── New chat message ───────────────────────────────────────────────────────
+    'new_chat_message_subject' => 'New message',
+    'new_chat_message_message' => "You have received a new message from :sender_name regarding your request.\n\nLog in to read and reply.",
+    'new_chat_message_sms'     => 'ML Sourcing: New message from :sender_name. Log in to reply.',
+
 ];

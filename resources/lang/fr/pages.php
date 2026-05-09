@@ -4,7 +4,7 @@ return [
 
     // --- Formulaire ajout requête ---
     'add_request'           => 'Ajouter une requête',
-    'we_source_for_you'     => 'Nous sourcingons pour vous',
+    'we_source_for_you'     => 'Nous sourçons pour vous',
     'sourcing_tagline'      => 'Laissez notre équipe de sourcing professionnelle prendre en charge tous vos besoins.',
     'product_name'          => 'Nom du produit',
     'product_url'           => 'URL du produit',
@@ -391,6 +391,10 @@ return [
     'client_unit_price_label'   => 'Prix unitaire client',
     'client_total_label'        => 'Total produits client',
     'commission_percent_label'  => 'Commission (%)',
+    'commission_type_label'     => 'Type de frais de service',
+    'commission_type_percent'   => 'Commission en %',
+    'commission_type_fixed'     => 'Forfait fixe',
+    'commission_fixed_label'    => 'Montant forfaitaire',
     'service_fees_label'        => 'Frais de service',
     'transit_mode_label'        => 'Mode de transit',
     'transit_normal'            => 'Normal (avion)',

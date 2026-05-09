@@ -260,7 +260,9 @@ class AgentController extends Controller
             'unit_price'           => 'required|numeric|min:0.01',
             'purchase_price'       => 'nullable|numeric|min:0',
             'margin_percent'       => 'nullable|numeric|min:0|max:9999',
+            'commission_type'      => 'required|in:percent,fixed',
             'commission_percent'   => 'nullable|numeric|min:0|max:100',
+            'commission_fixed'     => 'nullable|numeric|min:0',
             'transit_mode'         => 'required|in:normal,express,maritime',
             'transit_payment_mode' => 'required|in:at_delivery,half_half,at_order',
             'measurement_type'     => 'required|in:weight,cbm',
@@ -302,15 +304,20 @@ class AgentController extends Controller
             $importedProduct->cbm                = $validated['measurement_type'] === 'cbm'    ? $validated['cbm']    : null;
             $importedProduct->save();
 
-            $transitMode   = $validated['transit_mode'];
-            $rates         = self::TRANSIT_RATES[$transitMode];
-            $measureValue  = $rates['unit'] === 'kg'
+            $transitMode    = $validated['transit_mode'];
+            $rates          = self::TRANSIT_RATES[$transitMode];
+            $measureValue   = $rates['unit'] === 'kg'
                 ? (float) ($validated['weight'] ?? 0)
                 : (float) ($validated['cbm']    ?? 0);
-            $commissionPct = (float) ($validated['commission_percent'] ?? 0);
+            $commissionType = $validated['commission_type'] ?? 'percent';
+            $commissionPct  = (float) ($validated['commission_percent'] ?? 0);
+            $commissionAmt  = $commissionType === 'fixed'
+                ? to_fcfa((float) ($validated['commission_fixed'] ?? 0), $activeCurrency)
+                : $clientTotal * $commissionPct / 100;
 
-            $orderRequest->commission_percent      = $commissionPct;
-            $orderRequest->commission_amount       = $clientTotal * $commissionPct / 100;
+            $orderRequest->commission_type         = $commissionType;
+            $orderRequest->commission_percent      = $commissionType === 'percent' ? $commissionPct : 0;
+            $orderRequest->commission_amount       = $commissionAmt;
             $orderRequest->transit_mode            = $transitMode;
             $orderRequest->transit_client_amount   = $rates['client'] * $measureValue;   // already FCFA
             $orderRequest->transit_internal_margin = $rates['margin'] * $measureValue;   // already FCFA
@@ -372,8 +379,8 @@ class AgentController extends Controller
                                                    ? asset('storage/' . $importedProduct->productImage)
                                                    : null,
                                 'qte' => $importedProduct->qte,
-                                'unitPrice' => $importedProduct->unitPrice + 0,
-                                'totalPrice' => $importedProduct->totalPrice + 0,
+                                'unitPrice' => format_currency($importedProduct->unitPrice),
+                                'totalPrice' => format_currency($importedProduct->totalPrice),
                                 'weight' => $importedProduct->measurement_type === 'cbm' && $importedProduct->cbm
                                     ? ($importedProduct->cbm + 0) . ' m³'
                                     : ($importedProduct->weight ? ($importedProduct->weight + 0) . ' kg' : '-'),
@@ -571,6 +578,18 @@ class AgentController extends Controller
                 $importedProduct->productSpecification = $request->note;
                 $importedProduct->statusProduct        = '-';
                 $importedProduct->save();
+
+                // Notify the seller that a request was created for them
+                $seller = User::find($request->seller_id);
+                if ($seller) {
+                    NotificationService::notify(
+                        $seller,
+                        $orderRequest->id,
+                        'new_request_seller',
+                        [],
+                        route('seller.followUpProductRequest', ['id' => $orderRequest->id])
+                    );
+                }
             });
 
             return redirect()->route('agent.productRequests')->with('success', __('pages.request_submitted_for_seller'));

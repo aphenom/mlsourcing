@@ -138,7 +138,7 @@ class ComptableController extends Controller
                                 'request_no'     => $payment->ordersrequests->requestNO,
                                 'seller_id'      => $payment->seller_id,
                                 'seller_name'    => $payment->seller_name,
-                                'amount'         => $payment->amount,
+                                'amount'         => format_currency($payment->amount),
                                 'payment_option' => $payment->paymentMethod,
                                 'screenshot'     => '<a class="badge btn bg-gradient-dark" href="' . $screenshotUrl . '" target="_blank">View Document</a>',
                                 'status'         => $payment->status,

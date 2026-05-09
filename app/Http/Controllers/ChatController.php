@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\ChatThread;
 use App\Models\ChatMessage;
+use App\Models\User;
+use App\Services\NotificationService;
 
 
 class ChatController extends Controller
@@ -46,7 +48,28 @@ class ChatController extends Controller
         
         // Save the message to the database
         $message->save();
-        
+
+        // Notify the recipient (db + mail + sms)
+        $recipient = User::find($validated['recipient_id']);
+        if ($recipient) {
+            $link = '#';
+            if ($recipient->isAgent()) {
+                $link = route('agent.followUpProductRequest',  ['id' => $orderRequestId]);
+            } elseif ($recipient->isSeller()) {
+                $link = route('seller.followUpProductRequest', ['id' => $orderRequestId]);
+            } elseif ($recipient->isAdmin()) {
+                $link = route('admin.followUpProductRequest',  ['id' => $orderRequestId]);
+            }
+            NotificationService::notify(
+                $recipient,
+                (int) $orderRequestId,
+                'new_chat_message',
+                ['sender_name' => auth()->user()->name],
+                $link,
+                ['db', 'mail', 'sms']
+            );
+        }
+
         // Return a JSON response to be processed by the front-end
         return response()->json([
             'success' => true,

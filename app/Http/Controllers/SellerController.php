@@ -363,7 +363,7 @@ class SellerController extends Controller
                         'request_no'      => $row->requestNO,
                         'product_name'    => $row->importedproducts->pluck('productName')->implode(', '),
                         'quantity'        => $row->importedproducts->sum('qte'),
-                        'total_price'     => $row->importedproducts->sum('totalPrice'),
+                        'total_price'     => format_currency($row->importedproducts->sum('totalPrice')),
                         'product_url'     => $row->importedproducts->first()?->productURL,
                         'product_image'   => $row->importedproducts->first()?->productImage
                                              ? asset('storage/' . $row->importedproducts->first()->productImage)

@@ -18,7 +18,7 @@ class OrdersRequest extends Model
 
     protected $fillable = [
         'sellerID', 'agentID', 'requestNO', 'statusRequest', 'countryFrom', 'countryTo', 'ShippingMethod',
-        'commission_percent', 'commission_amount', 'transit_mode',
+        'commission_percent', 'commission_amount', 'commission_type', 'transit_mode',
         'transit_client_amount', 'transit_internal_margin', 'transit_payment_mode',
         'currency_code', 'currency_rate',
     ];

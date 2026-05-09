@@ -356,6 +356,13 @@
                         <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
                             <div class="d-flex flex-column">
                                 <h6 class="text-dark mb-1 font-weight-bold text-sm">{{ __('pages.service_fees_label') }}</h6>
+                                <span class="text-xs text-muted">
+                                    @if(($orderRequest->commission_type ?? 'percent') === 'fixed')
+                                        {{ __('pages.commission_type_fixed') }}
+                                    @else
+                                        {{ $orderRequest->commission_percent }}%
+                                    @endif
+                                </span>
                             </div>
                             <div class="d-flex align-items-center text-sm">
                                 {{ format_currency($orderRequest->commission_amount) }}

@@ -446,23 +446,47 @@
                                     <h6 class="mb-0 text-sm font-weight-bold">{{ __('pages.service_fees_label') }}</h6>
                                 </div>
                                 <div class="card-body py-3">
-                                    <label class="form-label text-xs">{{ __('pages.commission_percent_label') }}</label>
-                                    <div class="row g-2">
-                                        <div class="col-8">
-                                            <select class="form-control form-control-sm" id="q_commission_preset">
-                                                <option value="0">0%</option>
-                                                <option value="5">5%</option>
-                                                <option value="10">10%</option>
-                                                <option value="15">15%</option>
-                                                <option value="20">20%</option>
-                                                <option value="custom">{{ __('pages.margin_custom') }}</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-4">
-                                            <input type="number" class="form-control form-control-sm d-none" id="q_commission_custom"
-                                                   step="0.01" min="0" max="100" placeholder="%">
+                                    {{-- Type toggle --}}
+                                    <div class="mb-3">
+                                        <label class="form-label text-xs">{{ __('pages.commission_type_label') }}</label>
+                                        <div class="d-flex gap-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="commission_type" id="ct_percent" value="percent" checked>
+                                                <label class="form-check-label text-xs" for="ct_percent">{{ __('pages.commission_type_percent') }}</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="commission_type" id="ct_fixed" value="fixed">
+                                                <label class="form-check-label text-xs" for="ct_fixed">{{ __('pages.commission_type_fixed') }}</label>
+                                            </div>
                                         </div>
                                     </div>
+
+                                    {{-- Percent section --}}
+                                    <div id="comm_percent_section">
+                                        <label class="form-label text-xs">{{ __('pages.commission_percent_label') }}</label>
+                                        <div class="row g-2">
+                                            <div class="col-8">
+                                                <select class="form-control form-control-sm" id="q_commission_preset">
+                                                    <option value="0">0%</option>
+                                                    <option value="5">5%</option>
+                                                    <option value="10">10%</option>
+                                                    <option value="15">15%</option>
+                                                    <option value="20">20%</option>
+                                                    <option value="custom">{{ __('pages.margin_custom') }}</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-4">
+                                                <input type="text" inputmode="decimal" class="form-control form-control-sm d-none" id="q_commission_custom" placeholder="%">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- Fixed amount section --}}
+                                    <div id="comm_fixed_section" class="d-none">
+                                        <label class="form-label text-xs">{{ __('pages.commission_fixed_label') }} ({{ currency_symbol() }})</label>
+                                        <input type="text" inputmode="decimal" class="form-control form-control-sm" id="q_commission_fixed" name="commission_fixed" placeholder="0.00" value="0">
+                                    </div>
+
                                     <input type="hidden" id="q_commission_percent" name="commission_percent" value="0">
                                 </div>
                             </div>
@@ -559,7 +583,7 @@
 
                                     <hr class="my-2">
                                     <div class="d-flex justify-content-between mb-1">
-                                        <span class="text-xs text-muted">{{ __('pages.commission_percent_label') }}</span>
+                                        <span class="text-xs text-muted" id="prev_comm_type_label">{{ __('pages.commission_percent_label') }}</span>
                                         <span class="text-xs" id="prev_comm_pct">0%</span>
                                     </div>
                                     <div class="d-flex justify-content-between mb-2">
@@ -647,34 +671,45 @@
     function normalizeNum(val) { return (val || '').toString().replace(',', '.'); }
     function getVal(id) { return parseFloat(normalizeNum(document.getElementById(id)?.value)) || 0; }
 
+    var COMM_LABELS = {
+        percent: '{{ __('pages.commission_percent_label') }}',
+        fixed:   '{{ __('pages.commission_type_fixed') }}'
+    };
+
+    function getCommType() {
+        var checked = document.querySelector('input[name="commission_type"]:checked');
+        return checked ? checked.value : 'percent';
+    }
+
     function updatePreview() {
         var salePrice    = getVal('q_unit_price');
         var marginPct    = getVal('q_margin_percent');
-        var commPct      = getVal('q_commission_percent');
+        var commType     = getCommType();
+        var commPct      = commType === 'percent' ? getVal('q_commission_percent') : 0;
+        var commFixed    = commType === 'fixed'   ? getVal('q_commission_fixed')   : 0;
         var transitMode  = document.getElementById('q_transit_mode')?.value || 'normal';
         var payMode      = document.getElementById('q_transit_payment_mode')?.value || 'at_delivery';
-        var measType     = document.getElementById('measurement_type')?.value || 'weight';
         var weight       = getVal('q_weight');
         var cbm          = getVal('q_cbm');
 
         var clientUnit   = salePrice > 0 ? salePrice * (1 + marginPct / 100) : 0;
         var clientTotal  = clientUnit * qte;
-        var serviceFees  = clientTotal * commPct / 100;
+        var serviceFees  = commType === 'fixed' ? commFixed : clientTotal * commPct / 100;
 
         var rates        = TRANSIT_RATES[transitMode];
         var measure      = rates.unit === 'kg' ? weight : cbm;
         var transitFees  = rates.client * measure;
-        var grandTotal   = clientTotal + serviceFees + transitFees;
 
         document.getElementById('prev_sale_price').textContent    = salePrice > 0 ? fmt(salePrice) : '—';
         document.getElementById('prev_margin_pct').textContent    = marginPct + '%';
         document.getElementById('prev_client_unit').textContent   = clientUnit > 0 ? fmt(clientUnit) : '—';
         document.getElementById('prev_client_total').textContent  = clientTotal > 0 ? fmt(clientTotal) : '—';
-        document.getElementById('prev_comm_pct').textContent      = commPct + '%';
+        document.getElementById('prev_comm_type_label').textContent = COMM_LABELS[commType] || COMM_LABELS.percent;
+        document.getElementById('prev_comm_pct').textContent      = commType === 'fixed' ? fmt(commFixed) : commPct + '%';
         document.getElementById('prev_service_fees').textContent  = serviceFees > 0 ? fmt(serviceFees) : '0';
         document.getElementById('prev_transit_mode').textContent  = TRANSIT_LABELS[transitMode] || '—';
         document.getElementById('prev_transit_fees').textContent  = measure > 0 ? fmtFcfa(transitFees) : '—';
-        document.getElementById('prev_grand_total').textContent   = grandTotal > 0
+        document.getElementById('prev_grand_total').textContent   = (clientTotal + serviceFees) > 0
             ? fmt(clientTotal + serviceFees) + ' + ' + fmtFcfa(transitFees)
             : '—';
         document.getElementById('prev_transit_payment').textContent = PAYMENT_LABELS[payMode] || '—';
@@ -720,6 +755,29 @@
     wirePreset('q_margin_preset',     'q_margin_custom',     'q_margin_percent');
     wirePreset('q_commission_preset', 'q_commission_custom', 'q_commission_percent');
 
+    // Commission type toggle
+    function toggleCommType() {
+        var isFixed = getCommType() === 'fixed';
+        document.getElementById('comm_percent_section').classList.toggle('d-none', isFixed);
+        document.getElementById('comm_fixed_section').classList.toggle('d-none', !isFixed);
+        if (isFixed) { document.getElementById('q_commission_percent').value = '0'; }
+        updatePreview();
+    }
+    document.querySelectorAll('input[name="commission_type"]').forEach(function(r) {
+        r.addEventListener('change', toggleCommType);
+    });
+
+    // Fixed amount input listeners
+    var fixedInput = document.getElementById('q_commission_fixed');
+    if (fixedInput) {
+        fixedInput.addEventListener('input', updatePreview);
+        fixedInput.addEventListener('blur', function() {
+            var norm = normalizeNum(this.value);
+            var n = parseFloat(norm);
+            if (!isNaN(n)) { this.value = norm; }
+        });
+    }
+
     var sel = document.getElementById('measurement_type');
     if (sel) {
         sel.addEventListener('change', function() { toggleMeasurementFields(this.value); });
@@ -744,7 +802,7 @@
     var quoteForm = document.querySelector('#quoteModal form');
     if (quoteForm) {
         quoteForm.addEventListener('submit', function() {
-            ['q_purchase_price', 'q_unit_price', 'q_weight', 'q_cbm'].forEach(function(id) {
+            ['q_purchase_price', 'q_unit_price', 'q_weight', 'q_cbm', 'q_commission_fixed'].forEach(function(id) {
                 var el = document.getElementById(id);
                 if (el) el.value = normalizeNum(el.value);
             });
