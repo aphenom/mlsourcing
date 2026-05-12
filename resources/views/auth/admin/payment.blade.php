@@ -23,7 +23,7 @@
                             <select class="form-control" id="sellerID" name="sellerID">
                                 <option value="">{{ __('pages.all') }}</option>
                                 @foreach($sellers as $seller)
-                                <option value="{{$seller->id}}">ID:{{$seller->id}} - {{$seller->name}}</option>
+                                <option value="{{$seller->id}}">{{$seller->code ?? $seller->id}} - {{$seller->name}}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -49,6 +49,7 @@
                                     <th>{{ __('pages.status') }}</th>
                                     <th>{{ __('pages.approve') }}</th>
                                     <th>{{ __('pages.disapprove') }}</th>
+                                    <th>{{ __('pages.delete') }}</th>
                                 </tr>
                             </thead>
                             <tbody class="text-center">
@@ -67,6 +68,7 @@
                                     <th>{{ __('pages.status') }}</th>
                                     <th>{{ __('pages.approve') }}</th>
                                     <th>{{ __('pages.disapprove') }}</th>
+                                    <th>{{ __('pages.delete') }}</th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -143,12 +145,20 @@
                     data: 'disapprove',
                     name: 'disapprove',
                     render: function(data, type, row) {
-                        // Only display the Disapprove button if data is not '-'
                         if (data !== '-') {
                             return `<a type="button" class="btn btn-danger" href="${data}">{{ __('pages.disapprove') }}</a>`;
                         }
-                        return ''; // Return an empty string if data is '-'
-                }}
+                        return '';
+                    }
+                },
+                {
+                    data: 'delete_url',
+                    name: 'delete_url',
+                    orderable: false,
+                    render: function(data) {
+                        return `<button class="badge btn bg-gradient-danger btn-delete" data-url="${data}">{{ __('pages.delete') }}</button>`;
+                    }
+                }
             ],
             language: {
                 processing:   "{{ __('pages.dt_processing') }}",
@@ -213,7 +223,19 @@
         // Handle form submission
         $('#filter-form').on('submit', function(e) {
             e.preventDefault();
-            table.draw(); // Redraw the table with new filter parameters
+            table.draw();
+        });
+
+        $('#example').on('click', '.btn-delete', function() {
+            if (!confirm('{{ __("pages.confirm_delete") }}')) return;
+            var url = $(this).data('url');
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: { _method: 'DELETE', _token: $('meta[name="csrf-token"]').attr('content') },
+                success: function() { table.ajax.reload(null, false); },
+                error: function() { alert('{{ __("pages.delete_error") }}'); }
+            });
         });
 
     });

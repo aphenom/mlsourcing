@@ -110,6 +110,7 @@ class ComptableController extends Controller
                     'payments.id as payment_id',
                     'payments.created_at as payment_created_at',
                     'users.id as seller_id',
+                    'users.code as seller_code',
                     'users.name as seller_name'
                 );
 
@@ -133,10 +134,10 @@ class ComptableController extends Controller
                             }
 
                             return [
-                                'payment_id'     => $payment->payment_id,
-                                'created_at'     => $payment->payment_created_at,
+                                'payment_id'     => $payment->code,
+                                'created_at'     => \Carbon\Carbon::parse($payment->payment_created_at)->isoFormat('L LTS'),
                                 'request_no'     => $payment->ordersrequests->requestNO,
-                                'seller_id'      => $payment->seller_id,
+                                'seller_id'      => $payment->seller_code,
                                 'seller_name'    => $payment->seller_name,
                                 'amount'         => format_currency($payment->amount),
                                 'payment_option' => $payment->paymentMethod,

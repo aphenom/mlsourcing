@@ -520,8 +520,9 @@ class AdminController extends Controller
                                     ->value('name');
     
                                 return [
-                                    'created_at' => $row->created_at->isoFormat('L'),
-                                    'updated_at' => $row->updated_at->isoFormat('L'),
+                                    'request_id' => $row->requestNO,
+                                    'created_at' => $row->created_at->isoFormat('L LTS'),
+                                    'updated_at' => $row->updated_at->isoFormat('L LTS'),
                                     'seller' => $row->seller ? $row->seller->name . '<br><small class="text-muted">' . $row->seller->email . '</small>' : '-',
                                     'agent' => $agentName ?? '-',
                                     'product_name' => $row->importedproducts->pluck('productName')->implode(', '),
@@ -530,7 +531,8 @@ class AdminController extends Controller
                                     'country_to' => $row->countryTo,
                                     'request_status' => $row->statusRequest,
                                     'payment_status' => $row->payments->first()->status ?? '-',
-                                    'view_url' => url('/admin/requests/' . $row->id)
+                                    'view_url' => url('/admin/requests/' . $row->id),
+                                    'delete_url' => route('admin.deleteRequest', $row->id)
                                 ];
                             })->toArray();
     
@@ -662,7 +664,7 @@ class AdminController extends Controller
                                             ->value('name');
 
                             return [
-                                'created_at'       => $row->created_at->isoFormat('L'),
+                                'created_at'       => $row->created_at->isoFormat('L LTS'),
                                 'agent'            => $agentName,
                                 'request_no'       => $row->requestNO,
                                 'product_name'     => $importedProduct->productName,
@@ -680,7 +682,8 @@ class AdminController extends Controller
                                     : ($importedProduct->weight ? ($importedProduct->weight + 0) . ' kg' : '-'),
                                 'trackingNumber' => $importedProduct->trackingNumber ?? '-',
                                 'carrier' => $importedProduct->carrier ?? '-',
-                                'statusProduct' => $importedProduct->statusProduct
+                                'statusProduct' => $importedProduct->statusProduct,
+                                'delete_url' => route('admin.deleteOrder', $importedProduct->id)
                             ];
                         })->toArray();
 
@@ -716,10 +719,11 @@ class AdminController extends Controller
                     return $query->where('payments.sellerID', $sellerID);
                 })
                 ->select(
-                    'payments.*', 
-                    'payments.id as payment_id', 
-                    'payments.created_at as payment_created_at', 
-                    'users.id as seller_id', 
+                    'payments.*',
+                    'payments.id as payment_id',
+                    'payments.created_at as payment_created_at',
+                    'users.id as seller_id',
+                    'users.code as seller_code',
                     'users.name as seller_name'
                 );
         
@@ -745,17 +749,18 @@ class AdminController extends Controller
                             }
     
                             return [
-                                'payment_id' => $payment->payment_id,
-                                'created_at' => $payment->payment_created_at,
+                                'payment_id' => $payment->code,
+                                'created_at' => \Carbon\Carbon::parse($payment->payment_created_at)->isoFormat('L LTS'),
                                 'request_no' => $payment->ordersrequests->requestNO,
-                                'seller_id' => $payment->seller_id,
+                                'seller_id' => $payment->seller_code,
                                 'seller_name' => $payment->seller_name,
                                 'amount' => format_currency($payment->amount),
                                 'payment_option' => $payment->paymentMethod,
                                 'screenshot' => '<a class="badge btn bg-gradient-dark" href="' . $screenshotUrl . '" target="_blank">View Document</a>',
                                 'status' => $payment->status,
                                 'approve' => $actionURL1,
-                                'disapprove' => $actionURL2
+                                'disapprove' => $actionURL2,
+                                'delete_url' => route('admin.deletePayment', $payment->payment_id)
                             ];
                         })->toArray();
         
@@ -932,7 +937,7 @@ class AdminController extends Controller
                 $orderRequest                = new OrdersRequest();
                 $orderRequest->sellerID      = $request->seller_id;
                 $orderRequest->agentID       = $agentId;
-                $orderRequest->requestNO     = uniqid();
+                // requestNO auto-generated by OrdersRequest::boot()
                 $orderRequest->statusRequest = 'quoting';
                 $orderRequest->countryFrom   = $countryFromName;
                 $orderRequest->countryTo     = $countryToName;
@@ -959,17 +964,15 @@ class AdminController extends Controller
                 $importedProduct->statusProduct        = '-';
                 $importedProduct->save();
 
-                if ($agentId) {
-                    $agent = User::find($agentId);
-                    if ($agent) {
-                        NotificationService::notify(
-                            $agent,
-                            $orderRequest->id,
-                            'new_request_agent',
-                            [],
-                            route('agent.followUpProductRequest', ['id' => $orderRequest->id])
-                        );
-                    }
+                $allMatchingAgents = $this->getMatchingAgents($request->countryFrom, $request->countryTo);
+                foreach ($allMatchingAgents as $agent) {
+                    NotificationService::notify(
+                        $agent,
+                        $orderRequest->id,
+                        'new_request_agent',
+                        [],
+                        route('agent.followUpProductRequest', ['id' => $orderRequest->id])
+                    );
                 }
 
                 // Always notify the seller that a request was created for them
@@ -992,16 +995,39 @@ class AdminController extends Controller
         }
     }
 
+    public function deleteRequest($id)
+    {
+        $order = OrdersRequest::findOrFail($id);
+        $order->importedproducts()->delete();
+        $order->payments()->delete();
+        $order->delete();
+        return response()->json(['success' => true]);
+    }
+
+    public function deleteOrder($id)
+    {
+        ImportedProduct::findOrFail($id)->delete();
+        return response()->json(['success' => true]);
+    }
+
+    public function deletePayment($id)
+    {
+        Payment::findOrFail($id)->delete();
+        return response()->json(['success' => true]);
+    }
+
+    private function getMatchingAgents(int $countryFromId, int $countryToId)
+    {
+        return User::where('role', 2)
+            ->where('status', 'active')
+            ->whereHas('sourcingCountries', fn($q) => $q->where('sourcing_countries.id', $countryFromId))
+            ->whereHas('destinationCountries', fn($q) => $q->where('destination_countries.id', $countryToId))
+            ->get();
+    }
+
     private function assignAgent($countryFrom, $countryTo)
     {
-        $agents = User::where('role', 2)
-            ->with(['sourcingCountries', 'destinationCountries'])
-            ->get();
-
-        $availableAgents = $agents->filter(function ($agent) use ($countryFrom, $countryTo) {
-            return $agent->sourcingCountries->pluck('id')->contains($countryFrom) &&
-                   $agent->destinationCountries->pluck('id')->contains($countryTo);
-        });
+        $availableAgents = $this->getMatchingAgents($countryFrom, $countryTo);
 
         if ($availableAgents->count() === 1) {
             return $availableAgents->first()->id;

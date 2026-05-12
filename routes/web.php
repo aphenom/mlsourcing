@@ -202,6 +202,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('admin/requests/{id}', [AdminController::class, 'followUpProductRequest'])->name('admin.followUpProductRequest');
         Route::post('admin/requests/{id}/update-quantity', [AdminController::class, 'updateQuantity'])->name('admin.updateQuantity');
         
+        // Delete actions (admin only)
+        Route::delete('admin/requests/{id}', [AdminController::class, 'deleteRequest'])->name('admin.deleteRequest');
+        Route::delete('admin/orders/{id}', [AdminController::class, 'deleteOrder'])->name('admin.deleteOrder');
+        Route::delete('admin/payments/{id}', [AdminController::class, 'deletePayment'])->name('admin.deletePayment');
+
         // See and filter orders
         Route::get('admin/orders', [AdminController::class, 'orders'])->name('admin.orders');
         Route::get('admin/orders-data', [AdminController::class, 'filteredAdminOrders'])->name('admin.ordersData');

@@ -14,6 +14,16 @@ class OrdersRequest extends Model
 {
     use HasFactory,SoftDeletes;
 
+    protected static function boot(): void
+    {
+        parent::boot();
+        static::creating(function ($model) {
+            if (empty($model->requestNO)) {
+                $model->requestNO = generate_code('CMD', 'ordersrequests', 'requestNO');
+            }
+        });
+    }
+
     protected $dates = ['deleted_at'];    protected $table = 'ordersrequests';
 
     protected $fillable = [

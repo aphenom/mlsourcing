@@ -46,15 +46,13 @@
 
         .main-section {
             flex: 1;
-            /* min-height lets the section grow when content is taller than the viewport */
-            min-height: 0;
             display: flex;
-            align-items: center;
+            align-items: stretch;
             background-image: url('https://plus.unsplash.com/premium_photo-1661964050170-b9e54345217d?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8c2hpcHBpbmd8ZW58MHx8MHx8fDA%3D');
             background-size: cover;
             background-position: center;
             position: relative;
-            padding: 2rem 1rem;
+            padding: 0;
         }
 
         .main-section::before {
@@ -63,11 +61,29 @@
             inset: 0;
             background-color: #00A75236;
             z-index: 1;
+            pointer-events: none;
         }
 
+        /* Row stretches to fill the full section height */
         .main-section > .row {
             position: relative;
             z-index: 2;
+            min-height: 100%;
+            flex: 1;
+        }
+
+        /* Form column: padded internally so form stays centered */
+        .form-col {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 1.5rem;
+        }
+
+        /* Image column: zero padding, full height */
+        .image-col {
+            padding: 0;
+            overflow: hidden;
         }
 
         .login-form {
@@ -101,7 +117,18 @@
         .links a { color: #00A752; text-decoration: none; font-size: .9rem; }
         .links a:hover { text-decoration: underline; }
 
-        .image-container img { width: 100%; height: auto; border-radius: 10px; max-height: 70vh; object-fit: contain; }
+        /* Image fills its column completely */
+        .image-container {
+            height: 100%;
+            width: 100%;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
 
         footer {
             background-color: #00A752;
@@ -114,13 +141,7 @@
 
         /* ── Mobile overrides ── */
         @media (max-width: 767.98px) {
-            .main-section {
-                align-items: flex-start;
-                padding: 1.5rem 1rem;
-            }
-            .main-section > .row {
-                width: 100%;
-            }
+            .form-col { padding: 1.5rem 1rem; }
         }
     </style>
 </head>
@@ -131,10 +152,10 @@
     </header>
 
     <div class="container-fluid main-section">
-        <div class="row w-100 m-0 justify-content-center align-items-center g-3">
+        <div class="row w-100 m-0 align-items-stretch g-0">
 
             <!-- Form column: full width on mobile, half on md+ -->
-            <div class="col-12 col-md-6 d-flex justify-content-center align-items-center">
+            <div class="col-12 col-md-6 form-col">
                 <div class="login-form">
                     <h2 class="text-center mb-4">{{ __('global.login_title') }}</h2>
 
@@ -176,8 +197,8 @@
                 </div>
             </div>
 
-            <!-- Image column: hidden on mobile -->
-            <div class="col-md-6 d-none d-md-flex justify-content-center align-items-center">
+            <!-- Image column: hidden on mobile, full height on desktop -->
+            <div class="col-md-6 d-none d-md-block image-col">
                 <div class="image-container">
                     <img src="https://i.ibb.co/1ftfy9Rv/1.png" alt="Login Image" loading="lazy">
                 </div>

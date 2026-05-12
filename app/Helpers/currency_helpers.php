@@ -62,6 +62,26 @@ if (!function_exists('format_currency')) {
     }
 }
 
+if (!function_exists('generate_code')) {
+    /**
+     * Generate a unique, short, human-readable reference code.
+     * Format: PREFIX-XXXXXX  (6 chars from unambiguous alphabet)
+     * Example: CMD-BHK4MV, PAY-3RGNWX
+     */
+    function generate_code(string $prefix, string $table, string $column = 'code'): string
+    {
+        $chars = 'ABCDEFGHJKMNPQRSTVWXYZ23456789';
+        do {
+            $random = '';
+            for ($i = 0; $i < 6; $i++) {
+                $random .= $chars[random_int(0, strlen($chars) - 1)];
+            }
+            $code = $prefix . '-' . $random;
+        } while (\Illuminate\Support\Facades\DB::table($table)->where($column, $code)->exists());
+        return $code;
+    }
+}
+
 if (!function_exists('currency_symbol')) {
     function currency_symbol(?string $code = null): string
     {

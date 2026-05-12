@@ -22,7 +22,7 @@
                             <select class="form-control" id="sellerID" name="sellerID">
                                 <option value="">{{ __('pages.all') }}</option>
                                 @foreach($sellers as $seller)
-                                <option value="{{ $seller->id }}">ID:{{ $seller->id }} - {{ $seller->name }}</option>
+                                <option value="{{ $seller->id }}">{{ $seller->code ?? $seller->id }} - {{ $seller->name }}</option>
                                 @endforeach
                             </select>
                         </div>

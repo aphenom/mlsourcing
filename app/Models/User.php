@@ -66,6 +66,16 @@ class User extends Authenticatable implements MustVerifyEmail
      *
      * @var array<int, string>
      */
+    protected static function boot(): void
+    {
+        parent::boot();
+        static::creating(function ($model) {
+            if (empty($model->code)) {
+                $model->code = generate_code('USR', 'users');
+            }
+        });
+    }
+
     protected $fillable = [
         'name', 'email', 'password', 'phone_number', 'address',
         'role', 'status', 'user_type', 'company_name', 'company_information',

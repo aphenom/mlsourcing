@@ -71,6 +71,7 @@
                             <table id="example" class="table table-bordered table-striped table-hover" style="width:100%">
                                 <thead class="thead-light">
                                     <tr>
+                                        <th>{{ __('pages.reference_col') }}</th>
                                         <th>{{ __('pages.requested_at') }}</th>
                                         <th>{{ __('pages.updated_at') }}</th>
                                         <th>{{ __('pages.seller_col') }}</th>
@@ -82,11 +83,13 @@
                                         <th>{{ __('pages.request_status_col') }}</th>
                                         <th>{{ __('pages.payment_status_col') }}</th>
                                         <th>{{ __('pages.see_request') }}</th>
+                                        <th>{{ __('pages.delete') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody class="text-center"></tbody>
                                 <tfoot>
                                     <tr>
+                                        <th>{{ __('pages.reference_col') }}</th>
                                         <th>{{ __('pages.requested_at') }}</th>
                                         <th>{{ __('pages.updated_at') }}</th>
                                         <th>{{ __('pages.seller_col') }}</th>
@@ -98,6 +101,7 @@
                                         <th>{{ __('pages.request_status_col') }}</th>
                                         <th>{{ __('pages.payment_status_col') }}</th>
                                         <th>{{ __('pages.see_request') }}</th>
+                                        <th>{{ __('pages.delete') }}</th>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -134,6 +138,7 @@
                         }
                     },
                     columns: [
+                        {data: 'request_id', name: 'request_id'},
                         {data: 'created_at', name: 'created_at'},
                         {data: 'updated_at', name: 'updated_at'},
                         {data: 'seller', name: 'seller', render: function(data) { return data; }},
@@ -179,6 +184,14 @@
                             name: 'view_url',
                             render: function(data, type, row) {
                                 return `<a class="badge btn bg-gradient-dark" href="${data}">View</a>`;
+                            }
+                        },
+                        {
+                            data: 'delete_url',
+                            name: 'delete_url',
+                            orderable: false,
+                            render: function(data) {
+                                return `<button class="badge btn bg-gradient-danger btn-delete" data-url="${data}">{{ __('pages.delete') }}</button>`;
                             }
                         }
                     ],
@@ -260,7 +273,19 @@
                 // Handle form submission
                 $('#filter-form').on('submit', function(e) {
                     e.preventDefault();
-                    table.draw(); // Redraw the table with new filter parameters
+                    table.draw();
+                });
+
+                $('#example').on('click', '.btn-delete', function() {
+                    if (!confirm('{{ __("pages.confirm_delete") }}')) return;
+                    var url = $(this).data('url');
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        data: { _method: 'DELETE', _token: $('meta[name="csrf-token"]').attr('content') },
+                        success: function() { table.ajax.reload(null, false); },
+                        error: function() { alert('{{ __("pages.delete_error") }}'); }
+                    });
                 });
             });
         </script>

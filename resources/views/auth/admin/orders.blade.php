@@ -72,6 +72,7 @@
                                         <th>{{ __('pages.tracking_number_col') }}</th>
                                         <th>{{ __('pages.carrier') }}</th>
                                         <th>{{ __('pages.status_product_col') }}</th>
+                                        <th>{{ __('pages.delete') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody class="text-center"></tbody>
@@ -91,6 +92,7 @@
                                         <th>{{ __('pages.tracking_number_col') }}</th>
                                         <th>{{ __('pages.carrier') }}</th>
                                         <th>{{ __('pages.status_product_col') }}</th>
+                                        <th>{{ __('pages.delete') }}</th>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -148,7 +150,7 @@
                         {data: 'trackingNumber',name: 'trackingNumber'},
                         {data: 'carrier',name: 'carrier'},
                         {
-                            data: 'statusProduct', 
+                            data: 'statusProduct',
                             name: 'statusProduct',
                             render: function(data, type, row) {
                                 let className;
@@ -172,6 +174,14 @@
                                 }
 
                                 return `<p class="badge ${className}">${displayText}</p>`;
+                            }
+                        },
+                        {
+                            data: 'delete_url',
+                            name: 'delete_url',
+                            orderable: false,
+                            render: function(data) {
+                                return `<button class="badge btn bg-gradient-danger btn-delete" data-url="${data}">{{ __('pages.delete') }}</button>`;
                             }
                         }
                     ],
@@ -255,7 +265,19 @@
                 // Event listeners for filters
                 $('#filter-form').on('submit', function(e) {
                     e.preventDefault();
-                    table.draw(); // Redraw the table with new filter parameters
+                    table.draw();
+                });
+
+                $('#example').on('click', '.btn-delete', function() {
+                    if (!confirm('{{ __("pages.confirm_delete") }}')) return;
+                    var url = $(this).data('url');
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        data: { _method: 'DELETE', _token: $('meta[name="csrf-token"]').attr('content') },
+                        success: function() { table.ajax.reload(null, false); },
+                        error: function() { alert('{{ __("pages.delete_error") }}'); }
+                    });
                 });
             });
         </script>

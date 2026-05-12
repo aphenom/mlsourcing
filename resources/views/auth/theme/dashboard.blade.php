@@ -28,6 +28,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="ML SOURCING | Plateforme de sourcing B2B">
   <meta name="twitter:description" content="Approvisionnement direct fabricant, sans intermédiaire, pour des produits qualitatifs aux prix d’usine.">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
 
 
   <!-- Fonts and icons -->

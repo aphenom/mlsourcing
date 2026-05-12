@@ -49,27 +49,48 @@
         .main-section {
             flex: 1;
             display: flex;
-            align-items: flex-start; /* allow form to grow past viewport */
+            align-items: stretch;
             background-image: url('https://plus.unsplash.com/premium_photo-1661964050170-b9e54345217d?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8c2hpcHBpbmd8ZW58MHx8MHx8fDA%3D');
             background-size: cover;
             background-position: center;
-            background-attachment: fixed; /* keeps bg stable while scrolling */
             position: relative;
-            padding: 2rem 1rem;
+            padding: 0;
         }
 
         .main-section::before {
             content: '';
-            position: fixed; /* fixed so overlay stays behind content on scroll */
+            position: absolute;
             inset: 0;
             background-color: #00A75236;
             z-index: 1;
             pointer-events: none;
         }
 
+        /* Row stretches to fill the full section height */
         .main-section > .row {
             position: relative;
             z-index: 2;
+            min-height: 100%;
+            flex: 1;
+        }
+
+        /* Form column: padded internally, scrollable if form overflows */
+        .form-col {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 2rem 1.5rem;
+            overflow-y: auto;
+        }
+
+        /* Image column: zero padding, sticky so it stays in view while form scrolls */
+        .image-col {
+            padding: 0;
+            overflow: hidden;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            align-self: flex-start;
         }
 
         .signup-form {
@@ -104,7 +125,18 @@
         .links a { color: #00A752; text-decoration: none; font-size: .9rem; }
         .links a:hover { text-decoration: underline; }
 
-        .image-container img { width: 100%; height: auto; border-radius: 10px; max-height: 70vh; object-fit: contain; }
+        /* Image fills its column completely */
+        .image-container {
+            height: 100%;
+            width: 100%;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
 
         footer {
             background-color: #00A752;
@@ -117,10 +149,7 @@
 
         /* ── Mobile overrides ── */
         @media (max-width: 767.98px) {
-            .main-section {
-                padding: 1.25rem 0.75rem;
-            }
-            .main-section > .row { width: 100%; }
+            .form-col { padding: 1.25rem 0.75rem; align-items: flex-start; }
         }
     </style>
 </head>
@@ -131,10 +160,10 @@
     </header>
 
     <div class="container-fluid main-section">
-        <div class="row w-100 m-0 justify-content-center align-items-start g-3">
+        <div class="row w-100 m-0 align-items-stretch g-0">
 
             <!-- Form column: full width on mobile, half on md+ -->
-            <div class="col-12 col-md-6 d-flex justify-content-center">
+            <div class="col-12 col-md-6 form-col">
                 <div class="signup-form">
                     <h2 class="text-center mb-3">{{ __('global.sign_up_title') }}</h2>
                     <form action="{{ route('register') }}" method="POST" enctype="multipart/form-data">
@@ -240,8 +269,8 @@
                 </div>
             </div>
 
-            <!-- Image column: hidden on mobile -->
-            <div class="col-md-6 d-none d-md-flex justify-content-center align-items-center" style="min-height:400px;">
+            <!-- Image column: hidden on mobile, full height on desktop -->
+            <div class="col-md-6 d-none d-md-block image-col">
                 <div class="image-container">
                     <img src="https://i.ibb.co/1ftfy9Rv/1.png" alt="Sign up Image" loading="lazy">
                 </div>
