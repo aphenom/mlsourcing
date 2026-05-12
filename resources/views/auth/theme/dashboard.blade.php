@@ -39,6 +39,66 @@
   <!-- CSS Files -->
   <link id="pagestyle" href="{{ asset('adminTheme/assets/css/soft-ui-dashboard.css?v=1.0.7') }}" rel="stylesheet" />
 
+  <!-- Mobile-responsive overrides -->
+  <style>
+    /* ── Sidebar overlay on mobile ─────────────────────────────── */
+    .sidenav-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.45);
+      z-index: 994;
+      cursor: pointer;
+    }
+    @media (max-width: 1199.98px) {
+      body.g-sidenav-pinned .sidenav-overlay { display: block; }
+      /* Un-pin sidebar when overlay is shown so it can be dismissed */
+    }
+
+    /* ── Main content: allow scroll on all screen sizes ───────── */
+    .main-content {
+      max-height: none !important;
+      height: auto !important;
+      overflow-y: visible !important;
+    }
+
+    /* ── DataTables: horizontal scroll on small screens ───────── */
+    .dataTables_wrapper {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    table.dataTable { min-width: 500px; }
+
+    /* ── Modals: fit viewport on mobile ───────────────────────── */
+    @media (max-width: 767.98px) {
+      .modal-dialog {
+        margin: 0.5rem auto;
+        max-width: calc(100vw - 1rem);
+      }
+      .modal-body { max-height: 75vh; overflow-y: auto; }
+
+      /* Navbar top bar wrapping */
+      .navbar-main .container-fluid { flex-wrap: nowrap; overflow-x: auto; }
+
+      /* Cards grid spacing */
+      .card { margin-bottom: 1rem; }
+
+      /* Sidebar: full-width overlay on xs/sm */
+      .sidenav {
+        width: 100vw !important;
+        max-width: 280px;
+        border-radius: 0 !important;
+        margin: 0 !important;
+      }
+
+      /* Currency/lang buttons in topbar */
+      .navbar-main .nav-item.dropdown .btn { font-size: .75rem; padding: 6px 10px; }
+    }
+
+    /* ── Ensure body background extends below fold ─────────────── */
+    html, body { min-height: 100vh; }
+  </style>
+
   <!-- DataTables CSS -->
   <!-- Nepcha Analytics -->
   <script defer data-site="YOUR_DOMAIN_HERE" src="https://api.nepcha.com/js/nepcha-analytics.js"></script>
@@ -70,7 +130,10 @@
   
 @include('auth.theme.nav-side')
 
-  <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
+  {{-- Overlay that closes the mobile sidebar when tapped --}}
+  <div class="sidenav-overlay" id="sidenav-overlay"></div>
+
+  <main class="main-content position-relative border-radius-lg">
     <!-- Navbar -->
     <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur" navbar-scroll="true">
       <div class="container-fluid py-1 px-3">
@@ -284,6 +347,18 @@
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="{{ asset('adminTheme/assets/js/soft-ui-dashboard.min.js?v=1.0.7') }}"></script>
+  <script>
+    // Close sidebar when overlay is tapped on mobile
+    (function () {
+      var overlay = document.getElementById('sidenav-overlay');
+      var toggler = document.getElementById('iconNavbarSidenav');
+      if (overlay && toggler) {
+        overlay.addEventListener('click', function () {
+          toggler.click();
+        });
+      }
+    })();
+  </script>
 </body>
 
 </html>

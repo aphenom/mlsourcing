@@ -24,7 +24,8 @@
       "Bash(composer dump-autoload *)",
       "Bash(php -r 'echo $_SERVER['\\\\''HTTP_ACCEPT_LANGUAGE'\\\\''] ?? '\\\\''n/a'\\\\'';')",
       "Bash(Get-ChildItem -Path \"c:\\\\wamp64\\\\www\\\\mlsourcing\" -Recurse -Directory -Name)",
-      "Bash(Select-String -Pattern \"\\(views|Controllers|migrations\\)\")"
+      "Bash(Select-String -Pattern \"\\(views|Controllers|migrations\\)\")",
+      "Bash(Get-ChildItem -Path \"c:\\\\wamp64\\\\www\\\\mlsourcing\\\\resources\\\\views\\\\auth\" -Recurse -File)"
     ]
   }
 }
