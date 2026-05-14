@@ -137,7 +137,7 @@ class AdminController extends Controller
         ]);
         \App\Models\Currency::forgetCache();
 
-        return back()->with('success', 'Taux ' . $code . ' mis à jour.');
+        return back()->with('success', __('pages.rate_updated', ['code' => $code]));
     }
 
     public function syncCurrencyRates()
@@ -167,12 +167,12 @@ class AdminController extends Controller
 
         // Check if this country is assigned to any requests
         if ($isUsed) {
-            return redirect()->back()->withErrors(['msg' => 'This sourcing country cannot be deleted because it is assigned to one or more requests.']);
+            return redirect()->back()->withErrors(['msg' => __('pages.sourcing_country_delete_error')]);
         }
 
         $country->delete();
 
-        return redirect()->back()->with('success', 'Sourcing country deleted successfully.');
+        return redirect()->back()->with('success', __('pages.sourcing_country_deleted'));
 
     }
     // Delete Destination Country
@@ -183,12 +183,12 @@ class AdminController extends Controller
 
         // Check if the country is linked to any agent
         if ($isUsed) {
-            return redirect()->back()->withErrors(['msg' => 'This destination country cannot be deleted because it is assigned to one or more requests.']);
+            return redirect()->back()->withErrors(['msg' => __('pages.destination_country_delete_error')]);
         }
 
         $country->delete();
 
-        return redirect()->back()->with('success', 'Destination country deleted successfully.');
+        return redirect()->back()->with('success', __('pages.destination_country_deleted'));
     }
     // Add Sourcing Country 
     public function addSourcingCountry(Request $request) {
@@ -236,7 +236,7 @@ class AdminController extends Controller
                 'country_name' => $request->sourcing_country_name,
             ]);
         }
-        return redirect()->back()->with('success', 'Sourcing country added successfully.');
+        return redirect()->back()->with('success', __('pages.sourcing_country_added'));
     }
     // Add Destination Country
     public function addDestinationCountry(Request $request)
@@ -285,7 +285,7 @@ class AdminController extends Controller
                 ]);
             }
     
-            return redirect()->back()->with('success', 'Destination country added successfully.');
+            return redirect()->back()->with('success', __('pages.destination_country_added'));
     }
     // Delete Payment Option
     public function deletePaymentOption($paymentOptionId){
@@ -294,12 +294,12 @@ class AdminController extends Controller
 
         // Check if this country is assigned to any requests
         if ($isUsed) {
-            return redirect()->back()->withErrors(['msg' => 'This Payment Option cannot be deleted because it is assigned to one or more payments.']);
+            return redirect()->back()->withErrors(['msg' => __('pages.payment_option_delete_error')]);
         }
 
         $paymentOp->delete();
 
-        return redirect()->back()->with('success', 'Payment Option deleted successfully.');
+        return redirect()->back()->with('success', __('pages.payment_option_deleted'));
     }
     // Add Payment Option
     public function addPaymentOption(Request $req)
@@ -332,7 +332,7 @@ class AdminController extends Controller
           
 
         // Redirect back with a success message
-        return redirect()->back()->with('success', 'Payment option added successfully.');
+        return redirect()->back()->with('success', __('pages.payment_option_added'));
     }
     // Store Agent
     public function storeAgent(Request $request)
@@ -371,7 +371,7 @@ class AdminController extends Controller
 
         // Attach the agent's destination countries
         $agent->destinationCountries()->attach($request->destination_countries);
-        return redirect()->route('admin.configuration')->with('success', 'Agent added successfully.');
+        return redirect()->route('admin.configuration')->with('success', __('pages.agent_added'));
     }
 
     public function deleteAgent($id)
@@ -379,10 +379,10 @@ class AdminController extends Controller
         $agent = User::findOrFail($id);
         $isUsed = OrdersRequest::where('agentID',$agent->id)->exists();
         if($isUsed){
-            return redirect()->back()->withErrors(['msg' => 'This Agent cannot be deleted because it is assigned to one or more requests.']);
+            return redirect()->back()->withErrors(['msg' => __('pages.agent_delete_error')]);
         }
         $agent->delete();
-        return redirect()->back()->with('success', 'Agent deleted successfully.');
+        return redirect()->back()->with('success', __('pages.agent_deleted'));
     }
 
     public function storeComptable(Request $request)
@@ -424,7 +424,7 @@ class AdminController extends Controller
         $agent = User::findOrFail($agentId);
         $agent->destinationCountries()->detach($destinationCountryId);
 
-        return redirect()->back()->with('success', 'Destination country unlinked successfully.');
+        return redirect()->back()->with('success', __('pages.destination_country_unlinked'));
     }
 
     public function linkSourcingCountry(Request $request, $agentId)
@@ -439,7 +439,7 @@ class AdminController extends Controller
         // Attach the sourcing country to the agent
         $agent->sourcingCountries()->sync([$sourcingCountryId]);
 
-        return redirect()->back()->with('success', 'Sourcing country linked successfully.');
+        return redirect()->back()->with('success', __('pages.sourcing_country_linked'));
     }
 
     public function linkDestinationCountries(Request $request)
@@ -465,7 +465,7 @@ class AdminController extends Controller
             $agent->destinationCountries()->syncWithoutDetaching($newDestinationCountries);
         }
 
-        return redirect()->back()->with('success', 'Destination countries linked successfully.');
+        return redirect()->back()->with('success', __('pages.destination_countries_linked'));
     }
 
     public function productRequests()
@@ -603,7 +603,7 @@ class AdminController extends Controller
         $this->sendPaymentStatusNotificationToSeller($paymentID,1);
         $this->sendPaymentStatusNotificationToAgent($paymentID,1);
         // Optionally, redirect or provide feedback
-        return redirect()->back()->with('success', 'Payment approved successfully.');
+        return redirect()->back()->with('success', __('pages.payment_approved'));
     }
 
     public function disapprovePayment($paymentID)
@@ -618,7 +618,7 @@ class AdminController extends Controller
         $this->sendPaymentStatusNotificationToAgent($paymentID,0);
 
         // Optionally, redirect or provide feedback
-        return redirect()->back()->with('success', 'Payment disapproved successfully.');
+        return redirect()->back()->with('success', __('pages.payment_disapproved'));
     }
 
     public function orders()

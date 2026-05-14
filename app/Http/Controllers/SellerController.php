@@ -235,8 +235,12 @@ class SellerController extends Controller
                 $importedProduct->save();
 
                 $allMatchingAgents = $this->getMatchingAgents($request->countryFrom, $request->countryTo);
-                foreach ($allMatchingAgents as $agent) {
-                    $this->sendNotificationToAgent($agent, $orderRequest->id);
+                if ($allMatchingAgents->isNotEmpty()) {
+                    foreach ($allMatchingAgents as $agent) {
+                        $this->sendNotificationToAgent($agent, $orderRequest->id);
+                    }
+                } else {
+                    $this->sendNoAgentNotificationToAdmin($orderRequest->id, $countryFromName, $countryToName);
                 }
                 
                 
@@ -245,14 +249,14 @@ class SellerController extends Controller
             });
     
             // Redirect with success message
-            return redirect()->route('seller.productRequests')->with('success', 'Product request submitted successfully.');
-    
+            return redirect()->route('seller.productRequests')->with('success', __('pages.request_submitted'));
+
         } catch (\Exception $e) {
             // Log the error for debugging
             \Log::error('Error in storeProductRequests: ' . $e->getMessage());
-    
+
             // Redirect back with error message
-            return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
+            return redirect()->back()->with('error', __('pages.request_submit_error'));
         }
     }
     private function getMatchingAgents(int $countryFromId, int $countryToId)
@@ -450,10 +454,10 @@ class SellerController extends Controller
                 ));
     
             // Redirect back with a success message
-            return redirect()->back()->with('success', 'Reclamation sent successfully!');
+            return redirect()->back()->with('success', __('pages.reclamation_sent'));
         } catch (\Exception $e) {
             // Handle email sending errors
-            return redirect()->back()->withErrors('Failed to send reclamation: ' . $e->getMessage());
+            return redirect()->back()->withErrors(__('pages.reclamation_send_error'));
         }
     }
     
@@ -519,7 +523,7 @@ class SellerController extends Controller
 
         // Redirect with success message
         return redirect()->route('seller.productRequests')
-                        ->with('success', 'Payment has been recorded and is under review.');
+                        ->with('success', __('pages.payment_submitted'));
     }
     // This function shows payments history : DONE
     public function paymentHistory(){
@@ -602,6 +606,23 @@ class SellerController extends Controller
             $requestID,
             'payment_submitted_admin',
             ['request_no' => $requestNO],
+            route('admin.followUpProductRequest', ['id' => $requestID]),
+            ['db']
+        );
+    }
+
+    private function sendNoAgentNotificationToAdmin(int $requestID, string $countryFrom, string $countryTo): void
+    {
+        $admin = User::where('role', '1')->first();
+        if (!$admin) return;
+
+        $requestNO = OrdersRequest::find($requestID)?->requestNO ?? $requestID;
+
+        NotificationService::notify(
+            $admin,
+            $requestID,
+            'new_request_admin',
+            ['request_no' => $requestNO, 'country_from' => $countryFrom, 'country_to' => $countryTo],
             route('admin.followUpProductRequest', ['id' => $requestID]),
             ['db']
         );

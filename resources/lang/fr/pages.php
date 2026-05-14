@@ -461,6 +461,55 @@ return [
     'no_comptables'             => 'Aucun comptable trouvé.',
     'confirm_delete_comptable'  => 'Êtes-vous sûr de vouloir supprimer ce comptable ?',
 
+    // --- Messages flash (succès / erreur) ---
+    // Inscription
+    'register_error'                    => 'Une erreur est survenue lors de la création de votre compte. Veuillez réessayer.',
+    // Vérification email
+    'verify_email_title'                => 'Vérification de l\'adresse email',
+    'verify_email_heading'              => 'Vérifiez votre adresse email',
+    'verify_email_desc'                 => 'Avant de commencer, veuillez vérifier votre adresse email en cliquant sur le lien que nous venons de vous envoyer.',
+    'verify_email_resent'               => 'Un nouveau lien de vérification a été envoyé à l\'adresse email fournie lors de votre inscription.',
+    'verify_email_resend_btn'           => 'Renvoyer l\'email de vérification',
+    // Confirmation de mot de passe
+    'confirm_password_title'            => 'Confirmer le mot de passe',
+    'confirm_password_desc'             => 'Zone sécurisée. Veuillez confirmer votre mot de passe avant de continuer.',
+    'confirm_btn'                       => 'Confirmer',
+    // Pays (config)
+    'sourcing_country_deleted'          => 'Pays de sourcing supprimé avec succès.',
+    'sourcing_country_delete_error'     => 'Ce pays de sourcing ne peut pas être supprimé car il est associé à une ou plusieurs demandes.',
+    'destination_country_deleted'       => 'Pays de destination supprimé avec succès.',
+    'destination_country_delete_error'  => 'Ce pays de destination ne peut pas être supprimé car il est associé à une ou plusieurs demandes.',
+    'sourcing_country_added'            => 'Pays de sourcing ajouté avec succès.',
+    'destination_country_added'         => 'Pays de destination ajouté avec succès.',
+    'sourcing_country_linked'           => 'Pays de sourcing lié avec succès.',
+    'destination_country_unlinked'      => 'Pays de destination délié avec succès.',
+    'destination_countries_linked'      => 'Pays de destination liés avec succès.',
+    // Options de paiement
+    'payment_option_deleted'            => 'Option de paiement supprimée avec succès.',
+    'payment_option_delete_error'       => 'Cette option de paiement ne peut pas être supprimée car elle est associée à un ou plusieurs paiements.',
+    'payment_option_added'              => 'Option de paiement ajoutée avec succès.',
+    // Agents
+    'agent_added'                       => 'Agent ajouté avec succès.',
+    'agent_deleted'                     => 'Agent supprimé avec succès.',
+    'agent_delete_error'                => 'Cet agent ne peut pas être supprimé car il est assigné à une ou plusieurs demandes.',
+    // Paiements
+    'payment_approved'                  => 'Paiement approuvé avec succès.',
+    'payment_disapproved'               => 'Paiement rejeté avec succès.',
+    // Commandes / expédition
+    'order_shipped'                     => 'Commande marquée comme expédiée avec succès.',
+    'order_ship_error'                  => 'Une erreur est survenue lors de l\'expédition de la commande.',
+    'quotation_submitted'               => 'Devis soumis avec succès.',
+    // Demandes vendeur
+    'request_submitted'                 => 'Demande soumise avec succès.',
+    'request_submit_error'              => 'Une erreur est survenue lors de la soumission de la demande.',
+    // Paiement soumis
+    'payment_submitted'                 => 'Paiement enregistré et en cours de vérification.',
+    // Réclamation
+    'reclamation_sent'                  => 'Réclamation envoyée avec succès.',
+    'reclamation_send_error'            => 'Erreur lors de l\'envoi de la réclamation.',
+    // Devises
+    'rate_updated'                      => 'Taux :code mis à jour.',
+
     // DataTables UI
     'dt_processing'   => 'Chargement...',
     'dt_search'       => 'Rechercher',

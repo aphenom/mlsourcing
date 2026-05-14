@@ -169,7 +169,7 @@ class ComptableController extends Controller
 
         $this->sendPaymentNotification($paymentID, 1);
 
-        return redirect()->back()->with('success', 'Payment approved successfully.');
+        return redirect()->back()->with('success', __('pages.payment_approved'));
     }
 
     public function disapprovePayment($paymentID)
@@ -180,7 +180,7 @@ class ComptableController extends Controller
 
         $this->sendPaymentNotification($paymentID, 0);
 
-        return redirect()->back()->with('success', 'Payment disapproved successfully.');
+        return redirect()->back()->with('success', __('pages.payment_disapproved'));
     }
 
     public function profile()
@@ -276,7 +276,7 @@ class ComptableController extends Controller
         ]);
         \App\Models\Currency::forgetCache();
 
-        return back()->with('success', 'Taux ' . $code . ' mis à jour.');
+        return back()->with('success', __('pages.rate_updated', ['code' => $code]));
     }
 
     public function syncCurrencyRates()

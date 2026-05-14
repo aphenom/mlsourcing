@@ -248,9 +248,9 @@ class AgentController extends Controller
             $this->sendNotificationToSeller($m_seller,$orderRequest->id,$orderRequest->requestNO,'product_status_updated');
             $this->sendNotificationToAdmin($orderRequest->id,$orderRequest->requestNO);
             return redirect()->route('agent.orders')
-                             ->with('success', 'Order marked as shipped successfully.');
+                             ->with('success', __('pages.order_shipped'));
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'An error occurred while dispatching the order.');
+            return redirect()->back()->with('error', __('pages.order_ship_error'));
         }
     }
     public function updateQuantity(Request $request, $id)
@@ -353,7 +353,7 @@ class AgentController extends Controller
         $this->sendNotificationToSeller($m_seller, $orderRequest->id, $orderRequest->requestNO, 'request_quoted');
 
         return redirect()->route('agent.followUpProductRequest', ['id' => $id])
-            ->with('success', 'Quotation submitted successfully.');
+            ->with('success', __('pages.quotation_submitted'));
     }
 
     public function orders()

@@ -120,7 +120,7 @@ class RegisteredUserController extends Controller
             return redirect()->route('seller.pending');
         } catch (\Exception $e) {
             // Handle any errors and redirect back with the error message
-            return back()->withErrors(['error' => 'There was an issue creating your account. Please try again.'])->withInput();
+            return back()->withErrors(['error' => __('pages.register_error')])->withInput();
         }
     }
 }

@@ -25,7 +25,9 @@
       "Bash(php -r 'echo $_SERVER['\\\\''HTTP_ACCEPT_LANGUAGE'\\\\''] ?? '\\\\''n/a'\\\\'';')",
       "Bash(Get-ChildItem -Path \"c:\\\\wamp64\\\\www\\\\mlsourcing\" -Recurse -Directory -Name)",
       "Bash(Select-String -Pattern \"\\(views|Controllers|migrations\\)\")",
-      "Bash(Get-ChildItem -Path \"c:\\\\wamp64\\\\www\\\\mlsourcing\\\\resources\\\\views\\\\auth\" -Recurse -File)"
+      "Bash(Get-ChildItem -Path \"c:\\\\wamp64\\\\www\\\\mlsourcing\\\\resources\\\\views\\\\auth\" -Recurse -File)",
+      "PowerShell(& \"C:\\\\wamp64\\\\bin\\\\php\\\\php8.2.28\\\\php.exe\" \"C:\\\\wamp64\\\\www\\\\mlsourcing\\\\artisan\" migrate)",
+      "Read(//c/wamp64/**)"
     ]
   }
 }

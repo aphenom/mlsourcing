@@ -72,6 +72,11 @@ return [
     'new_request_seller_message' => "A new request has been created for you.\n\nPlease check the details of your request.",
     'new_request_seller_sms'     => 'ML Sourcing: A new request has been created for you. Check your account.',
 
+    // ── New request without agent — admin ─────────────────────────────────────
+    'new_request_admin_subject' => 'New request — no agent assigned',
+    'new_request_admin_message' => "A new request #:request_no has been submitted but no agent matches the country pair (sourcing: :country_from → destination: :country_to).\n\nPlease assign an agent manually.",
+    'new_request_admin_sms'     => 'ML Sourcing: Request #:request_no has no agent. Please assign one manually.',
+
     // ── New chat message ───────────────────────────────────────────────────────
     'new_chat_message_subject' => 'New message',
     'new_chat_message_message' => "You have received a new message from :sender_name regarding your request.\n\nLog in to read and reply.",
