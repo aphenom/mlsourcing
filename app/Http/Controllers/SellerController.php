@@ -180,7 +180,7 @@ class SellerController extends Controller
             'product_url'     => 'nullable|url|max:2048',
             'product_image'   => 'nullable|file|mimes:jpeg,jpg,png,gif,webp|max:5120',
             'category'        => 'required|string|max:255',
-            'quantity'        => 'required|integer|min:30',
+            'quantity'        => 'required|integer|min:1',
             'countryTo'       => 'required|integer|exists:destination_countries,id',
             'countryFrom'     => 'required|integer|exists:sourcing_countries,id',
             'shipping_method' => 'required|string|max:255',

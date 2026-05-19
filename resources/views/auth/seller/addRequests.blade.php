@@ -101,7 +101,7 @@
                                     <div class="col-md-4">
                                         <div class="mb-3">
                                             <label for="quantity" class="form-label">{{ __('pages.quantity') }}*</label>
-                                            <input id="quantity" name="quantity" type="number" min="30" class="form-control" value="{{ old('quantity', 30) }}" required>
+                                            <input id="quantity" name="quantity" type="number" min="1" class="form-control" value="{{ old('quantity', 1) }}" required>
                                             @error('quantity')
                                                 <span class="text-danger">{{ $message }}</span>
                                             @enderror
