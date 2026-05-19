@@ -32,43 +32,50 @@ class AgentController extends Controller
     // This function return data of agent in Dashboard agent : DONE
     public function dashboard()
     {
-        $agentID = Auth::id();
-        
-        $requestsArrived = OrdersRequest::where('agentID', $agentID)->count();
-        
-        $requestsQuoted = OrdersRequest::where('agentID', $agentID)
+        $agent   = Auth::user();
+        $agentID = $agent->id;
+
+        $sourcingNames    = $agent->sourcingCountries->pluck('country_name')->toArray();
+        $destinationNames = $agent->destinationCountries->pluck('country_name')->toArray();
+
+        $matchScope = function ($q) use ($agentID, $sourcingNames, $destinationNames) {
+            $q->where('agentID', $agentID);
+            if (!empty($sourcingNames) && !empty($destinationNames)) {
+                $q->orWhere(function ($inner) use ($sourcingNames, $destinationNames) {
+                    $inner->whereIn('countryFrom', $sourcingNames)
+                          ->whereIn('countryTo', $destinationNames);
+                });
+            }
+        };
+
+        $requestsArrived = OrdersRequest::where($matchScope)->count();
+
+        $requestsQuoted = OrdersRequest::where($matchScope)
             ->where('statusRequest', 'quoted')
             ->count();
-        
-        $requestsPendingQuoting = OrdersRequest::where('agentID', $agentID)
+
+        $requestsPendingQuoting = OrdersRequest::where($matchScope)
             ->where('statusRequest', 'quoting')
             ->count();
-        
-        $totalOrdersPaid = Payment::where('status', 'approved')
-            ->whereHas('ordersrequests', function ($query) use ($agentID) {
-                $query->where('agentID', $agentID);
-            })
-            ->count();
-        
-        $totalOrdersWaitingPayment = $requestsQuoted -  $totalOrdersPaid;
 
-        // Orders Waiting for Shipping: Imported products with status 'null' or '-'
-        $ordersWaitingForShipping = ImportedProduct::whereHas('ordersrequests', function ($query) use ($agentID) {
-            $query->where('agentID', $agentID)
-                  ->whereHas('payments', function ($paymentQuery) {
-                      $paymentQuery->where('status', 'approved'); // Ensure the request is paid
-                  });
+        $totalOrdersPaid = Payment::where('status', 'approved')
+            ->whereHas('ordersrequests', $matchScope)
+            ->count();
+
+        $totalOrdersWaitingPayment = $requestsQuoted - $totalOrdersPaid;
+
+        $ordersWaitingForShipping = ImportedProduct::whereHas('ordersrequests', function ($query) use ($matchScope) {
+                $query->where($matchScope)
+                      ->whereHas('payments', function ($q) {
+                          $q->where('status', 'approved');
+                      });
             })->where(function ($query) {
                 $query->whereNull('statusProduct')
                     ->orWhere('statusProduct', '-');
             })->count();
-        
-            
-        
+
         $totalOrdersArrived = ImportedProduct::where('statusProduct', 'delivered')
-            ->whereHas('ordersrequests', function ($query) use ($agentID) {
-                $query->where('agentID', $agentID);
-            })
+            ->whereHas('ordersrequests', $matchScope)
             ->count();
     
         $shippedOrders = $totalOrdersPaid - $ordersWaitingForShipping - $totalOrdersArrived;
@@ -153,14 +160,7 @@ class AgentController extends Controller
             $data = $query->skip($request->input('start', 0))
                         ->take($request->input('length', 10))
                         ->get()
-                        ->map(function ($row) use ($agentId) {
-                            if ($row->agentID === $agentId) {
-                                $assignedTo = 'me';
-                            } elseif ($row->agentID) {
-                                $assignedTo = 'other';
-                            } else {
-                                $assignedTo = 'unassigned';
-                            }
+                        ->map(function ($row) {
                             return [
                                 'request_id' => $row->requestNO,
                                 'created_at' => $row->created_at->isoFormat('L LTS'),
@@ -172,7 +172,6 @@ class AgentController extends Controller
                                 'country_to' => $row->countryTo,
                                 'request_status' => $row->statusRequest,
                                 'payment_status' => $row->payments->isNotEmpty() ? $row->payments->first()->status : '-',
-                                'assigned_to' => $assignedTo,
                                 'view_url' => url('/agent/requests/' . $row->id)
                             ];
                         })->toArray();
@@ -364,10 +363,22 @@ class AgentController extends Controller
     public function filteredOrders(Request $request)
     {
         try {
-            $agentId = auth()->id();
+            $agent   = auth()->user();
+            $agentId = $agent->id;
+
+            $sourcingNames    = $agent->sourcingCountries->pluck('country_name')->toArray();
+            $destinationNames = $agent->destinationCountries->pluck('country_name')->toArray();
 
             $query = OrdersRequest::with(['importedproducts', 'payments'])
-                ->where('agentID', $agentId)
+                ->where(function ($q) use ($agentId, $sourcingNames, $destinationNames) {
+                    $q->where('agentID', $agentId);
+                    if (!empty($sourcingNames) && !empty($destinationNames)) {
+                        $q->orWhere(function ($inner) use ($sourcingNames, $destinationNames) {
+                            $inner->whereIn('countryFrom', $sourcingNames)
+                                  ->whereIn('countryTo', $destinationNames);
+                        });
+                    }
+                })
                 ->whereHas('payments', function ($q) {
                     $q->where('status', 'approved');
                 })

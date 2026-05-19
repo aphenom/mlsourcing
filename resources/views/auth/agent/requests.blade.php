@@ -54,7 +54,6 @@
                                     <th>{{ __('pages.country_to') }}</th>
                                     <th>{{ __('pages.request_status_col') }}</th>
                                     <th>{{ __('pages.payment_status_col') }}</th>
-                                    <th>{{ __('pages.assignment_col') }}</th>
                                     <th>{{ __('pages.see_request') }}</th>
                                 </tr>
                             </thead>
@@ -71,7 +70,6 @@
                                     <th>{{ __('pages.country_to') }}</th>
                                     <th>{{ __('pages.request_status_col') }}</th>
                                     <th>{{ __('pages.payment_status_col') }}</th>
-                                    <th>{{ __('pages.assignment_col') }}</th>
                                     <th>{{ __('pages.see_request') }}</th>
                                 </tr>
                             </tfoot>
@@ -143,19 +141,6 @@
                                 break;
                         }
                         return `<p class="badge ${className}">${data}</p>`;
-                    }
-                },
-                {
-                    data: 'assigned_to',
-                    name: 'assigned_to',
-                    render: function(data) {
-                        var map = {
-                            me:         { cls: 'bg-gradient-success', label: '{{ __("pages.assigned_to_me") }}' },
-                            other:      { cls: 'bg-gradient-warning',  label: '{{ __("pages.assigned_to_other") }}' },
-                            unassigned: { cls: 'bg-gradient-secondary',label: '{{ __("pages.unassigned") }}' }
-                        };
-                        var entry = map[data] || map.unassigned;
-                        return `<span class="badge ${entry.cls}">${entry.label}</span>`;
                     }
                 },
                 {

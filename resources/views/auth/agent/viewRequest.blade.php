@@ -824,8 +824,8 @@
 
 $(document).ready(function () {
     // Hardcoded sender and recipient IDs based on Blade variables
-    var senderID = "{{ $orderRequest->agentID }}";  // Agent ID is fixed
-    var recipientID = "{{ $orderRequest->sellerID }}";  // Seller ID is fixed
+    var senderID = "{{ auth()->id() }}";
+    var recipientID = "{{ $orderRequest->sellerID }}";
 
     // Send message via AJAX
     $('#chat-form').submit(function (event) {
