@@ -388,15 +388,7 @@
 <script>
 $(document).ready(function () {
     // Hardcoded sender and recipient IDs based on Blade variables
-    var senderID = "{{ $orderRequest->sellerID }}";
-    @php
-        $lastNonSeller = collect($chatMessages)
-            ->filter(fn($m) => $m->sender_id != $orderRequest->sellerID)
-            ->last();
-        $chatRecipientId = $lastNonSeller
-            ? $lastNonSeller->sender_id
-            : ($orderRequest->agentID ?? optional(\App\Models\User::where('role',1)->first())->id);
-    @endphp
+    var senderID    = "{{ $orderRequest->sellerID }}";
     var recipientID = "{{ $chatRecipientId }}";
 
     // Send message via AJAX

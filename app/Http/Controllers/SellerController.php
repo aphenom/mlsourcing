@@ -317,14 +317,17 @@ class SellerController extends Controller
         $paymentOptions = !$isPaid ? PaymentOption::all() : null;
 
         // Pass Chating Sys
-        $chatThread = ChatThread::with('messages')
-                        ->where('order_request_id', $id)
-                        ->first();
-        
-        $chatMessages = $chatThread ? $chatThread->messages : [];
+        $chatThread   = ChatThread::with('messages')->where('order_request_id', $id)->first();
+        $chatMessages = $chatThread ? $chatThread->messages : collect();
+
+        // Recipient: last non-seller who participated, else assigned agent, else admin
+        $lastNonSeller   = $chatMessages->filter(fn($m) => $m->sender_id != $orderRequest->sellerID)->last();
+        $chatRecipientId = $lastNonSeller
+            ? $lastNonSeller->sender_id
+            : ($orderRequest->agentID ?? optional(User::where('role', 1)->first())->id);
 
         // Pass the data to the view
-        return view('auth.seller.viewRequest', compact('orderRequest', 'isPaid', 'payment','chatMessages'));
+        return view('auth.seller.viewRequest', compact('orderRequest', 'isPaid', 'payment', 'chatMessages', 'chatRecipientId'));
     }
     // This function retreive Orders Data
     public function filteredOrders(Request $request)
