@@ -13,7 +13,7 @@
                 <div class="card-body">
                     <p>{{ __('pages.insert_reference') }}</p>
                     <p><strong>{{ __('pages.request_number') }}:</strong> {{ $orderRequest->requestNO }}</p>
-                    <p><strong>{{ __('pages.total_price') }}:</strong> ${{ $orderRequest->importedproducts->first()->totalPrice }}</p>
+                    <p><strong>{{ __('pages.total_price') }}:</strong> {{ format_currency($orderRequest->importedproducts->first()->totalPrice) }}</p>
                 </div>
             </div>
 
@@ -82,7 +82,7 @@
                     @foreach($paymentOptions as $option)
                         {{ $option->id }}: {
                             requestNO: "{{ $orderRequest->requestNO }}",
-                            totalPrice: "{{ $orderRequest->importedproducts->first()->totalPrice }}",
+                            totalPrice: "{{ format_currency($orderRequest->importedproducts->first()->totalPrice) }}",
                             details: @json(json_decode($option->details, true)),
                             id: "{{ $option->id }}"
                         },
@@ -92,8 +92,8 @@
                 const data = optionDetails[optionId];
 
                 let detailsHtml = `
-                    <p><strong>Request Number:</strong> ${data.requestNO}</p>
-                    <p><strong>Total Price:</strong> $${parseFloat(data.totalPrice).toFixed(2)}</p>
+                    <p><strong>{{ __('pages.request_number') }}:</strong> ${data.requestNO}</p>
+                    <p><strong>{{ __('pages.total_price') }}:</strong> ${data.totalPrice}</p>
                 `;
 
                 for (const key in data.details) {
