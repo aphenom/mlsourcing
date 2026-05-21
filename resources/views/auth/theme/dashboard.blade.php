@@ -123,6 +123,25 @@
   
 
   <!-- DataTables JS -->
+
+  <style>
+    /* ── Notification dropdown : plein écran sur mobile ─────────────────── */
+    @media (max-width: 767.98px) {
+      #notifDropdown ~ .dropdown-menu {
+        position: fixed !important;
+        top: 58px !important;
+        left: 10px !important;
+        right: 10px !important;
+        min-width: auto !important;
+        max-width: none !important;
+        max-height: 80vh;
+        overflow-y: auto;
+        border-radius: 12px !important;
+        box-shadow: 0 8px 32px rgba(0,0,0,.18) !important;
+        z-index: 9999 !important;
+      }
+    }
+  </style>
 </head>
 
 

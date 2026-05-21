@@ -35,16 +35,18 @@
                                 $isUnread = is_null($notif->read_at);
                                 $data = $notif->data;
                             @endphp
-                            <div class="list-group-item px-4 py-3 {{ $isUnread ? 'bg-light' : '' }}"
+                            <div class="list-group-item px-3 px-md-4 py-3 {{ $isUnread ? 'bg-light' : '' }}"
                                  style="{{ $isUnread ? 'border-left: 3px solid #00A752;' : 'border-left: 3px solid transparent;' }}">
-                                <div class="d-flex justify-content-between align-items-start">
 
-                                    {{-- Left: unread dot + content --}}
+                                {{-- Wrapper : row sur md+, colonne sur mobile --}}
+                                <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-2">
+
+                                    {{-- Contenu principal --}}
                                     <div class="d-flex align-items-start gap-3" style="flex:1; min-width:0;">
                                         <span class="flex-shrink-0 mt-2"
                                               style="width:10px;height:10px;border-radius:50%;background:{{ $isUnread ? '#00A752' : '#ccc' }};display:inline-block;"></span>
                                         <div style="min-width:0;">
-                                            <div class="d-flex align-items-center gap-2 mb-1">
+                                            <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
                                                 <span class="text-sm font-weight-bold">{{ $data['subject'] ?? __('pages.notification') }}</span>
                                                 @if($isUnread)
                                                     <span class="badge bg-gradient-success" style="font-size:9px;">{{ __('pages.unread') }}</span>
@@ -52,7 +54,7 @@
                                                     <span class="badge bg-gradient-secondary" style="font-size:9px;">{{ __('pages.read') }}</span>
                                                 @endif
                                             </div>
-                                            <p class="text-sm text-secondary mb-1" style="line-height:1.4;">
+                                            <p class="text-sm text-secondary mb-1" style="line-height:1.4; word-break:break-word;">
                                                 {{ $data['message'] ?? '' }}
                                             </p>
                                             <span class="text-xs text-muted">
@@ -63,8 +65,8 @@
                                         </div>
                                     </div>
 
-                                    {{-- Right: action buttons --}}
-                                    <div class="d-flex align-items-center gap-2 ms-3 flex-shrink-0">
+                                    {{-- Boutons action --}}
+                                    <div class="d-flex align-items-center gap-2 flex-shrink-0 ms-md-3">
                                         @if(!empty($data['link']))
                                         <a href="{{ $isUnread ? route('notifications.markRead', $notif->id) : $data['link'] }}"
                                            class="btn btn-sm bg-gradient-dark text-white">
