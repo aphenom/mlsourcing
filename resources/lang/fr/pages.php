@@ -403,6 +403,7 @@ return [
     'commission_type_fixed'     => 'Forfait fixe',
     'commission_fixed_label'    => 'Montant forfaitaire',
     'service_fees_label'        => 'Frais de service',
+    'transit_include_label'     => 'Inclure les frais de transit dans le devis',
     'transit_mode_label'        => 'Mode de transit',
     'transit_normal'            => 'Normal (avion)',
     'transit_express'           => 'Express (avion)',

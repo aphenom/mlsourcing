@@ -282,8 +282,8 @@ class AgentController extends Controller
             'commission_type'      => 'required|in:percent,fixed',
             'commission_percent'   => 'nullable|numeric|min:0|max:100',
             'commission_fixed'     => 'nullable|numeric|min:0',
-            'transit_mode'         => 'required|in:normal,express,maritime',
-            'transit_payment_mode' => 'required|in:at_delivery,half_half,at_order',
+            'transit_mode'         => 'nullable|required_with:transit_payment_mode|in:normal,express,maritime',
+            'transit_payment_mode' => 'nullable|required_with:transit_mode|in:at_delivery,half_half,at_order',
             'measurement_type'     => 'required|in:weight,cbm',
             'weight'               => 'nullable|numeric|min:0',
             'cbm'                  => 'nullable|numeric|min:0',
@@ -323,11 +323,6 @@ class AgentController extends Controller
             $importedProduct->cbm                = $validated['measurement_type'] === 'cbm'    ? $validated['cbm']    : null;
             $importedProduct->save();
 
-            $transitMode    = $validated['transit_mode'];
-            $rates          = self::TRANSIT_RATES[$transitMode];
-            $measureValue   = $rates['unit'] === 'kg'
-                ? (float) ($validated['weight'] ?? 0)
-                : (float) ($validated['cbm']    ?? 0);
             $commissionType = $validated['commission_type'] ?? 'percent';
             $commissionPct  = (float) ($validated['commission_percent'] ?? 0);
             $commissionAmt  = $commissionType === 'fixed'
@@ -337,10 +332,25 @@ class AgentController extends Controller
             $orderRequest->commission_type         = $commissionType;
             $orderRequest->commission_percent      = $commissionType === 'percent' ? $commissionPct : 0;
             $orderRequest->commission_amount       = $commissionAmt;
-            $orderRequest->transit_mode            = $transitMode;
-            $orderRequest->transit_client_amount   = $rates['client'] * $measureValue;   // already FCFA
-            $orderRequest->transit_internal_margin = $rates['margin'] * $measureValue;   // already FCFA
-            $orderRequest->transit_payment_mode    = $validated['transit_payment_mode'];
+
+            if (!empty($validated['transit_mode'])) {
+                $transitMode  = $validated['transit_mode'];
+                $rates        = self::TRANSIT_RATES[$transitMode];
+                $measureValue = $rates['unit'] === 'kg'
+                    ? (float) ($validated['weight'] ?? 0)
+                    : (float) ($validated['cbm']    ?? 0);
+
+                $orderRequest->transit_mode            = $transitMode;
+                $orderRequest->transit_client_amount   = $rates['client'] * $measureValue;   // already FCFA
+                $orderRequest->transit_internal_margin = $rates['margin'] * $measureValue;   // already FCFA
+                $orderRequest->transit_payment_mode    = $validated['transit_payment_mode'];
+            } else {
+                $orderRequest->transit_mode            = null;
+                $orderRequest->transit_client_amount   = null;
+                $orderRequest->transit_internal_margin = null;
+                $orderRequest->transit_payment_mode    = null;
+            }
+
             $orderRequest->currency_code           = $activeCurrency;
             $orderRequest->currency_rate           = $fxRate;
         }

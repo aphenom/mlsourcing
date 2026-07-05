@@ -493,10 +493,14 @@
 
                             {{-- Section 3: Transit --}}
                             <div class="card border mb-3">
-                                <div class="card-header py-2 bg-light">
+                                <div class="card-header py-2 bg-light d-flex justify-content-between align-items-center">
                                     <h6 class="mb-0 text-sm font-weight-bold">{{ __('pages.transit_mode_label') }}</h6>
+                                    <div class="form-check form-switch mb-0">
+                                        <input class="form-check-input" type="checkbox" id="q_transit_enabled" checked>
+                                        <label class="form-check-label text-xs" for="q_transit_enabled">{{ __('pages.transit_include_label') }}</label>
+                                    </div>
                                 </div>
-                                <div class="card-body py-3">
+                                <div class="card-body py-3" id="transit_fields_body">
                                     <div class="mb-3">
                                         <label class="form-label text-xs">{{ __('pages.transit_mode_label') }}*</label>
                                         <select class="form-control" id="q_transit_mode" name="transit_mode" required>
@@ -681,12 +685,18 @@
         return checked ? checked.value : 'percent';
     }
 
+    function isTransitEnabled() {
+        var cb = document.getElementById('q_transit_enabled');
+        return cb ? cb.checked : true;
+    }
+
     function updatePreview() {
         var salePrice    = getVal('q_unit_price');
         var marginPct    = getVal('q_margin_percent');
         var commType     = getCommType();
         var commPct      = commType === 'percent' ? getVal('q_commission_percent') : 0;
         var commFixed    = commType === 'fixed'   ? getVal('q_commission_fixed')   : 0;
+        var transitOn    = isTransitEnabled();
         var transitMode  = document.getElementById('q_transit_mode')?.value || 'normal';
         var payMode      = document.getElementById('q_transit_payment_mode')?.value || 'at_delivery';
         var weight       = getVal('q_weight');
@@ -697,8 +707,8 @@
         var serviceFees  = commType === 'fixed' ? commFixed : clientTotal * commPct / 100;
 
         var rates        = TRANSIT_RATES[transitMode];
-        var measure      = rates.unit === 'kg' ? weight : cbm;
-        var transitFees  = rates.client * measure;
+        var measure      = transitOn ? (rates.unit === 'kg' ? weight : cbm) : 0;
+        var transitFees  = transitOn ? rates.client * measure : 0;
 
         document.getElementById('prev_sale_price').textContent    = salePrice > 0 ? fmt(salePrice) : '—';
         document.getElementById('prev_margin_pct').textContent    = marginPct + '%';
@@ -707,12 +717,12 @@
         document.getElementById('prev_comm_type_label').textContent = COMM_LABELS[commType] || COMM_LABELS.percent;
         document.getElementById('prev_comm_pct').textContent      = commType === 'fixed' ? fmt(commFixed) : commPct + '%';
         document.getElementById('prev_service_fees').textContent  = serviceFees > 0 ? fmt(serviceFees) : '0';
-        document.getElementById('prev_transit_mode').textContent  = TRANSIT_LABELS[transitMode] || '—';
-        document.getElementById('prev_transit_fees').textContent  = measure > 0 ? fmtFcfa(transitFees) : '—';
+        document.getElementById('prev_transit_mode').textContent  = transitOn ? (TRANSIT_LABELS[transitMode] || '—') : '—';
+        document.getElementById('prev_transit_fees').textContent  = transitOn && measure > 0 ? fmtFcfa(transitFees) : '—';
         document.getElementById('prev_grand_total').textContent   = (clientTotal + serviceFees) > 0
-            ? fmt(clientTotal + serviceFees) + ' + ' + fmtFcfa(transitFees)
+            ? fmt(clientTotal + serviceFees) + (transitOn ? ' + ' + fmtFcfa(transitFees) : '')
             : '—';
-        document.getElementById('prev_transit_payment').textContent = PAYMENT_LABELS[payMode] || '—';
+        document.getElementById('prev_transit_payment').textContent = transitOn ? (PAYMENT_LABELS[payMode] || '—') : '—';
     }
 
     // Measurement type toggle
@@ -797,6 +807,26 @@
         var el = document.getElementById(id);
         if (el) el.addEventListener('change', updatePreview);
     });
+
+    // Transit section enable/disable toggle
+    function toggleTransitSection() {
+        var enabled = isTransitEnabled();
+        var body    = document.getElementById('transit_fields_body');
+        var mode    = document.getElementById('q_transit_mode');
+        var pay     = document.getElementById('q_transit_payment_mode');
+        if (body) body.classList.toggle('d-none', !enabled);
+        [mode, pay].forEach(function(el) {
+            if (!el) return;
+            el.disabled  = !enabled;
+            el.required  = enabled;
+        });
+        updatePreview();
+    }
+    var transitToggle = document.getElementById('q_transit_enabled');
+    if (transitToggle) {
+        transitToggle.addEventListener('change', toggleTransitSection);
+        toggleTransitSection();
+    }
 
     // Normalize decimal separators before form submission (support both . and ,)
     var quoteForm = document.querySelector('#quoteModal form');

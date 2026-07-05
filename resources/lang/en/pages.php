@@ -401,6 +401,7 @@ return [
     'commission_type_fixed'     => 'Fixed amount',
     'commission_fixed_label'    => 'Fixed fee amount',
     'service_fees_label'        => 'Service Fees',
+    'transit_include_label'     => 'Include transit fees in the quote',
     'transit_mode_label'        => 'Transit Mode',
     'transit_normal'            => 'Normal (air)',
     'transit_express'           => 'Express (air)',

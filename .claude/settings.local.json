@@ -11,7 +11,13 @@
       "Bash(Get-Content \"c:\\\\wamp64\\\\www\\\\mlsourcing\\\\app\\\\Http\\\\Controllers\\\\AdminController.php\")",
       "Bash(Measure-Object -Line)",
       "PowerShell(cmd /c dir c:\\\\wamp64\\\\www\\\\mlsourcing\\\\public\\\\ /AL)",
-      "PowerShell(cmd /c dir c:\\\\wamp64\\\\www\\\\mlsourcing\\\\public\\\\ /AL /S 2>&1)"
+      "PowerShell(cmd /c dir c:\\\\wamp64\\\\www\\\\mlsourcing\\\\public\\\\ /AL /S 2>&1)",
+      "Bash(\"/c/wamp64/bin/php/php8.2.18/php.exe\" -l app/Http/Controllers/AgentController.php)",
+      "PowerShell(& \"C:\\\\wamp64\\\\bin\\\\php\\\\php8.2.18\\\\php.exe\" -l \"c:\\\\wamp64\\\\www\\\\mlsourcing\\\\app\\\\Http\\\\Controllers\\\\AgentController.php\")",
+      "Read(//c/wamp64/**)",
+      "Read(//c/wamp64/bin/php/**)",
+      "PowerShell(& \"C:\\\\wamp64\\\\bin\\\\php\\\\php8.2.29\\\\php.exe\" -l \"c:\\\\wamp64\\\\www\\\\mlsourcing\\\\app\\\\Http\\\\Controllers\\\\AgentController.php\")",
+      "PowerShell(& \"C:\\\\wamp64\\\\bin\\\\php\\\\php8.2.29\\\\php.exe\" artisan view:clear)"
     ]
   }
 }
