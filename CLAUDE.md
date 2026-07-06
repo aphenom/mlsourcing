@@ -2,7 +2,7 @@
 
 ## Stack
 - Laravel 11, PHP 8.2, Blade, Bootstrap 5.3
-- MySQL via WAMP (Windows dev), run via `C:\wamp64\bin\php\php8.2.18\php.exe artisan ...`
+- MySQL via WAMP (Windows dev), run via `C:\wamp64\bin\php\php8.2.29\php.exe artisan ...`
 - Vite for assets (`npm run dev`)
 - DataTables (server-side), Highcharts, Bootstrap 5 JS
 
@@ -10,8 +10,8 @@
 
 ### Roles
 - `role = 1` → Admin
-- `role = 2` → Seller (submits sourcing requests)
-- `role = 3` → Agent (quotes, ships)
+- `role = 2` → Agent (quotes, ships)
+- `role = 3` → Seller (submits sourcing requests)
 - `role = 4` → Comptable (approves payments)
 
 ### Core flow
@@ -107,7 +107,7 @@ npm run dev
 
 On Windows with WAMP, use the full PHP path for artisan:
 ```
-C:\wamp64\bin\php\php8.2.18\php.exe artisan migrate
+C:\wamp64\bin\php\php8.2.29\php.exe artisan migrate
 ```
 
 ## Code Conventions

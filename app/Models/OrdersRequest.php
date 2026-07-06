@@ -38,6 +38,11 @@ class OrdersRequest extends Model
         return $this->belongsTo(User::class, 'sellerID');
     }
 
+    public function agent()
+    {
+        return $this->belongsTo(User::class, 'agentID');
+    }
+
     public function importedproducts()
     {
         return $this->hasMany(ImportedProduct::class, 'requestID');

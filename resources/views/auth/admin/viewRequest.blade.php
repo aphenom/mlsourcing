@@ -248,6 +248,24 @@
                                 {{ $orderRequest->ShippingMethod }}
                             </div>
                         </li>
+                        <li class="list-group-item border-0 d-flex justify-content-between align-items-center ps-0 mb-2 border-radius-lg flex-wrap gap-2">
+                            <div class="d-flex flex-column">
+                                <h6 class="text-dark mb-1 font-weight-bold text-sm">{{ __('pages.assigned_agent_label') }}</h6>
+                                <span class="text-xs text-muted">
+                                    {{ $orderRequest->agent->name ?? __('pages.no_agent_assigned') }}
+                                </span>
+                            </div>
+                            <form action="{{ route('admin.assignAgent', $orderRequest->id) }}" method="POST" class="d-flex gap-1">
+                                @csrf
+                                <select name="agent_id" class="form-select form-select-sm" required>
+                                    <option value="">{{ __('pages.select_agent') }}</option>
+                                    @foreach($agents as $a)
+                                        <option value="{{ $a->id }}" {{ $orderRequest->agentID == $a->id ? 'selected' : '' }}>{{ $a->name }}</option>
+                                    @endforeach
+                                </select>
+                                <button type="submit" class="btn btn-sm bg-gradient-dark mb-0">{{ __('pages.assign_agent_btn') }}</button>
+                            </form>
+                        </li>
                         @if($product->measurement_type === 'cbm' && $product->cbm)
                         <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
                             <div class="d-flex flex-column">

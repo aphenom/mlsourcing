@@ -17,7 +17,12 @@
       "Read(//c/wamp64/**)",
       "Read(//c/wamp64/bin/php/**)",
       "PowerShell(& \"C:\\\\wamp64\\\\bin\\\\php\\\\php8.2.29\\\\php.exe\" -l \"c:\\\\wamp64\\\\www\\\\mlsourcing\\\\app\\\\Http\\\\Controllers\\\\AgentController.php\")",
-      "PowerShell(& \"C:\\\\wamp64\\\\bin\\\\php\\\\php8.2.29\\\\php.exe\" artisan view:clear)"
+      "PowerShell(& \"C:\\\\wamp64\\\\bin\\\\php\\\\php8.2.29\\\\php.exe\" artisan view:clear)",
+      "PowerShell(& \"C:\\\\wamp64\\\\bin\\\\php\\\\php8.2.29\\\\php.exe\" -l \"c:\\\\wamp64\\\\www\\\\mlsourcing\\\\app\\\\Http\\\\Controllers\\\\AdminController.php\")",
+      "PowerShell(& \"C:\\\\wamp64\\\\bin\\\\php\\\\php8.2.29\\\\php.exe\" -l \"c:\\\\wamp64\\\\www\\\\mlsourcing\\\\app\\\\Models\\\\OrdersRequest.php\")",
+      "PowerShell(& \"C:\\\\wamp64\\\\bin\\\\php\\\\php8.2.29\\\\php.exe\" -l \"c:\\\\wamp64\\\\www\\\\mlsourcing\\\\routes\\\\web.php\")",
+      "PowerShell(& \"C:\\\\wamp64\\\\bin\\\\php\\\\php8.2.29\\\\php.exe\" -l \"c:\\\\wamp64\\\\www\\\\mlsourcing\\\\resources\\\\lang\\\\fr\\\\pages.php\")",
+      "PowerShell(& \"C:\\\\wamp64\\\\bin\\\\php\\\\php8.2.29\\\\php.exe\" -l \"c:\\\\wamp64\\\\www\\\\mlsourcing\\\\resources\\\\lang\\\\en\\\\pages.php\")"
     ]
   }
 }

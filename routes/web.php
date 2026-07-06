@@ -201,7 +201,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // See Details of specific request
         Route::get('admin/requests/{id}', [AdminController::class, 'followUpProductRequest'])->name('admin.followUpProductRequest');
         Route::post('admin/requests/{id}/update-quantity', [AdminController::class, 'updateQuantity'])->name('admin.updateQuantity');
-        
+        Route::post('admin/requests/{id}/assign-agent', [AdminController::class, 'assignAgentToRequest'])->name('admin.assignAgent');
+
         // Delete actions (admin only)
         Route::delete('admin/requests/{id}', [AdminController::class, 'deleteRequest'])->name('admin.deleteRequest');
         Route::delete('admin/orders/{id}', [AdminController::class, 'deleteOrder'])->name('admin.deleteOrder');

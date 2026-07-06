@@ -361,6 +361,7 @@ class AdminController extends Controller
         $agent->company_information = $request->company_information;
         $agent->password = Hash::make('test');
         $agent->role = 2;
+        $agent->status = 'active';
         $agent->email_verified_at = now();
         $agent->save();
 
@@ -564,11 +565,34 @@ class AdminController extends Controller
 
         $chatMessages = $chatThread ? $chatThread->messages : [];
 
-
+        // Active agents available for manual (re)assignment
+        $agents = User::where('role', 2)->where('status', 'active')->orderBy('name')->get();
 
         // Pass the data to the view
-        return view('auth.admin.viewRequest', compact('orderRequest', 'payment','chatMessages'));
+        return view('auth.admin.viewRequest', compact('orderRequest', 'payment', 'chatMessages', 'agents'));
 
+    }
+
+    public function assignAgentToRequest(Request $request, $id)
+    {
+        $request->validate([
+            'agent_id' => 'required|exists:users,id',
+        ]);
+
+        $agent = User::where('id', $request->agent_id)->where('role', 2)->firstOrFail();
+        $orderRequest = OrdersRequest::findOrFail($id);
+        $orderRequest->agentID = $agent->id;
+        $orderRequest->save();
+
+        NotificationService::notify(
+            $agent,
+            $orderRequest->id,
+            'new_request_agent',
+            [],
+            route('agent.followUpProductRequest', ['id' => $orderRequest->id])
+        );
+
+        return redirect()->back()->with('success', __('pages.agent_assigned'));
     }
     
     public function updateQuantity(Request $request, $id)
