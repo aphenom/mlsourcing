@@ -41,7 +41,7 @@ return [
     'menu_payments' => 'Payments',
     'menu_products' => 'Products',
     'menu_tutoriel' => 'Tutorial',
-    'menu_tarifs' => 'Pricing',
+    'menu_tarifs' => 'Our Fees',
     'menu_reclamation' => 'Claims',
     'menu_requests' => 'Requests',
     'menu_orders' => 'Orders',
